@@ -224,10 +224,8 @@ internal Envoy will add 0 to <em>interval_jitter_ms</em> milliseconds to the wai
 </dl>
 <dl class="docutils" id="config-cluster-manager-cluster-hc-service-name">
 <dt>service_name</dt>
-<dd><em>(optional, string)</em> An optional service name parameter which is used to validate the health
-checked cluster against this value. The upstream health checked cluster is taken from the
-<em>x-envoy-upstream-healthchecked-cluster</em> response header, <a class="reference internal" href="../../intro/arch_overview/health_checking.html#arch-overview-health-checking-filter"><span class="std std-ref">see details here</span></a>. It is compared against the <a class="reference internal" href="../../operations/cli.html#cmdoption--service-cluster"><code class="xref std std-option docutils literal"><span class="pre">--service-cluster</span></code></a>
-command line option. If the upstream health checked cluster differs from expected, HC will fail.</dd>
+<dd><em>(optional, string)</em> An optional service name parameter which is used to validate the identity of
+the health checked cluster. See the <a class="reference internal" href="../../intro/arch_overview/health_checking.html#arch-overview-health-checking-identity"><span class="std std-ref">architecture overview</span></a> for more information.</dd>
 </dl>
 </div>
 

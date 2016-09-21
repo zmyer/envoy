@@ -99,6 +99,7 @@
 <li class="toctree-l3"><a class="reference internal" href="service_discovery.html">Service discovery</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Health checking</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#http-health-checking-filter">HTTP health checking filter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#health-check-identity">Health check identity</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="connection_pooling.html">Connection pooling</a></li>
@@ -210,9 +211,21 @@ check requests have very little cost to Envoy itself. Thus, this mode of operati
 eventually consistent view of the health state of each upstream host without overwhelming the
 local service with a large number of health check requests.</li>
 </ul>
-<p>The health check filter appends the x-envoy-upstream-healthchecked-cluster header to the response
-headers, the value is determined by the <a class="reference internal" href="../../operations/cli.html#cmdoption--service-cluster"><code class="xref std std-option docutils literal"><span class="pre">--service-cluster</span></code></a> command line option.</p>
 <p>Health check filter <a class="reference internal" href="../../configuration/http_filters/health_check_filter.html#config-http-filters-health-check"><span class="std std-ref">configuration</span></a>.</p>
+</div>
+<div class="section" id="health-check-identity">
+<span id="arch-overview-health-checking-identity"></span><h2>Health check identity<a class="headerlink" href="#health-check-identity" title="Permalink to this headline">¶</a></h2>
+<p>Just verifying that an upstream host responds to a particular health check URL does not necessarily
+mean that the upstream host is valid. For example, when using eventually consistent service
+discovery in a cloud auto scaling or container environment, it&#8217;s possible for a host to go away and
+then come back with the same IP address, but as a different host type. One solution to this problem
+is having a different HTTP health checking URL for every service type. The downside of that approach
+is that overall configuration becomes more complicated as every health check URL is fully custom.</p>
+<p>The Envoy HTTP health checker supports the <a class="reference internal" href="../../configuration/cluster_manager/cluster_hc.html#config-cluster-manager-cluster-hc-service-name"><span class="std std-ref">service_name</span></a> option. If this option is set, the health checker
+additionally compares the value of the <em>x-envoy-upstream-healthchecked-cluster</em> response header to
+<em>service_name</em>. If the values do not match, the health check does not pass. The upstream health
+check filter appends <em>x-envoy-upstream-healthchecked-cluster</em> to the response headers. The appended
+value is determined by the <a class="reference internal" href="../../operations/cli.html#cmdoption--service-cluster"><code class="xref std std-option docutils literal"><span class="pre">--service-cluster</span></code></a> command line option.</p>
 </div>
 </div>
 
