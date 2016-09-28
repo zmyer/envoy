@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Router &mdash; envoy 1.0.0 documentation</title>
+  <title>Router &mdash; envoy 1.1.0-a6bc37 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="envoy 1.0.0 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.1.0-a6bc37 documentation" href="../../index.html"/>
         <link rel="up" title="HTTP filters" href="http_filters.html"/>
         <link rel="next" title="Cluster manager" href="../cluster_manager/cluster_manager.html"/>
         <link rel="prev" title="Rate limit" href="rate_limit_filter.html"/> 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.0.0
+                1.1.0-a6bc37
               </div>
             
           
@@ -223,9 +223,12 @@ using a &#8216;,&#8217; delimited list. The supported policies are:</p>
 <dd><p class="first">Envoy will attempt a retry if the upstream server responds with any 5xx response code, or does not
 respond at all (disconnect/reset/etc.). (Includes <em>connect-failure</em> and <em>refused-stream</em>)</p>
 <ul class="last simple">
-<li><strong>NOTE:</strong> Envoy will not retry when a request times out (resulting in a 504 error code). This is
-by design. The request timeout is an outer time limit for a request, including any retries that
-take place.</li>
+<li><strong>NOTE:</strong> Envoy will not retry when a request exceeds
+<a class="reference internal" href="#config-http-filters-router-x-envoy-upstream-rq-timeout-ms"><span class="std std-ref">x-envoy-upstream-rq-timeout-ms</span></a> (resulting in a 504 error
+code). Use <a class="reference internal" href="#config-http-filters-router-x-envoy-upstream-rq-per-try-timeout-ms"><span class="std std-ref">x-envoy-upstream-rq-per-try-timeout-ms</span></a> if you want
+to retry when individual attempts take too long.
+<a class="reference internal" href="#config-http-filters-router-x-envoy-upstream-rq-timeout-ms"><span class="std std-ref">x-envoy-upstream-rq-timeout-ms</span></a> is an outer time limit for a
+request, including any retries that take place.</li>
 </ul>
 </dd>
 <dt>connect-failure</dt>
@@ -412,7 +415,7 @@ configuration and can be used to fully disable retries across all Envoys if need
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.0.0',
+            VERSION:'1.1.0-a6bc37',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

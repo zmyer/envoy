@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Access logging &mdash; envoy 1.0.0 documentation</title>
+  <title>Access logging &mdash; envoy 1.1.0-a6bc37 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="envoy 1.0.0 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.1.0-a6bc37 documentation" href="../../index.html"/>
         <link rel="up" title="HTTP connection manager" href="http_conn_man.html"/>
         <link rel="next" title="HTTP header manipulation" href="headers.html"/>
         <link rel="prev" title="Filters" href="filters.html"/> 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.0.0
+                1.1.0-a6bc37
               </div>
             
           
@@ -192,8 +192,11 @@ determine if the access log needs to be written.</dd>
 <div class="section" id="format-rules">
 <span id="config-http-con-manager-access-log-format"></span><h2>Format rules<a class="headerlink" href="#format-rules" title="Permalink to this headline">¶</a></h2>
 <p>The access log format string contains either command operators or other characters interpreted as a
-plain string. Note, if one of the parameters are not available &#8216;-&#8216; will be present in the log
-entry. The following command operators are supported:</p>
+plain string. The access log formatter does not make any assumptions about a new line separator, so one
+has to specified as part of the format string.
+See the <a class="reference internal" href="#config-http-con-manager-access-log-default-format"><span class="std std-ref">default format</span></a> for an example.
+Note that the access log line will contain a &#8216;-&#8216; character for every not set/empty value.</p>
+<p>The following command operators are supported:</p>
 <dl class="docutils">
 <dt>%START_TIME%</dt>
 <dd>Request start time including milliseconds.</dd>
@@ -239,7 +242,7 @@ the headers are present &#8216;-&#8216; symbol will be in the log.</dd>
 <div class="highlight-none"><div class="highlight"><pre><span></span>[%START_TIME%] &quot;%REQ(:METHOD)% %REQ(X-ENVOY-ORIGINAL-PATH?:PATH)% %PROTOCOL%&quot;
 %RESPONSE_CODE% %FAILURE_REASON% %BYTES_RECEIVED% %BYTES_SENT% %DURATION%
 %RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)% &quot;%REQ(X-FORWARDED-FOR)%&quot; &quot;%REQ(USER-AGENT)%&quot;
-&quot;%REQ(X-REQUEST-ID)%&quot; &quot;%REQ(:AUTHORITY)%&quot; &quot;%UPSTREAM_HOST%&quot;
+&quot;%REQ(X-REQUEST-ID)%&quot; &quot;%REQ(:AUTHORITY)%&quot; &quot;%UPSTREAM_HOST%&quot;\n
 </pre></div>
 </div>
 <p>Example of the default Envoy access log format:</p>
@@ -399,7 +402,7 @@ sequentially and if one of them returns true, the filter returns true immediatel
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.0.0',
+            VERSION:'1.1.0-a6bc37',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

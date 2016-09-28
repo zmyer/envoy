@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>HTTP connection manager &mdash; envoy 1.0.0 documentation</title>
+  <title>HTTP connection manager &mdash; envoy 1.1.0-a6bc37 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="envoy 1.0.0 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.1.0-a6bc37 documentation" href="../../index.html"/>
         <link rel="up" title="Configuration reference" href="../configuration.html"/>
         <link rel="next" title="Route configuration" href="route_config/route_config.html"/>
         <link rel="prev" title="TCP proxy" href="../network_filters/tcp_proxy_filter.html"/> 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.0.0
+                1.1.0-a6bc37
               </div>
             
           
@@ -170,6 +170,7 @@
     <span class="nt">&quot;http_codec_options&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
     <span class="nt">&quot;server_name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
     <span class="nt">&quot;idle_timeout_s&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;drain_timeout_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
     <span class="nt">&quot;access_log&quot;</span><span class="p">:</span> <span class="p">[],</span>
     <span class="nt">&quot;use_remote_address&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
   <span class="p">}</span>
@@ -241,8 +242,18 @@ disabling HTTP/2 header compression.</p>
 <dd><em>(optional, integer)</em> The idle timeout in seconds for connections managed by the connection
 manager. The idle timeout is defined as the period in which there are no active requests. If not
 set, there is no idle timeout. When the idle timeout is reached the connection will be closed. If
-the connection is an HTTP/2 connection a GOAWAY frame will be sent prior to closing
-the connection.</dd>
+the connection is an HTTP/2 connection a drain sequence will occur prior to closing the
+connection. See <a class="reference internal" href="#config-http-conn-man-drain-timeout-ms"><span class="std std-ref">drain_timeout_s</span></a>.</dd>
+</dl>
+<dl class="docutils" id="config-http-conn-man-drain-timeout-ms">
+<dt>drain_timeout_ms</dt>
+<dd><em>(optional, integer)</em> The time in milliseconds that Envoy will wait between sending an HTTP/2
+&#8220;shutdown notification&#8221; (GOAWAY frame with max stream ID) and a final GOAWAY frame. This is used
+so that Envoy provides a grace period for new streams that race with the final GOAWAY frame.
+During this grace period, Envoy will continue to accept new streams. After the grace period, a
+final GOAWAY frame is sent and Envoy will start refusing new streams. Draining occurs both
+when a connection hits the idle timeout or during general server draining. The default grace
+period is 5000 milliseconds (5 seconds) if this option is not specified.</dd>
 <dt><a class="reference internal" href="access_log.html#config-http-conn-man-access-log"><span class="std std-ref">access_log</span></a></dt>
 <dd><em>(optional, array)</em> Configuration for <a class="reference internal" href="../../intro/arch_overview/http_connection_management.html#arch-overview-http-access-logs"><span class="std std-ref">HTTP access logs</span></a>
 emitted by the connection manager.</dd>
@@ -302,7 +313,7 @@ various headers. If set to false or absent, the connection manager will use the
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.0.0',
+            VERSION:'1.1.0-a6bc37',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

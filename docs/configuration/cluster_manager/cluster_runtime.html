@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Runtime &mdash; envoy 1.0.0 documentation</title>
+  <title>Runtime &mdash; envoy 1.1.0-a6bc37 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="envoy 1.0.0 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.1.0-a6bc37 documentation" href="../../index.html"/>
         <link rel="up" title="Cluster" href="cluster.html"/>
         <link rel="next" title="Service discovery service" href="sds.html"/>
         <link rel="prev" title="Statistics" href="cluster_stats.html"/> 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.0.0
+                1.1.0-a6bc37
               </div>
             
           
@@ -182,6 +182,16 @@ if configured. Set to 0 to disable HTTP/2 even if the feature is configured. Def
 <dt>upstream.weight_enabled</dt>
 <dd>Binary switch to turn on or off weighted load balancing. If set to non 0, weighted load balancing
 is enabled. Defaults to enabled.</dd>
+<dt>upstream.zone_routing.enabled</dt>
+<dd>% of requests that will be routed to the same upstream zone. Defaults to 100% of requests.</dd>
+<dt>upstream.zone_routing.percent_diff</dt>
+<dd>Zone aware routing will be used only if the percent of upstream hosts in the same zone is within
+percent_diff of expected. Expected is calculated as 100 / number_of_zones. This prevents Envoy
+from using same zone routing if the zones are not balanced well. Defaults to 3% allowed deviation.</dd>
+<dt>upstream.zone_routing.healthy_panic_threshold</dt>
+<dd>Defines the <a class="reference internal" href="../../intro/arch_overview/load_balancing.html#arch-overview-load-balancing-zone-panic-threshold"><span class="std std-ref">zone healthy panic threshold</span></a>
+percentage. Defaults to 80%. If the % of healthy hosts in the current zone falls below this %
+all healthy hosts will be used for routing.</dd>
 </dl>
 </div>
 
@@ -226,7 +236,7 @@ is enabled. Defaults to enabled.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.0.0',
+            VERSION:'1.1.0-a6bc37',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

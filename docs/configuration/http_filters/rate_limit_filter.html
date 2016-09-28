@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Rate limit &mdash; envoy 1.0.0 documentation</title>
+  <title>Rate limit &mdash; envoy 1.1.0-a6bc37 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="envoy 1.0.0 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.1.0-a6bc37 documentation" href="../../index.html"/>
         <link rel="up" title="HTTP filters" href="http_filters.html"/>
         <link rel="next" title="Router" href="router_filter.html"/>
         <link rel="prev" title="Health check" href="health_check_filter.html"/> 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.0.0
+                1.1.0-a6bc37
               </div>
             
           
@@ -191,8 +191,8 @@ specified. The supported action types are documented below.</dd>
 </div>
 <dl class="docutils">
 <dt>type</dt>
-<dd><em>(required, string) The type of rate limit action to perform. The currently supported action
-type is *service_to_service</em>.</dd>
+<dd><em>(required, string)</em> The type of rate limit action to perform. The currently supported action
+types are <em>service_to_service</em> and <em>request_headers</em>.</dd>
 </dl>
 <div class="section" id="service-to-service">
 <h3>Service to service<a class="headerlink" href="#service-to-service" title="Permalink to this headline">¶</a></h3>
@@ -210,6 +210,36 @@ type is *service_to_service</em>.</dd>
 </ul>
 </div></blockquote>
 <p>&lt;local service cluster&gt; is derived from the <a class="reference internal" href="../../operations/cli.html#cmdoption--service-cluster"><code class="xref std std-option docutils literal"><span class="pre">--service-cluster</span></code></a> option.</p>
+</div>
+<div class="section" id="request-headers">
+<h3>Request Headers<a class="headerlink" href="#request-headers" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;request_headers&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;header_name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;descriptor_key&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>header_name</dt>
+<dd><em>(required, string)</em> The header name to be queried from the request headers and used to
+populate the descriptor value for the <em>descriptor_key</em>.</dd>
+<dt>descriptor_key</dt>
+<dd><em>(required, string)</em> The key to use in the descriptor.</dd>
+</dl>
+<p>The following descriptor is sent when a header contains a key that matches the <em>header_name</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>(&#8220;&lt;descriptor_key&gt;&#8221;, &#8220;&lt;header_value_queried_from_header&gt;&#8221;)</li>
+</ul>
+</div></blockquote>
+<p>If <em>route_key</em> is set in the <a class="reference internal" href="../http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-rate-limit"><span class="std std-ref">route</span></a>, the following
+descriptor is sent as well:</p>
+<blockquote>
+<div><ul class="simple">
+<li>(&#8220;route_key&#8221;, &#8220;&lt;route_key&gt;&#8221;), (&#8220;&lt;descriptor_key&gt;&#8221;, &#8220;&lt;header_value_queried_from_header&gt;&#8221;)</li>
+</ul>
+</div></blockquote>
 </div>
 </div>
 <div class="section" id="statistics">
@@ -298,7 +328,7 @@ This can be used to test what would happen before fully enforcing the outcome.</
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.0.0',
+            VERSION:'1.1.0-a6bc37',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
