@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Runtime &mdash; envoy 1.1.0-a6bc37 documentation</title>
+  <title>Runtime &mdash; envoy 1.1.0-a45b57 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="envoy 1.1.0-a6bc37 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.1.0-a45b57 documentation" href="../../index.html"/>
         <link rel="up" title="Cluster" href="cluster.html"/>
         <link rel="next" title="Service discovery service" href="sds.html"/>
         <link rel="prev" title="Statistics" href="cluster_stats.html"/> 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.0-a6bc37
+                1.1.0-a45b57
               </div>
             
           
@@ -192,6 +192,14 @@ from using same zone routing if the zones are not balanced well. Defaults to 3% 
 <dd>Defines the <a class="reference internal" href="../../intro/arch_overview/load_balancing.html#arch-overview-load-balancing-zone-panic-threshold"><span class="std std-ref">zone healthy panic threshold</span></a>
 percentage. Defaults to 80%. If the % of healthy hosts in the current zone falls below this %
 all healthy hosts will be used for routing.</dd>
+<dt>circuit_breakers.&lt;cluster_name&gt;.&lt;priority&gt;.max_connections</dt>
+<dd><a class="reference internal" href="cluster_circuit_breakers.html#config-cluster-manager-cluster-circuit-breakers-max-connections"><span class="std std-ref">Max connections circuit breaker setting</span></a></dd>
+<dt>circuit_breakers.&lt;cluster_name&gt;.&lt;priority&gt;.max_pending_requests</dt>
+<dd><a class="reference internal" href="cluster_circuit_breakers.html#config-cluster-manager-cluster-circuit-breakers-max-pending-requests"><span class="std std-ref">Max pending requests circuit breaker setting</span></a></dd>
+<dt>circuit_breakers.&lt;cluster_name&gt;.&lt;priority&gt;.max_requests</dt>
+<dd><a class="reference internal" href="cluster_circuit_breakers.html#config-cluster-manager-cluster-circuit-breakers-max-requests"><span class="std std-ref">Max requests circuit breaker setting</span></a></dd>
+<dt>circuit_breakers.&lt;cluster_name&gt;.&lt;priority&gt;.max_retries</dt>
+<dd><a class="reference internal" href="cluster_circuit_breakers.html#config-cluster-manager-cluster-circuit-breakers-max-retries"><span class="std std-ref">Max retries circuit breaker setting</span></a></dd>
 </dl>
 </div>
 
@@ -236,7 +244,7 @@ all healthy hosts will be used for routing.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.1.0-a6bc37',
+            VERSION:'1.1.0-a45b57',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

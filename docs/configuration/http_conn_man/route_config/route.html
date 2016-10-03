@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Route &mdash; envoy 1.1.0-a6bc37 documentation</title>
+  <title>Route &mdash; envoy 1.1.0-a45b57 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="envoy 1.1.0-a6bc37 documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.1.0-a45b57 documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Virtual cluster" href="vcluster.html"/>
         <link rel="prev" title="Virtual host" href="vhost.html"/> 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.0-a6bc37
+                1.1.0-a45b57
               </div>
             
           
@@ -180,7 +180,8 @@ next (e.g., redirect, forward, rewrite, etc.).</p>
   <span class="nt">&quot;retry_policy&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
   <span class="nt">&quot;rate_limit&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
   <span class="nt">&quot;shadow&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;priority&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
+  <span class="nt">&quot;priority&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;headers&quot;</span><span class="p">:</span> <span class="s2">&quot;[]&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -237,6 +238,8 @@ HTTP header.</dd>
 <dd><em>(optional, object)</em> Indicates that the route has a shadow policy.</dd>
 <dt>priority</dt>
 <dd><em>(optional, string)</em> Optionally specifies the <a class="reference internal" href="../../../intro/arch_overview/http_routing.html#arch-overview-http-routing-priority"><span class="std std-ref">routing priority</span></a>.</dd>
+<dt><a class="reference internal" href="#config-http-conn-man-route-table-route-headers"><span class="std std-ref">headers</span></a></dt>
+<dd><em>(optional, array)</em> Specifies a set of headers that the route should match on.</dd>
 </dl>
 <div class="section" id="runtime">
 <span id="config-http-conn-man-route-table-route-runtime"></span><h2>Runtime<a class="headerlink" href="#runtime" title="Permalink to this headline">¶</a></h2>
@@ -323,6 +326,28 @@ is specified in the configuration but not present in runtime, 0 is the default a
 requests will be shadowed.</dd>
 </dl>
 </div>
+<div class="section" id="headers">
+<span id="config-http-conn-man-route-table-route-headers"></span><h2>Headers<a class="headerlink" href="#headers" title="Permalink to this headline">¶</a></h2>
+<p>The router can match a request to a route based on headers specified in the route config.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">[</span>
+  <span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span> <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>name</dt>
+<dd><em>(required, string)</em> Specifies the name of the header in the request.</dd>
+<dt>value</dt>
+<dd><dl class="first last docutils">
+<dt><em>(optional, string)</em> Specifies the value of the header. If the value is absent a request that has the</dt>
+<dd><code class="docutils literal"><span class="pre">name</span></code> header will match, regardless of the header&#8217;s value.</dd>
+</dl>
+</dd>
+</dl>
+<p>The router will check the request&#8217;s headers against all the specified
+headers in the route config. A match will happen if all the headers in the route are present in
+the request with the same values (or based on presence if the <code class="docutils literal"><span class="pre">value</span></code> field is not in the config).</p>
+</div>
 </div>
 
 
@@ -366,7 +391,7 @@ requests will be shadowed.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.1.0-a6bc37',
+            VERSION:'1.1.0-a45b57',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

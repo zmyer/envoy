@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Circuit breakers &mdash; envoy 1.1.0-a6bc37 documentation</title>
+  <title>Circuit breakers &mdash; envoy 1.1.0-a45b57 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="envoy 1.1.0-a6bc37 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.1.0-a45b57 documentation" href="../../index.html"/>
         <link rel="up" title="Cluster" href="cluster.html"/>
         <link rel="next" title="TLS context" href="cluster_ssl.html"/>
         <link rel="prev" title="Health checking" href="cluster_hc.html"/> 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.0-a6bc37
+                1.1.0-a45b57
               </div>
             
           
@@ -194,16 +194,30 @@ them.</p>
 <dt>max_connections</dt>
 <dd><em>(optional, integer)</em> The maximum number of connections that Envoy will make to the upstream
 cluster. If not specified, the default is 1024. See the <a class="reference internal" href="../../intro/arch_overview/circuit_breaking.html#arch-overview-circuit-break"><span class="std std-ref">circuit breaking overview</span></a> for more information.</dd>
+</dl>
+<dl class="docutils" id="config-cluster-manager-cluster-circuit-breakers-max-pending-requests">
 <dt>max_pending_requests</dt>
 <dd><em>(optional, integer)</em> The maximum number of pending requests that Envoy will allow to the upstream
 cluster. If not specified, the default is 1024. See the <a class="reference internal" href="../../intro/arch_overview/circuit_breaking.html#arch-overview-circuit-break"><span class="std std-ref">circuit breaking overview</span></a> for more information.</dd>
+</dl>
+<dl class="docutils" id="config-cluster-manager-cluster-circuit-breakers-max-requests">
 <dt>max_requests</dt>
 <dd><em>(optional, integer)</em> The maximum number of parallel requests that Envoy will make to the upstream
 cluster. If not specified, the default is 1024. See the <a class="reference internal" href="../../intro/arch_overview/circuit_breaking.html#arch-overview-circuit-break"><span class="std std-ref">circuit breaking overview</span></a> for more information.</dd>
+</dl>
+<dl class="docutils" id="config-cluster-manager-cluster-circuit-breakers-max-retries">
 <dt>max_retries</dt>
 <dd><em>(optional, integer)</em> The maximum number of parallel retries that Envoy will allow to the upstream
 cluster. If not specified, the default is 3. See the <a class="reference internal" href="../../intro/arch_overview/circuit_breaking.html#arch-overview-circuit-break"><span class="std std-ref">circuit breaking overview</span></a> for more information.</dd>
 </dl>
+</div>
+<div class="section" id="runtime">
+<h2>Runtime<a class="headerlink" href="#runtime" title="Permalink to this headline">¶</a></h2>
+<p>All four circuit breaking settings are runtime configurable for all defined priorities based on cluster
+name. They follow the following naming scheme <code class="docutils literal"><span class="pre">circuit_breakers.&lt;cluster_name&gt;.&lt;priority&gt;.&lt;setting&gt;</span></code>.
+<code class="docutils literal"><span class="pre">cluster_name</span></code> is the name field in each cluster&#8217;s configuration, which is set in the envoy
+<a class="reference internal" href="cluster.html#config-cluster-manager-cluster-name"><span class="std std-ref">config file</span></a>. Available runtime settings will override
+settings set in the envoy config file.</p>
 </div>
 </div>
 
@@ -248,7 +262,7 @@ cluster. If not specified, the default is 3. See the <a class="reference interna
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.1.0-a6bc37',
+            VERSION:'1.1.0-a45b57',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
