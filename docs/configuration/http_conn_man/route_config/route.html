@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Route &mdash; envoy 1.1.0-a45b57 documentation</title>
+  <title>Route &mdash; envoy 1.1.0-9d97f9 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="envoy 1.1.0-a45b57 documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.1.0-9d97f9 documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Virtual cluster" href="vcluster.html"/>
         <link rel="prev" title="Virtual host" href="vhost.html"/> 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.0-a45b57
+                1.1.0-9d97f9
               </div>
             
           
@@ -181,7 +181,7 @@ next (e.g., redirect, forward, rewrite, etc.).</p>
   <span class="nt">&quot;rate_limit&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
   <span class="nt">&quot;shadow&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
   <span class="nt">&quot;priority&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;headers&quot;</span><span class="p">:</span> <span class="s2">&quot;[]&quot;</span>
+  <span class="nt">&quot;headers&quot;</span><span class="p">:</span> <span class="p">[]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -338,11 +338,8 @@ requests will be shadowed.</dd>
 <dt>name</dt>
 <dd><em>(required, string)</em> Specifies the name of the header in the request.</dd>
 <dt>value</dt>
-<dd><dl class="first last docutils">
-<dt><em>(optional, string)</em> Specifies the value of the header. If the value is absent a request that has the</dt>
-<dd><code class="docutils literal"><span class="pre">name</span></code> header will match, regardless of the header&#8217;s value.</dd>
-</dl>
-</dd>
+<dd><em>(optional, string)</em> Specifies the value of the header. If the value is absent a request that has
+the <em>name</em> header will match, regardless of the header&#8217;s value.</dd>
 </dl>
 <p>The router will check the request&#8217;s headers against all the specified
 headers in the route config. A match will happen if all the headers in the route are present in
@@ -391,7 +388,7 @@ the request with the same values (or based on presence if the <code class="docut
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.1.0-a45b57',
+            VERSION:'1.1.0-9d97f9',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
