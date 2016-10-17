@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Route &mdash; envoy 1.1.0-46da71 documentation</title>
+  <title>Route &mdash; envoy 1.1.0-4f0640 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="envoy 1.1.0-46da71 documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.1.0-4f0640 documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Virtual cluster" href="vcluster.html"/>
         <link rel="prev" title="Virtual host" href="vhost.html"/> 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.0-46da71
+                1.1.0-4f0640
               </div>
             
           
@@ -175,7 +175,6 @@ next (e.g., redirect, forward, rewrite, etc.).</p>
   <span class="nt">&quot;host_rewrite&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;case_sensitive&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;timeout_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;content_type&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;runtime&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
   <span class="nt">&quot;retry_policy&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
   <span class="nt">&quot;rate_limit&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
@@ -225,9 +224,6 @@ Note that this timeout includes all retries. See also
 <a class="reference internal" href="../../http_filters/router_filter.html#config-http-filters-router-x-envoy-upstream-rq-timeout-ms"><span class="std std-ref">x-envoy-upstream-rq-timeout-ms</span></a>,
 <a class="reference internal" href="../../http_filters/router_filter.html#config-http-filters-router-x-envoy-upstream-rq-per-try-timeout-ms"><span class="std std-ref">x-envoy-upstream-rq-per-try-timeout-ms</span></a>, and the
 <a class="reference internal" href="../../../intro/arch_overview/http_routing.html#arch-overview-http-routing-retry"><span class="std std-ref">retry overview</span></a>.</dd>
-<dt>content_type</dt>
-<dd><em>(optional, string)</em> Indicates that the route should additionally match on the <em>content-type</em>
-HTTP header.</dd>
 <dt><a class="reference internal" href="#config-http-conn-man-route-table-route-runtime"><span class="std std-ref">runtime</span></a></dt>
 <dd><em>(optional, object)</em> Indicates that the route should additionally match on a runtime key.</dd>
 <dt><a class="reference internal" href="#config-http-conn-man-route-table-route-retry"><span class="std std-ref">retry_policy</span></a></dt>
@@ -388,7 +384,7 @@ the request with the same values (or based on presence if the <code class="docut
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.1.0-46da71',
+            VERSION:'1.1.0-4f0640',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

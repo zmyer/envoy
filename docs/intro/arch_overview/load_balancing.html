@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Load balancing &mdash; envoy 1.1.0-46da71 documentation</title>
+  <title>Load balancing &mdash; envoy 1.1.0-4f0640 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="envoy 1.1.0-46da71 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.1.0-4f0640 documentation" href="../../index.html"/>
         <link rel="up" title="Architecture overview" href="arch_overview.html"/>
         <link rel="next" title="Circuit breaking" href="circuit_breaking.html"/>
         <link rel="prev" title="Connection pooling" href="connection_pooling.html"/> 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.0-46da71
+                1.1.0-4f0640
               </div>
             
           
@@ -218,9 +218,8 @@ the cluster as load increases.</p>
 <div class="section" id="zone-aware-routing-and-local-zone-panic-threshold">
 <span id="arch-overview-load-balancing-zone-panic-threshold"></span><h2>Zone aware routing and local zone panic threshold<a class="headerlink" href="#zone-aware-routing-and-local-zone-panic-threshold" title="Permalink to this headline">¶</a></h2>
 <p>By default Envoy performs zone aware routing where it will send traffic to the same upstream zone.
-This is only done if the zones are well balanced (defaults to 3% allowed deviation) and if there
-are enough healthy hosts in the local zone (the <em>panic threshold</em> which defaults to 80%). These are
-<a class="reference internal" href="../../configuration/cluster_manager/cluster_runtime.html#config-cluster-manager-cluster-runtime"><span class="std std-ref">configurable</span></a> via runtime.</p>
+This feature is in active development.
+You can enable/disable it <a class="reference internal" href="../../configuration/cluster_manager/cluster_runtime.html#config-cluster-manager-cluster-runtime"><span class="std std-ref">via runtime</span></a>.</p>
 </div>
 </div>
 
@@ -265,7 +264,7 @@ are enough healthy hosts in the local zone (the <em>panic threshold</em> which d
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.1.0-46da71',
+            VERSION:'1.1.0-4f0640',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
