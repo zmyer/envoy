@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Hot restart &mdash; envoy 1.1.0-4f0640 documentation</title>
+  <title>Hot restart &mdash; envoy 1.1.0-01e800 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="envoy 1.1.0-4f0640 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.1.0-01e800 documentation" href="../../index.html"/>
         <link rel="up" title="Architecture overview" href="arch_overview.html"/>
         <link rel="next" title="Deployment types" href="../deployment_types/deployment_types.html"/>
         <link rel="prev" title="DynamoDB" href="dynamo.html"/> 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.0-4f0640
+                1.1.0-01e800
               </div>
             
           
@@ -187,8 +187,10 @@ discovery and health checking phase, etc.) before it asks for copies of the list
 the old process. The new process starts listening and then tells the old process to start
 draining.</li>
 <li>During the draining phase, the old process attempts to gracefully close existing connections. How
-this is done depends on the configured filters. The drain time is configurable and as more time
-passes draining becomes more aggressive.</li>
+this is done depends on the configured filters. The drain time is configurable via the
+<a class="reference internal" href="../../operations/cli.html#cmdoption--drain-time-s"><code class="xref std std-option docutils literal"><span class="pre">--drain-time-s</span></code></a> option and as more time passes draining becomes more aggressive.</li>
+<li>After drain sequence, the new Envoy process tells the old Envoy process to shut itself down.
+This time is configurable via the <a class="reference internal" href="../../operations/cli.html#cmdoption--parent-shutdown-time-s"><code class="xref std std-option docutils literal"><span class="pre">--parent-shutdown-time-s</span></code></a> option.</li>
 <li>Envoy’s hot restart support was designed so that it will work correctly even if the new Envoy
 process and the old Envoy process are running inside different containers. Communication between
 the processes takes place only using unix domain sockets.</li>
@@ -238,7 +240,7 @@ parent process is usable with standard process control utilities such as monit/r
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.1.0-4f0640',
+            VERSION:'1.1.0-01e800',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>DynamoDB &mdash; envoy 1.1.0-4f0640 documentation</title>
+  <title>DynamoDB &mdash; envoy 1.1.0-01e800 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="envoy 1.1.0-4f0640 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.1.0-01e800 documentation" href="../../index.html"/>
         <link rel="up" title="HTTP filters" href="http_filters.html"/>
         <link rel="next" title="gRPC HTTP/1.1 bridge" href="grpc_http1_bridge_filter.html"/>
         <link rel="prev" title="Buffer" href="buffer_filter.html"/> 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.0-4f0640
+                1.1.0-01e800
               </div>
             
           
@@ -251,6 +251,31 @@ in all operations from the batch.</p>
 </tbody>
 </table>
 </div></blockquote>
+<p><em>Disclaimer: Please note that this is a pre-release Amazon DynamoDB feature that is not yet widely available.</em>
+Per partition and operation stats can be found in the <em>http.&lt;stat_prefix&gt;.dynamodb.table.&lt;table_name&gt;.</em>
+namespace. For batch operations, Envoy tracks per partition and operation stats only if it is the same
+table used in all operations.</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>capacity.&lt;operation_name&gt;.__partition_id=&lt;last_seven_characters_from_partition_id&gt;</td>
+<td>Counter</td>
+<td>Total number of capacity for &lt;operation_name&gt; on &lt;table_name&gt; table for a given &lt;partition_id&gt;</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
 <p>Additional detailed stats:</p>
 <ul>
 <li><p class="first">For 4xx responses and partial batch operation failures, the total number of failures for a given
@@ -332,7 +357,7 @@ table and failure are tracked in the <em>http.&lt;stat_prefix&gt;.dynamodb.error
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.1.0-4f0640',
+            VERSION:'1.1.0-01e800',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

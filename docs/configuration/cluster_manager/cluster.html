@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Cluster &mdash; envoy 1.1.0-4f0640 documentation</title>
+  <title>Cluster &mdash; envoy 1.1.0-01e800 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="envoy 1.1.0-4f0640 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.1.0-01e800 documentation" href="../../index.html"/>
         <link rel="up" title="Cluster manager" href="cluster_manager.html"/>
         <link rel="next" title="Health checking" href="cluster_hc.html"/>
         <link rel="prev" title="Cluster manager" href="cluster_manager.html"/> 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.0-4f0640
+                1.1.0-01e800
               </div>
             
           
@@ -209,14 +209,15 @@ domain sockets (UDS) addresses are supported. A TCP address looks like:</p>
 </div>
 </dd>
 <dt>strict_dns</dt>
-<dd><p class="first">Strict DNS clusters can specify any number of DNS/port combinations. All DNS addresses will be
-resolved and grouped together to form the final cluster. For example:</p>
+<dd><p class="first">Strict DNS clusters can specify any number of hostname:port combinations. All names will be
+resolved using DNS and grouped together to form the final cluster. If multiple records are
+returned for a single name, all will be used. For example:</p>
 <div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="nt">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;tcp://foo1.bar.com:1234&quot;</span><span class="p">},</span> <span class="p">{</span><span class="nt">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;tcp://foo2.bar.com:5678&quot;</span><span class="p">}]</span>
 </pre></div>
 </div>
 </dd>
 <dt>logical_dns</dt>
-<dd><p class="first">Logical DNS clusters specify a host much like strict DNS, however only the first host will be
+<dd><p class="first">Logical DNS clusters specify hostnames much like strict DNS, however only the first host will be
 used. For example:</p>
 <div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="nt">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;tcp://foo1.bar.com:1234&quot;</span><span class="p">}]</span>
 </pre></div>
@@ -319,7 +320,7 @@ ignored.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.1.0-4f0640',
+            VERSION:'1.1.0-01e800',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

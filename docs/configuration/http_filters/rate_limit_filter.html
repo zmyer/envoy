@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Rate limit &mdash; envoy 1.1.0-4f0640 documentation</title>
+  <title>Rate limit &mdash; envoy 1.1.0-01e800 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="envoy 1.1.0-4f0640 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.1.0-01e800 documentation" href="../../index.html"/>
         <link rel="up" title="HTTP filters" href="http_filters.html"/>
         <link rel="next" title="Router" href="router_filter.html"/>
         <link rel="prev" title="Health check" href="health_check_filter.html"/> 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.0-4f0640
+                1.1.0-01e800
               </div>
             
           
@@ -305,6 +305,9 @@ descriptor is sent as well:</p>
 <dt>ratelimit.http_filter_enforcing</dt>
 <dd>% of requests that will call the rate limit service and enforce the decision. Defaults to 100.
 This can be used to test what would happen before fully enforcing the outcome.</dd>
+<dt>ratelimit.&lt;route_key&gt;.http_filter_enabled</dt>
+<dd>% of requests that will call the rate limit service for a given <em>route_key</em> specified in the
+<a class="reference internal" href="../http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-rate-limit"><span class="std std-ref">route</span></a>. Defaults to 100.</dd>
 </dl>
 </div>
 </div>
@@ -350,7 +353,7 @@ This can be used to test what would happen before fully enforcing the outcome.</
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.1.0-4f0640',
+            VERSION:'1.1.0-01e800',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

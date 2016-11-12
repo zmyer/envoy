@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Load balancing &mdash; envoy 1.1.0-4f0640 documentation</title>
+  <title>Load balancing &mdash; envoy 1.1.0-01e800 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="envoy 1.1.0-4f0640 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.1.0-01e800 documentation" href="../../index.html"/>
         <link rel="up" title="Architecture overview" href="arch_overview.html"/>
         <link rel="next" title="Circuit breaking" href="circuit_breaking.html"/>
         <link rel="prev" title="Connection pooling" href="connection_pooling.html"/> 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.0-4f0640
+                1.1.0-01e800
               </div>
             
           
@@ -102,7 +102,7 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Load balancing</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#supported-load-balancers">Supported load balancers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#panic-threshold">Panic threshold</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#zone-aware-routing-and-local-zone-panic-threshold">Zone aware routing and local zone panic threshold</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#zone-aware-routing">Zone aware routing</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="circuit_breaking.html">Circuit breaking</a></li>
@@ -215,11 +215,49 @@ panic threshold is 50%. This is <a class="reference internal" href="../../config
 runtime. The panic threshold is used to avoid a situation in which host failures cascade throughout
 the cluster as load increases.</p>
 </div>
-<div class="section" id="zone-aware-routing-and-local-zone-panic-threshold">
-<span id="arch-overview-load-balancing-zone-panic-threshold"></span><h2>Zone aware routing and local zone panic threshold<a class="headerlink" href="#zone-aware-routing-and-local-zone-panic-threshold" title="Permalink to this headline">¶</a></h2>
-<p>By default Envoy performs zone aware routing where it will send traffic to the same upstream zone.
-This feature is in active development.
-You can enable/disable it <a class="reference internal" href="../../configuration/cluster_manager/cluster_runtime.html#config-cluster-manager-cluster-runtime"><span class="std std-ref">via runtime</span></a>.</p>
+<div class="section" id="zone-aware-routing">
+<span id="arch-overview-load-balancing-zone-aware-routing"></span><h2>Zone aware routing<a class="headerlink" href="#zone-aware-routing" title="Permalink to this headline">¶</a></h2>
+<p>We use the following terminology:</p>
+<ul class="simple">
+<li><strong>Originating/Upstream cluster</strong>: Envoy routes requests from an originating cluster to an upstream
+cluster.</li>
+<li><strong>Local zone</strong>: The same zone that contains a subset of hosts in both the originating and
+upstream clusters.</li>
+<li><strong>Zone aware routing</strong>: Best effort routing of requests to an upstream cluster host in the local
+zone.</li>
+</ul>
+<p>In deployments where hosts in originating and upstream clusters belong to different zones
+Envoy performs zone aware routing. There are several preconditions before zone aware routing can be
+performed:</p>
+<ul class="simple">
+<li>Both originating and upstream cluster are not in
+<a class="reference internal" href="#arch-overview-load-balancing-panic-threshold"><span class="std std-ref">panic mode</span></a>.</li>
+<li>Zone aware <a class="reference internal" href="../../configuration/cluster_manager/cluster_runtime.html#config-cluster-manager-cluster-runtime-zone-routing"><span class="std std-ref">routing is enabled</span></a>.</li>
+<li>The originating cluster has the same number of zones as the upstream cluster.</li>
+<li>The upstream cluster has enough hosts. See
+<a class="reference internal" href="../../configuration/cluster_manager/cluster_runtime.html#config-cluster-manager-cluster-runtime-zone-routing"><span class="std std-ref">here</span></a> for more information.</li>
+</ul>
+<p>The purpose of zone aware routing is to send as much traffic to the local zone in the upstream
+cluster as possible while roughly maintaining the same number of requests per second across all
+upstream hosts (depending on load balancing policy).</p>
+<p>Envoy tries to push as much traffic as possible to the local upstream zone as long as
+roughly the same number of requests per host in the upstream cluster are maintained. The decision of
+whether Envoy routes to the local zone or performs cross zone routing depends on the percentage of
+healthy hosts in the originating cluster and upstream cluster in the local zone. There are two cases
+with regard to percentage relations in the local zone between originating and upstream clusters:</p>
+<ul class="simple">
+<li>The originating cluster local zone percentage is greater than the one in the upstream cluster.
+In this case we cannot route all requests from the local zone of the originating cluster to the
+local zone of the upstream cluster because that will lead to request imbalance across all upstream
+hosts. Instead, Envoy calculates the percentage of requests that can be routed directly to the
+local zone of the upstream cluster. The rest of the requests are routed cross zone. The specific
+zone is selected based on the residual capacity of the zone (that zone will get some local zone
+traffic and may have additional capacity Envoy can use for cross zone traffic).</li>
+<li>The originating cluster local zone percentage is smaller than the one in upstream cluster.
+In this case the local zone of the upstream cluster can get all of the requests from the
+local zone of the originating cluster and also have some space to allow traffic from other zones
+in the originating cluster (if needed).</li>
+</ul>
 </div>
 </div>
 
@@ -264,7 +302,7 @@ You can enable/disable it <a class="reference internal" href="../../configuratio
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.1.0-4f0640',
+            VERSION:'1.1.0-01e800',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
