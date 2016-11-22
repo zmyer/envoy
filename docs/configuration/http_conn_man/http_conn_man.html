@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>HTTP connection manager &mdash; envoy 1.1.0-01e800 documentation</title>
+  <title>HTTP connection manager &mdash; envoy 1.1.0-8aba4a documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="envoy 1.1.0-01e800 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.1.0-8aba4a documentation" href="../../index.html"/>
         <link rel="up" title="Configuration reference" href="../configuration.html"/>
         <link rel="next" title="Route configuration" href="route_config/route_config.html"/>
         <link rel="prev" title="TCP proxy" href="../network_filters/tcp_proxy_filter.html"/> 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.0-01e800
+                1.1.0-8aba4a
               </div>
             
           
@@ -91,15 +91,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../listeners/listeners.html">Listeners</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../network_filters/network_filters.html">Network filters</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">HTTP connection manager</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#tracing-configuration">Tracing configuration</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="route_config/route_config.html">Route configuration</a></li>
-<li class="toctree-l4"><a class="reference internal" href="filters.html">Filters</a></li>
-<li class="toctree-l4"><a class="reference internal" href="access_log.html">Access logging</a></li>
-<li class="toctree-l4"><a class="reference internal" href="headers.html">HTTP header manipulation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="stats.html">Statistics</a></li>
-<li class="toctree-l4"><a class="reference internal" href="runtime.html">Runtime</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="route_config/route_config.html">Route configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="filters.html">Filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="access_log.html">Access logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tracing.html">Tracing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="headers.html">HTTP header manipulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stats.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="runtime.html">Runtime</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../http_filters/http_filters.html">HTTP filters</a></li>
@@ -218,9 +216,7 @@ are processed sequentially as request events happen.</dd>
 <a class="reference internal" href="headers.html#config-http-conn-man-headers-user-agent"><span class="std std-ref">user-agent</span></a> and
 <a class="reference internal" href="headers.html#config-http-conn-man-headers-downstream-service-cluster"><span class="std std-ref">x-envoy-downstream-service-cluster</span></a> headers. See the linked
 documentation for more information. Defaults to false.</dd>
-</dl>
-<dl class="docutils" id="config-http-conn-man-tracing">
-<dt><a class="reference internal" href="#config-http-conn-man-tracing-format"><span class="std std-ref">tracing</span></a></dt>
+<dt><a class="reference internal" href="tracing.html#config-http-conn-man-tracing"><span class="std std-ref">tracing</span></a></dt>
 <dd><em>(optional, object)</em> Presence of the object defines whether the connection manager
 emits <a class="reference internal" href="../../intro/arch_overview/tracing.html#arch-overview-tracing"><span class="std std-ref">tracing</span></a> data to the <a class="reference internal" href="../overview/tracing.html#config-tracing"><span class="std std-ref">configured tracing provider</span></a>.</dd>
 </dl>
@@ -277,32 +273,7 @@ various headers. If set to false or absent, the connection manager will use the
 <em>true</em>. Generating a random UUID4 is expensive so in high throughput scenarios where this
 feature is not desired it can be disabled.</dd>
 </dl>
-<div class="section" id="tracing-configuration">
-<span id="config-http-conn-man-tracing-format"></span><h2>Tracing configuration<a class="headerlink" href="#tracing-configuration" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;tracing&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;operation_name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<dl class="docutils">
-<dt>operation_name</dt>
-<dd><em>(required, string)</em> Span name that will be emitted on completed request.</dd>
-<dt>type</dt>
-<dd><p class="first"><em>(optional, string)</em> Allows filtering of requests so that only some of them are traced. Default
-value is <em>all</em>. Possible values are:</p>
-<dl class="last docutils">
-<dt>all</dt>
-<dd>Trace all requests.</dd>
-<dt>upstream_failure</dt>
-<dd>Trace only requests for which an upstream failure occurred.</dd>
-</dl>
-</dd>
-</dl>
 <div class="toctree-wrapper compound">
-</div>
 </div>
 </div>
 
@@ -347,7 +318,7 @@ value is <em>all</em>. Possible values are:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.1.0-01e800',
+            VERSION:'1.1.0-8aba4a',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

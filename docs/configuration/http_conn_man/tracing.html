@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Buffer &mdash; envoy 1.1.0-8aba4a documentation</title>
+  <title>Tracing &mdash; envoy 1.1.0-8aba4a documentation</title>
   
 
   
@@ -31,9 +31,9 @@
 
   
     <link rel="top" title="envoy 1.1.0-8aba4a documentation" href="../../index.html"/>
-        <link rel="up" title="HTTP filters" href="http_filters.html"/>
-        <link rel="next" title="Fault Injection" href="fault_filter.html"/>
-        <link rel="prev" title="HTTP filters" href="http_filters.html"/> 
+        <link rel="up" title="HTTP connection manager" href="http_conn_man.html"/>
+        <link rel="next" title="HTTP header manipulation" href="headers.html"/>
+        <link rel="prev" title="Access logging" href="access_log.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -90,20 +90,17 @@
 <li class="toctree-l2"><a class="reference internal" href="../overview/overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../listeners/listeners.html">Listeners</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../network_filters/network_filters.html">Network filters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../http_conn_man/http_conn_man.html">HTTP connection manager</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="http_filters.html">HTTP filters</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Buffer</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#statistics">Statistics</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="http_conn_man.html">HTTP connection manager</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="route_config/route_config.html">Route configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="filters.html">Filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="access_log.html">Access logging</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Tracing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="headers.html">HTTP header manipulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stats.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="runtime.html">Runtime</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="fault_filter.html">Fault Injection</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dynamodb_filter.html">DynamoDB</a></li>
-<li class="toctree-l3"><a class="reference internal" href="grpc_http1_bridge_filter.html">gRPC HTTP/1.1 bridge</a></li>
-<li class="toctree-l3"><a class="reference internal" href="health_check_filter.html">Health check</a></li>
-<li class="toctree-l3"><a class="reference internal" href="rate_limit_filter.html">Rate limit</a></li>
-<li class="toctree-l3"><a class="reference internal" href="router_filter.html">Router</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../http_filters/http_filters.html">HTTP filters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cluster_manager/cluster_manager.html">Cluster manager</a></li>
 </ul>
 </li>
@@ -141,13 +138,13 @@
       
           <li><a href="../configuration.html">Configuration reference</a> &raquo;</li>
       
-          <li><a href="http_filters.html">HTTP filters</a> &raquo;</li>
+          <li><a href="http_conn_man.html">HTTP connection manager</a> &raquo;</li>
       
-    <li>Buffer</li>
+    <li>Tracing</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../../_sources/configuration/http_filters/buffer_filter.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/configuration/http_conn_man/tracing.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -157,57 +154,30 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="buffer">
-<span id="config-http-filters-buffer"></span><h1>Buffer<a class="headerlink" href="#buffer" title="Permalink to this headline">¶</a></h1>
-<p>The buffer filter is used to stop filter iteration and wait for a fully buffered complete request.
-This is useful in different situations including protecting some applications from having to deal
-with partial requests and high network latency.</p>
+  <div class="section" id="tracing">
+<span id="config-http-conn-man-tracing"></span><h1>Tracing<a class="headerlink" href="#tracing" title="Permalink to this headline">¶</a></h1>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;decoder&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;buffer&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;config&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;max_request_bytes&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;max_request_time_s&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
+  <span class="nt">&quot;tracing&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;operation_name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
   <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <dl class="docutils">
-<dt>max_request_bytes</dt>
-<dd><em>(required, integer)</em> The maximum request size that the filter will before before it stops
-buffering and returns a 413 response.</dd>
-<dt>max_request_time_s</dt>
-<dd><em>(required, integer)</em> The maximum amount of time that the filter will wait for a complete request
-before returning a 408 response.</dd>
+<dt>operation_name</dt>
+<dd><em>(required, string)</em> Span name that will be emitted on completed request.</dd>
+<dt>type</dt>
+<dd><p class="first"><em>(optional, string)</em> Allows filtering of requests so that only some of them are traced. Default
+value is <em>all</em>. Possible values are:</p>
+<dl class="last docutils">
+<dt>all</dt>
+<dd>Trace all requests.</dd>
+<dt>upstream_failure</dt>
+<dd>Trace only requests for which an upstream failure occurred.</dd>
 </dl>
-<div class="section" id="statistics">
-<h2>Statistics<a class="headerlink" href="#statistics" title="Permalink to this headline">¶</a></h2>
-<p>The buffer filter outputs statistics in the <em>http.&lt;stat_prefix&gt;.buffer.</em> namespace. The <a class="reference internal" href="../http_conn_man/http_conn_man.html#config-http-conn-man-stat-prefix"><span class="std std-ref">stat
-prefix</span></a> comes from the owning HTTP connection manager.</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="25%" />
-<col width="25%" />
-<col width="50%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Name</th>
-<th class="head">Type</th>
-<th class="head">Description</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>rq_timeout</td>
-<td>Counter</td>
-<td>Total requests that timed out waiting for a full request</td>
-</tr>
-<tr class="row-odd"><td>rq_too_large</td>
-<td>Counter</td>
-<td>Total requests that failed due to being too large</td>
-</tr>
-</tbody>
-</table>
-</div>
+</dd>
+</dl>
 </div>
 
 
@@ -217,10 +187,10 @@ prefix</span></a> comes from the owning HTTP connection manager.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="fault_filter.html" class="btn btn-neutral float-right" title="Fault Injection" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="headers.html" class="btn btn-neutral float-right" title="HTTP header manipulation" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="http_filters.html" class="btn btn-neutral" title="HTTP filters" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="access_log.html" class="btn btn-neutral" title="Access logging" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
