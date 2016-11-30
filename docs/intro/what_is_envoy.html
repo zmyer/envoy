@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>What is Envoy &mdash; envoy 1.1.0-8aba4a documentation</title>
+  <title>What is Envoy &mdash; envoy 1.1.0-5df08a documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="envoy 1.1.0-8aba4a documentation" href="../index.html"/>
+    <link rel="top" title="envoy 1.1.0-5df08a documentation" href="../index.html"/>
         <link rel="up" title="Introduction" href="intro.html"/>
         <link rel="next" title="Architecture overview" href="arch_overview/arch_overview.html"/>
         <link rel="prev" title="Introduction" href="intro.html"/> 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.0-8aba4a
+                1.1.0-5df08a
               </div>
             
           
@@ -238,12 +238,11 @@ the <a class="reference internal" href="../operations/admin.html#operations-admi
 <a class="reference internal" href="arch_overview/tracing.html#arch-overview-tracing"><span class="std std-ref">tracing</span></a> via thirdparty providers.</p>
 <div class="section" id="design-goals">
 <h2>Design goals<a class="headerlink" href="#design-goals" title="Permalink to this headline">¶</a></h2>
-<p>A short note on the design goals of the code itself: Although Envoy is by no means slow,
-little effort has been put into micro performance optimizations of the native code. Fans of deep
-performance tuning will find ample opportunity for improvement. The code has been written to be
-modular and easy to test versus aiming for the greatest possible absolute performance. It&#8217;s our
-view that this is a more efficient use of time given that typical deployments will be alongside
-languages and runtimes many times slower and with many times greater memory usage.</p>
+<p>A short note on the design goals of the code itself: Although Envoy is by no means slow (we have
+spent considerable time optimizing certain fast paths), the code has been written to be modular and
+easy to test versus aiming for the greatest possible absolute performance. It&#8217;s our view that this
+is a more efficient use of time given that typical deployments will be alongside languages and
+runtimes many times slower and with many times greater memory usage.</p>
 </div>
 </div>
 
@@ -288,7 +287,7 @@ languages and runtimes many times slower and with many times greater memory usag
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.1.0-8aba4a',
+            VERSION:'1.1.0-5df08a',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
