@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Statistics &mdash; envoy 1.1.0-c34e49 documentation</title>
+  <title>Statistics &mdash; envoy 1.2.0-6cfa21 documentation</title>
   
 
   
@@ -30,7 +30,10 @@
   
 
   
-    <link rel="top" title="envoy 1.1.0-c34e49 documentation" href="../../index.html"/>
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="envoy 1.2.0-6cfa21 documentation" href="../../index.html"/>
         <link rel="up" title="Cluster" href="cluster.html"/>
         <link rel="next" title="Runtime" href="cluster_runtime.html"/>
         <link rel="prev" title="TLS context" href="cluster_ssl.html"/> 
@@ -61,7 +64,7 @@
             
             
               <div class="version">
-                1.1.0-c34e49
+                1.2.0-6cfa21
               </div>
             
           
@@ -149,7 +152,7 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../../_sources/configuration/cluster_manager/cluster_stats.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/configuration/cluster_manager/cluster_stats.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -339,23 +342,27 @@
 <td>Counter</td>
 <td>Total cluster membership changes</td>
 </tr>
-<tr class="row-even"><td>membership_total</td>
+<tr class="row-even"><td>membership_healthy</td>
+<td>Gauge</td>
+<td>Current cluster healthy total (inclusive of both health checking and outlier detection)</td>
+</tr>
+<tr class="row-odd"><td>membership_total</td>
 <td>Gauge</td>
 <td>Current cluster membership total</td>
 </tr>
-<tr class="row-odd"><td>update_attempt</td>
+<tr class="row-even"><td>update_attempt</td>
 <td>Counter</td>
 <td>Total cluster membership update attempts</td>
 </tr>
-<tr class="row-even"><td>update_success</td>
+<tr class="row-odd"><td>update_success</td>
 <td>Counter</td>
 <td>Total cluster membership update successes</td>
 </tr>
-<tr class="row-odd"><td>update_failure</td>
+<tr class="row-even"><td>update_failure</td>
 <td>Counter</td>
 <td>Total cluster membership update failures</td>
 </tr>
-<tr class="row-even"><td>max_host_weight</td>
+<tr class="row-odd"><td>max_host_weight</td>
 <td>Gauge</td>
 <td>Maximum weight of any host in the cluster</td>
 </tr>
@@ -487,7 +494,7 @@ the dynamic HTTP statistics section <a class="reference internal" href="#config-
 </div>
 <div class="section" id="per-service-zone-dynamic-http-statistics">
 <span id="config-cluster-manager-cluster-per-az-stats"></span><h2><a class="toc-backref" href="#id5">Per service zone dynamic HTTP statistics</a><a class="headerlink" href="#per-service-zone-dynamic-http-statistics" title="Permalink to this headline">¶</a></h2>
-<p>If the service zone is available for the local service (via <a class="reference internal" href="../../operations/cli.html#cmdoption--service-zone"><code class="xref std std-option docutils literal"><span class="pre">--service-zone</span></code></a>)
+<p>If the service zone is available for the local service (via <a class="reference internal" href="../../operations/cli.html#cmdoption-service-zone"><code class="xref std std-option docutils literal"><span class="pre">--service-zone</span></code></a>)
 and the <a class="reference internal" href="../../intro/arch_overview/service_discovery.html#arch-overview-service-discovery-sds"><span class="std std-ref">upstream cluster</span></a>,
 Envoy will track the following statistics in <em>cluster.&lt;name&gt;.zone.&lt;from_zone&gt;.&lt;to_zone&gt;.</em> namespace.</p>
 <table border="1" class="docutils">
@@ -609,7 +616,7 @@ the following statistics:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.1.0-c34e49',
+            VERSION:'1.2.0-6cfa21',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

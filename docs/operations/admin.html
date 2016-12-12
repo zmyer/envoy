@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Administration interface &mdash; envoy 1.1.0-c34e49 documentation</title>
+  <title>Administration interface &mdash; envoy 1.2.0-6cfa21 documentation</title>
   
 
   
@@ -30,7 +30,10 @@
   
 
   
-    <link rel="top" title="envoy 1.1.0-c34e49 documentation" href="../index.html"/>
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="envoy 1.2.0-6cfa21 documentation" href="../index.html"/>
         <link rel="up" title="Operations and administration" href="operations.html"/>
         <link rel="next" title="Statistics overview" href="stats_overview.html"/>
         <link rel="prev" title="Hot restart Python wrapper" href="hot_restarter.html"/> 
@@ -61,7 +64,7 @@
             
             
               <div class="version">
-                1.1.0-c34e49
+                1.2.0-6cfa21
               </div>
             
           
@@ -133,7 +136,7 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/operations/admin.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/operations/admin.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -195,28 +198,42 @@ This is useful for debugging service discovery issues. The per host statistics i
 <td>Counter</td>
 <td>Total requests</td>
 </tr>
-<tr class="row-even"><td>rq_active</td>
+<tr class="row-even"><td>rq_timeout</td>
+<td>Counter</td>
+<td>Total timed out requests</td>
+</tr>
+<tr class="row-odd"><td>rq_active</td>
 <td>Gauge</td>
 <td>Total active requests</td>
 </tr>
-<tr class="row-odd"><td>healthy</td>
-<td>Boolean</td>
-<td>Whether the host is healthy (1) or not (0)</td>
+<tr class="row-even"><td>healthy</td>
+<td>String</td>
+<td>The health status of the host. See below</td>
 </tr>
-<tr class="row-even"><td>weight</td>
+<tr class="row-odd"><td>weight</td>
 <td>Integer</td>
 <td>Load balancing weight (1-100)</td>
 </tr>
-<tr class="row-odd"><td>zone</td>
+<tr class="row-even"><td>zone</td>
 <td>String</td>
 <td>Service zone</td>
 </tr>
-<tr class="row-even"><td>canary</td>
+<tr class="row-odd"><td>canary</td>
 <td>Boolean</td>
 <td>Whether the host is a canary</td>
 </tr>
 </tbody>
 </table>
+<dl class="docutils">
+<dt>Host health status</dt>
+<dd><p class="first">A host is either healthy or unhealthy because of one or more different failing health states.
+If the host is healthy the <code class="docutils literal"><span class="pre">healthy</span></code> output will be equal to <em>healthy</em>.</p>
+<p>If the host is not healthy, the <code class="docutils literal"><span class="pre">healthy</span></code> output will be composed of one or more of the
+following strings:</p>
+<p><em>/failed_active_hc</em>: The host has failed an <a class="reference internal" href="../configuration/cluster_manager/cluster_hc.html#config-cluster-manager-cluster-hc"><span class="std std-ref">active health check</span></a>.</p>
+<p class="last"><em>/failed_outlier_check</em>: The host has failed an outlier detection check.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="get">
@@ -243,7 +260,7 @@ regardless of how the filter is configured (pass through, etc.).</p>
 <dl class="get">
 <dt id="get--hot_restart_version">
 <code class="descname">GET </code><code class="descname">/hot_restart_version</code><a class="headerlink" href="#get--hot_restart_version" title="Permalink to this definition">¶</a></dt>
-<dd><p>See <a class="reference internal" href="cli.html#cmdoption--hot-restart-version"><code class="xref std std-option docutils literal"><span class="pre">--hot-restart-version</span></code></a>.</p>
+<dd><p>See <a class="reference internal" href="cli.html#cmdoption-hot-restart-version"><code class="xref std std-option docutils literal"><span class="pre">--hot-restart-version</span></code></a>.</p>
 </dd></dl>
 
 <dl class="get">
@@ -337,7 +354,7 @@ information.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.1.0-c34e49',
+            VERSION:'1.2.0-6cfa21',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

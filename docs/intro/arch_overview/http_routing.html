@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>HTTP routing &mdash; envoy 1.1.0-c34e49 documentation</title>
+  <title>HTTP routing &mdash; envoy 1.2.0-6cfa21 documentation</title>
   
 
   
@@ -30,7 +30,10 @@
   
 
   
-    <link rel="top" title="envoy 1.1.0-c34e49 documentation" href="../../index.html"/>
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="envoy 1.2.0-6cfa21 documentation" href="../../index.html"/>
         <link rel="up" title="Architecture overview" href="arch_overview.html"/>
         <link rel="next" title="gRPC" href="grpc.html"/>
         <link rel="prev" title="HTTP filters" href="http_filters.html"/> 
@@ -61,7 +64,7 @@
             
             
               <div class="version">
-                1.1.0-c34e49
+                1.2.0-6cfa21
               </div>
             
           
@@ -166,7 +169,7 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../../_sources/intro/arch_overview/http_routing.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/intro/arch_overview/http_routing.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -187,19 +190,21 @@ level the router takes an incoming HTTP request, matches it to an upstream clust
 request. The router filter supports the following features:</p>
 <ul class="simple">
 <li>Virtual hosts that map domains/authorities to a set of routing rules.</li>
-<li>Prefix and exact path matching rules (both case sensitive and case insensitive). Regex/slug
+<li>Prefix and exact path matching rules (both <a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-case-sensitive"><span class="std std-ref">case sensitive</span></a> and case insensitive). Regex/slug
 matching is not currently supported, mainly because it makes it difficult/impossible to
 programmatically determine whether routing rules conflict with each other. For this reason we
 don’t recommend regex/slug routing at the reverse proxy level, however we may add support in the
 future depending on demand.</li>
-<li>TLS redirection at the virtual host level.</li>
-<li>Path/host redirection at the route level.</li>
-<li>Host rewriting.</li>
-<li>Prefix rewriting.</li>
-<li>Request retries specified either via HTTP header or via route configuration.</li>
-<li>Request timeout specified either via HTTP header or via route configuration.</li>
-<li>Runtime configuration routing rules.</li>
-<li>Content type routing rules.</li>
+<li><a class="reference internal" href="../../configuration/http_conn_man/route_config/vhost.html#config-http-conn-man-route-table-vhost-require-ssl"><span class="std std-ref">TLS redirection</span></a> at the virtual host level.</li>
+<li><a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-path-redirect"><span class="std std-ref">Path</span></a>/<a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-host-redirect"><span class="std std-ref">host</span></a> redirection at the route level.</li>
+<li><a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-host-rewrite"><span class="std std-ref">Host rewriting</span></a>.</li>
+<li><a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-prefix-rewrite"><span class="std std-ref">Prefix rewriting</span></a>.</li>
+<li><a class="reference internal" href="#arch-overview-http-routing-retry"><span class="std std-ref">Request retries</span></a> specified either via HTTP header or via route configuration.</li>
+<li>Request timeout specified either via <a class="reference internal" href="../../configuration/http_filters/router_filter.html#config-http-filters-router-headers"><span class="std std-ref">HTTP
+header</span></a> or via <a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-timeout"><span class="std std-ref">route configuration</span></a>.</li>
+<li>Runtime configuration routing rules. Runtime configuration can be used to create <a class="reference internal" href="../../configuration/http_conn_man/route_config/traffic_shifting.html#config-http-conn-man-route-table-traffic-shifting"><span class="std std-ref">traffic
+shifting</span></a>.</li>
+<li>Arbitrary headers <a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-headers"><span class="std std-ref">routing rules</span></a>.</li>
 <li>Virtual cluster specifications. A virtual cluster is specified at the virtual host level and is
 used by Envoy to generate additional statistics on top of the standard cluster level ones. Virtual
 clusters can use regex matching.</li>
@@ -286,7 +291,7 @@ priority traffic does not starve higher priority traffic.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.1.0-c34e49',
+            VERSION:'1.2.0-6cfa21',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
