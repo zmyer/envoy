@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Runtime &mdash; envoy 1.2.0-6cfa21 documentation</title>
+  <title>Runtime &mdash; envoy 1.2.0-ac8ed5 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-6cfa21 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-ac8ed5 documentation" href="../../index.html"/>
         <link rel="up" title="Cluster" href="cluster.html"/>
         <link rel="next" title="Service discovery service" href="sds.html"/>
         <link rel="prev" title="Statistics" href="cluster_stats.html"/> 
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                1.2.0-6cfa21
+                1.2.0-ac8ed5
               </div>
             
           
@@ -106,6 +106,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="sds.html">Service discovery service</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sds_api.html">Service discovery service REST API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="outlier.html">Outlier detection</a></li>
 </ul>
 </li>
 </ul>
@@ -165,6 +166,8 @@
   <div class="section" id="runtime">
 <span id="config-cluster-manager-cluster-runtime"></span><h1>Runtime<a class="headerlink" href="#runtime" title="Permalink to this headline">¶</a></h1>
 <p>Upstream clusters support the following runtime settings:</p>
+<div class="section" id="active-health-checking">
+<h2>Active health checking<a class="headerlink" href="#active-health-checking" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt>health_check.min_interval</dt>
 <dd>Min value for the health checking <a class="reference internal" href="cluster_hc.html#config-cluster-manager-cluster-hc-interval"><span class="std std-ref">interval</span></a>.
@@ -176,6 +179,32 @@ Default value is MAX_INT. The health checking interval will be between <em>min_i
 <em>max_interval</em>.</dd>
 <dt>health_check.verify_cluster</dt>
 <dd>What % of health check requests will be verified against the <a class="reference internal" href="cluster_hc.html#config-cluster-manager-cluster-hc-service-name"><span class="std std-ref">expected upstream service</span></a> as the <a class="reference internal" href="../../intro/arch_overview/health_checking.html#arch-overview-health-checking-filter"><span class="std std-ref">health check filter</span></a> will write the remote service cluster into the response.</dd>
+</dl>
+</div>
+<div class="section" id="outlier-detection">
+<span id="config-cluster-manager-cluster-runtime-outlier-detection"></span><h2>Outlier detection<a class="headerlink" href="#outlier-detection" title="Permalink to this headline">¶</a></h2>
+<p>See the outlier detection <a class="reference internal" href="../../intro/arch_overview/outlier.html#arch-overview-outlier-detection"><span class="std std-ref">architecture overview</span></a> for more
+information on outlier detection.</p>
+<dl class="docutils">
+<dt>outlier_detection.consecutive_5xx</dt>
+<dd>The number of consecutive 5xx responses before a consecutive 5xx ejection occurs. Defaults to 5.</dd>
+<dt>outlier_detection.interval_ms</dt>
+<dd>The time interval between ejection analysis sweeps. This can result in both new ejections as well
+as hosts being returned to service. Defaults to 10000ms or 10s.</dd>
+<dt>outlier_detection.base_ejection_time_ms</dt>
+<dd>The base time that a host is ejected for. The real time is equal to the base time multiplied by
+the number of times the host has been ejected. Defaults to 30000ms or 30s.</dd>
+<dt>outlier_detection.max_ejection_percent</dt>
+<dd>The maximum % of an upstream cluster that can be ejected due to outlier detection. Defaults to
+10%.</dd>
+<dt>outlier_detection.enforcing</dt>
+<dd>The % chance that a host will be actually ejected when an outlier status is detected. This setting
+can be used to disable ejection or to ramp it up slowly. Defaults to 100.</dd>
+</dl>
+</div>
+<div class="section" id="core">
+<h2>Core<a class="headerlink" href="#core" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
 <dt>upstream.healthy_panic_threshold</dt>
 <dd>Sets the <a class="reference internal" href="../../intro/arch_overview/load_balancing.html#arch-overview-load-balancing-panic-threshold"><span class="std std-ref">panic threshold</span></a> percentage.
 Defaults to 50%.</dd>
@@ -186,13 +215,21 @@ if configured. Set to 0 to disable HTTP/2 even if the feature is configured. Def
 <dd>Binary switch to turn on or off weighted load balancing. If set to non 0, weighted load balancing
 is enabled. Defaults to enabled.</dd>
 </dl>
-<dl class="docutils" id="config-cluster-manager-cluster-runtime-zone-routing">
+</div>
+<div class="section" id="zone-aware-load-balancing">
+<span id="config-cluster-manager-cluster-runtime-zone-routing"></span><h2>Zone aware load balancing<a class="headerlink" href="#zone-aware-load-balancing" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
 <dt>upstream.zone_routing.enabled</dt>
 <dd>% of requests that will be routed to the same upstream zone. Defaults to 100% of requests.</dd>
 <dt>upstream.zone_routing.min_cluster_size</dt>
 <dd>Minimal size of the upstream cluster for which zone aware routing can be attempted. Default value
 is 6. If the upstream cluster size is smaller than <em>min_cluster_size</em> zone aware routing will not
 be performed.</dd>
+</dl>
+</div>
+<div class="section" id="circuit-breaking">
+<h2>Circuit breaking<a class="headerlink" href="#circuit-breaking" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
 <dt>circuit_breakers.&lt;cluster_name&gt;.&lt;priority&gt;.max_connections</dt>
 <dd><a class="reference internal" href="cluster_circuit_breakers.html#config-cluster-manager-cluster-circuit-breakers-max-connections"><span class="std std-ref">Max connections circuit breaker setting</span></a></dd>
 <dt>circuit_breakers.&lt;cluster_name&gt;.&lt;priority&gt;.max_pending_requests</dt>
@@ -202,6 +239,7 @@ be performed.</dd>
 <dt>circuit_breakers.&lt;cluster_name&gt;.&lt;priority&gt;.max_retries</dt>
 <dd><a class="reference internal" href="cluster_circuit_breakers.html#config-cluster-manager-cluster-circuit-breakers-max-retries"><span class="std std-ref">Max retries circuit breaker setting</span></a></dd>
 </dl>
+</div>
 </div>
 
 
@@ -245,7 +283,7 @@ be performed.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-6cfa21',
+            VERSION:'1.2.0-ac8ed5',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

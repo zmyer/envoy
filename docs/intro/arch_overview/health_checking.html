@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Health checking &mdash; envoy 1.2.0-6cfa21 documentation</title>
+  <title>Health checking &mdash; envoy 1.2.0-ac8ed5 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-6cfa21 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-ac8ed5 documentation" href="../../index.html"/>
         <link rel="up" title="Architecture overview" href="arch_overview.html"/>
         <link rel="next" title="Connection pooling" href="connection_pooling.html"/>
         <link rel="prev" title="Service discovery" href="service_discovery.html"/> 
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                1.2.0-6cfa21
+                1.2.0-ac8ed5
               </div>
             
           
@@ -107,6 +107,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="connection_pooling.html">Connection pooling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="load_balancing.html">Load balancing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="outlier.html">Outlier detection</a></li>
 <li class="toctree-l3"><a class="reference internal" href="circuit_breaking.html">Circuit breaking</a></li>
 <li class="toctree-l3"><a class="reference internal" href="global_rate_limiting.html">Global rate limiting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ssl.html">TLS</a></li>
@@ -194,6 +195,7 @@ immediately notify downstream hosts to no longer forward traffic to it.</li>
 upstream host. It expects the byte buffer to be echoed in the response if the host is to be
 considered healthy.</li>
 </ul>
+<p>Note that Envoy also supports passive health checking via <a class="reference internal" href="outlier.html#arch-overview-outlier-detection"><span class="std std-ref">outlier detection</span></a>.</p>
 <div class="section" id="http-health-checking-filter">
 <span id="arch-overview-health-checking-filter"></span><h2>HTTP health checking filter<a class="headerlink" href="#http-health-checking-filter" title="Permalink to this headline">¶</a></h2>
 <p>When an Envoy mesh is deployed with active health checking between clusters, a large amount of
@@ -273,7 +275,7 @@ value is determined by the <a class="reference internal" href="../../operations/
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-6cfa21',
+            VERSION:'1.2.0-ac8ed5',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

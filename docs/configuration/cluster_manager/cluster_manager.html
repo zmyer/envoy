@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Cluster manager &mdash; envoy 1.2.0-6cfa21 documentation</title>
+  <title>Cluster manager &mdash; envoy 1.2.0-ac8ed5 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-6cfa21 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-ac8ed5 documentation" href="../../index.html"/>
         <link rel="up" title="Configuration reference" href="../configuration.html"/>
         <link rel="next" title="Cluster" href="cluster.html"/>
         <link rel="prev" title="Router" href="../http_filters/router_filter.html"/> 
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                1.2.0-6cfa21
+                1.2.0-ac8ed5
               </div>
             
           
@@ -99,6 +99,7 @@
 <li class="toctree-l3"><a class="reference internal" href="cluster.html">Cluster</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sds.html">Service discovery service</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sds_api.html">Service discovery service REST API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="outlier.html">Outlier detection</a></li>
 </ul>
 </li>
 </ul>
@@ -157,7 +158,8 @@
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="nt">&quot;clusters&quot;</span><span class="p">:</span> <span class="p">[],</span>
   <span class="nt">&quot;sds&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;local_cluster_name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
+  <span class="nt">&quot;local_cluster_name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;outlier_detection&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -175,6 +177,8 @@ configuration). In order to enable
 <a class="reference internal" href="../../intro/arch_overview/load_balancing.html#arch-overview-load-balancing-zone-aware-routing"><span class="std std-ref">zone aware routing</span></a> this option must be
 set. If <em>local_cluster_name</em> is defined then <a class="reference internal" href="#config-cluster-manager-clusters"><span class="std std-ref">clusters</span></a>
 must contain a definition of a cluster with the same name.</dd>
+<dt><a class="reference internal" href="outlier.html#config-cluster-manager-outlier-detection"><span class="std std-ref">outlier_detection</span></a></dt>
+<dd><em>(optional, object)</em> Optional global configuration for outlier detection.</dd>
 </dl>
 <div class="toctree-wrapper compound">
 </div>
@@ -221,7 +225,7 @@ must contain a definition of a cluster with the same name.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-6cfa21',
+            VERSION:'1.2.0-ac8ed5',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

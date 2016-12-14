@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Cluster &mdash; envoy 1.2.0-6cfa21 documentation</title>
+  <title>Cluster &mdash; envoy 1.2.0-ac8ed5 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-6cfa21 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-ac8ed5 documentation" href="../../index.html"/>
         <link rel="up" title="Cluster manager" href="cluster_manager.html"/>
         <link rel="next" title="Health checking" href="cluster_hc.html"/>
         <link rel="prev" title="Cluster manager" href="cluster_manager.html"/> 
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                1.2.0-6cfa21
+                1.2.0-ac8ed5
               </div>
             
           
@@ -106,6 +106,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="sds.html">Service discovery service</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sds_api.html">Service discovery service REST API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="outlier.html">Outlier detection</a></li>
 </ul>
 </li>
 </ul>
@@ -176,7 +177,8 @@
   <span class="nt">&quot;features&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;http_codec_options&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;alt_stat_name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;dns_refresh_rate_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
+  <span class="nt">&quot;dns_refresh_rate_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;outlier_detection&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -280,6 +282,13 @@ or <em>logical_dns</em>, this value is used as the cluster&#8217;s dns refresh r
 the value defaults to 5000. For cluster types other than <em>strict_dns</em> and <em>logical_dns</em> this setting is
 ignored.</dd>
 </dl>
+<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection">
+<dt>outlier_detection</dt>
+<dd><em>(optional, object)</em> If specified, outlier detection will be enabled for this upstream cluster.
+Currently the presence of the empty object enables it and there are no options. See the
+<a class="reference internal" href="../../intro/arch_overview/outlier.html#arch-overview-outlier-detection"><span class="std std-ref">architecture overview</span></a> for more information on outlier
+detection.</dd>
+</dl>
 <div class="toctree-wrapper compound">
 </div>
 </div>
@@ -325,7 +334,7 @@ ignored.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-6cfa21',
+            VERSION:'1.2.0-ac8ed5',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Runtime &mdash; envoy 1.2.0-ac8ed5 documentation</title>
+  <title>Outlier detection &mdash; envoy 1.2.0-ac8ed5 documentation</title>
   
 
   
@@ -34,9 +34,9 @@
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="envoy 1.2.0-ac8ed5 documentation" href="../../index.html"/>
-        <link rel="up" title="HTTP connection manager" href="http_conn_man.html"/>
-        <link rel="next" title="HTTP filters" href="../http_filters/http_filters.html"/>
-        <link rel="prev" title="Statistics" href="stats.html"/> 
+        <link rel="up" title="Cluster manager" href="cluster_manager.html"/>
+        <link rel="next" title="Operations and administration" href="../../operations/operations.html"/>
+        <link rel="prev" title="Service discovery service REST API" href="sds_api.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -93,18 +93,15 @@
 <li class="toctree-l2"><a class="reference internal" href="../overview/overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../listeners/listeners.html">Listeners</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../network_filters/network_filters.html">Network filters</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="http_conn_man.html">HTTP connection manager</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="route_config/route_config.html">Route configuration</a></li>
-<li class="toctree-l3"><a class="reference internal" href="filters.html">Filters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="access_log.html">Access logging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tracing.html">Tracing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="headers.html">HTTP header manipulation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="stats.html">Statistics</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../http_conn_man/http_conn_man.html">HTTP connection manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../http_filters/http_filters.html">HTTP filters</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="cluster_manager.html">Cluster manager</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="cluster.html">Cluster</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sds.html">Service discovery service</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sds_api.html">Service discovery service REST API</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Outlier detection</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../http_filters/http_filters.html">HTTP filters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cluster_manager/cluster_manager.html">Cluster manager</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../operations/operations.html">Operations and administration</a></li>
@@ -141,13 +138,13 @@
       
           <li><a href="../configuration.html">Configuration reference</a> &raquo;</li>
       
-          <li><a href="http_conn_man.html">HTTP connection manager</a> &raquo;</li>
+          <li><a href="cluster_manager.html">Cluster manager</a> &raquo;</li>
       
-    <li>Runtime</li>
+    <li>Outlier detection</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../../_sources/configuration/http_conn_man/runtime.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/configuration/cluster_manager/outlier.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -157,24 +154,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="runtime">
-<h1>Runtime<a class="headerlink" href="#runtime" title="Permalink to this headline">¶</a></h1>
-<p>The HTTP connection manager supports the following runtime settings:</p>
-<dl class="docutils" id="config-http-conn-man-runtime-client-enabled">
-<dt>tracing.client_enabled</dt>
-<dd>% of requests that will be force traced if the
-<a class="reference internal" href="headers.html#config-http-conn-man-headers-x-client-trace-id"><span class="std std-ref">x-client-trace-id</span></a> header is set. Defaults to 100.</dd>
-</dl>
-<dl class="docutils" id="config-http-conn-man-runtime-global-enabled">
-<dt>tracing.global_enabled</dt>
-<dd>% of requests that will be traced after all other checks have been applied (force tracing,
-sampling, etc.). Defaults to 100.</dd>
-</dl>
-<dl class="docutils" id="config-http-conn-man-runtime-random-sampling">
-<dt>tracing.random_sampling</dt>
-<dd>% of requests that will be randomly traced. See <a class="reference internal" href="../../intro/arch_overview/tracing.html#arch-overview-tracing"><span class="std std-ref">here</span></a> for more
-information. This runtime control is specified in the range 0-10000 and defaults to 0. Thus,
-trace sampling can be specified in 0.01% increments.</dd>
+  <div class="section" id="outlier-detection">
+<span id="config-cluster-manager-outlier-detection"></span><h1>Outlier detection<a class="headerlink" href="#outlier-detection" title="Permalink to this headline">¶</a></h1>
+<p>Outlier detection <a class="reference internal" href="../../intro/arch_overview/outlier.html#arch-overview-outlier-detection"><span class="std std-ref">architecture overview</span></a>.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;event_log_path&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>event_log_path</dt>
+<dd><em>(optional, string)</em> Specifies the path to the outlier event log.</dd>
 </dl>
 </div>
 
@@ -185,10 +175,10 @@ trace sampling can be specified in 0.01% increments.</dd>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../http_filters/http_filters.html" class="btn btn-neutral float-right" title="HTTP filters" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../../operations/operations.html" class="btn btn-neutral float-right" title="Operations and administration" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="stats.html" class="btn btn-neutral" title="Statistics" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="sds_api.html" class="btn btn-neutral" title="Service discovery service REST API" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
