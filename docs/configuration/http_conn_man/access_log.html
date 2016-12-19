@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Access logging &mdash; envoy 1.2.0-ac8ed5 documentation</title>
+  <title>Access logging &mdash; envoy 1.2.0-c6e827 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-ac8ed5 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-c6e827 documentation" href="../../index.html"/>
         <link rel="up" title="HTTP connection manager" href="http_conn_man.html"/>
         <link rel="next" title="Tracing" href="tracing.html"/>
         <link rel="prev" title="Filters" href="filters.html"/> 
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                1.2.0-ac8ed5
+                1.2.0-c6e827
               </div>
             
           
@@ -215,8 +215,8 @@ beginning of a response. This generally means that the (downstream) client disco
 <dd>Body bytes sent.</dd>
 <dt>%DURATION%</dt>
 <dd>Total duration in milliseconds of the request from the start time to the last byte out.</dd>
-<dt>%FAILURE_REASON%</dt>
-<dd><p class="first">Additional failure reason if any in addition to response code. Possible values are:</p>
+<dt>%RESPONSE_FLAGS%</dt>
+<dd><p class="first">Additional details about the response, if any. Possible values are:</p>
 <ul class="last simple">
 <li><strong>LH</strong>: Local service failed <a class="reference internal" href="../../intro/arch_overview/health_checking.html#arch-overview-health-checking"><span class="std std-ref">health check request</span></a> in addition to 503 response code.</li>
 <li><strong>UH</strong>: No healthy upstream hosts in upstream cluster in addition to 503 response code.</li>
@@ -227,7 +227,8 @@ beginning of a response. This generally means that the (downstream) client disco
 <li><strong>UC</strong>: Upstream connection termination in addition to 503 response code.</li>
 <li><strong>UO</strong>: Upstream overflow (<a class="reference internal" href="../../intro/arch_overview/circuit_breaking.html#arch-overview-circuit-break"><span class="std std-ref">circuit breaking</span></a>) in addition to 503 response code.</li>
 <li><strong>NR</strong>: No <a class="reference internal" href="../../intro/arch_overview/http_routing.html#arch-overview-http-routing"><span class="std std-ref">route configured</span></a> for a given request in addition to 404 response code.</li>
-<li><strong>FI</strong>: The request was aborted as a result of <a class="reference internal" href="../http_filters/fault_filter.html#config-http-filters-fault-injection"><span class="std std-ref">fault injection</span></a>.</li>
+<li><strong>DI</strong>: The request processing was delayed for a period specified via <a class="reference internal" href="../http_filters/fault_filter.html#config-http-filters-fault-injection"><span class="std std-ref">fault injection</span></a>.</li>
+<li><strong>FI</strong>: The request was aborted with a response code specified via <a class="reference internal" href="../http_filters/fault_filter.html#config-http-filters-fault-injection"><span class="std std-ref">fault injection</span></a>.</li>
 </ul>
 </dd>
 <dt>%UPSTREAM_HOST%</dt>
@@ -245,7 +246,7 @@ the headers are present &#8216;-&#8216; symbol will be in the log.</dd>
 <span id="config-http-con-manager-access-log-default-format"></span><h2>Default format<a class="headerlink" href="#default-format" title="Permalink to this headline">¶</a></h2>
 <p>If custom format is not specified, Envoy uses the following default format:</p>
 <div class="highlight-none"><div class="highlight"><pre><span></span>[%START_TIME%] &quot;%REQ(:METHOD)% %REQ(X-ENVOY-ORIGINAL-PATH?:PATH)% %PROTOCOL%&quot;
-%RESPONSE_CODE% %FAILURE_REASON% %BYTES_RECEIVED% %BYTES_SENT% %DURATION%
+%RESPONSE_CODE% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION%
 %RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)% &quot;%REQ(X-FORWARDED-FOR)%&quot; &quot;%REQ(USER-AGENT)%&quot;
 &quot;%REQ(X-REQUEST-ID)%&quot; &quot;%REQ(:AUTHORITY)%&quot; &quot;%UPSTREAM_HOST%&quot;\n
 </pre></div>
@@ -407,7 +408,7 @@ sequentially and if one of them returns true, the filter returns true immediatel
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-ac8ed5',
+            VERSION:'1.2.0-c6e827',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

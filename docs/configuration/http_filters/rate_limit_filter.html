@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Rate limit &mdash; envoy 1.2.0-ac8ed5 documentation</title>
+  <title>Rate limit &mdash; envoy 1.2.0-c6e827 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-ac8ed5 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-c6e827 documentation" href="../../index.html"/>
         <link rel="up" title="HTTP filters" href="http_filters.html"/>
         <link rel="next" title="Router" href="router_filter.html"/>
         <link rel="prev" title="Health check" href="health_check_filter.html"/> 
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                1.2.0-ac8ed5
+                1.2.0-c6e827
               </div>
             
           
@@ -101,7 +101,6 @@
 <li class="toctree-l3"><a class="reference internal" href="grpc_http1_bridge_filter.html">gRPC HTTP/1.1 bridge</a></li>
 <li class="toctree-l3"><a class="reference internal" href="health_check_filter.html">Health check</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Rate limit</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#actions">Actions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#statistics">Statistics</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#runtime">Runtime</a></li>
 </ul>
@@ -165,8 +164,10 @@
   <div class="section" id="rate-limit">
 <span id="config-http-filters-rate-limit"></span><h1>Rate limit<a class="headerlink" href="#rate-limit" title="Permalink to this headline">¶</a></h1>
 <p>Global rate limiting <a class="reference internal" href="../../intro/arch_overview/global_rate_limiting.html#arch-overview-rate-limit"><span class="std std-ref">architecture overview</span></a>.</p>
-<p>The HTTP rate limit filter will call the rate limit service when the request&#8217;s route has the
-<em>global</em> property set in the <a class="reference internal" href="../http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-rate-limit"><span class="std std-ref">rate limit configuration</span></a>.</p>
+<p>The HTTP rate limit filter will call the rate limit service when the request&#8217;s route has one or
+more <a class="reference internal" href="../http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-rate-limits"><span class="std std-ref">rate limit configurations</span></a> that match the
+filter stage setting. More than one configuration can apply to a request. Each configuration
+results in a descriptor being sent to the rate limit service.</p>
 <p>If the rate limit service is called, and the response for any of the descriptors is over limit, a
 429 response is returned.</p>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -174,7 +175,7 @@
   <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;rate_limit&quot;</span><span class="p">,</span>
   <span class="nt">&quot;config&quot;</span><span class="p">:</span> <span class="p">{</span>
     <span class="nt">&quot;domain&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;actions&quot;</span><span class="p">:</span> <span class="p">[]</span>
+    <span class="nt">&quot;stage&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
   <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -182,92 +183,10 @@
 <dl class="docutils">
 <dt>domain</dt>
 <dd><em>(required, string)</em> The rate limit domain to use when calling the rate limit service.</dd>
-<dt>actions</dt>
-<dd><em>(required, array)</em> An array of rate limiting actions to perform. Multiple actions can be
-specified. The supported action types are documented below.</dd>
+<dt>stage</dt>
+<dd><em>(optional, integer)</em> If set, rate limit configurations will only be applied with the same stage
+number. If not set, all rate limit configurations will be applied.</dd>
 </dl>
-<div class="section" id="actions">
-<h2>Actions<a class="headerlink" href="#actions" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<dl class="docutils">
-<dt>type</dt>
-<dd><em>(required, string)</em> The type of rate limit action to perform. The currently supported action
-types are <em>service_to_service</em> , <em>request_headers</em> and <em>remote_address</em>.</dd>
-</dl>
-<div class="section" id="service-to-service">
-<h3>Service to service<a class="headerlink" href="#service-to-service" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;service_to_service&quot;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>The following descriptors are sent:</p>
-<blockquote>
-<div><ul class="simple">
-<li>(&#8220;to_cluster&#8221;, &#8220;&lt;<a class="reference internal" href="../http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-cluster"><span class="std std-ref">route target cluster</span></a>&gt;&#8221;)</li>
-<li>(&#8220;to_cluster&#8221;, &#8220;&lt;<a class="reference internal" href="../http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-cluster"><span class="std std-ref">route target cluster</span></a>&gt;&#8221;),
-(&#8220;from_cluster&#8221;, &#8220;&lt;local service cluster&gt;&#8221;)</li>
-</ul>
-</div></blockquote>
-<p>&lt;local service cluster&gt; is derived from the <a class="reference internal" href="../../operations/cli.html#cmdoption-service-cluster"><code class="xref std std-option docutils literal"><span class="pre">--service-cluster</span></code></a> option.</p>
-</div>
-<div class="section" id="request-headers">
-<h3>Request Headers<a class="headerlink" href="#request-headers" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;request_headers&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;header_name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;descriptor_key&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<dl class="docutils">
-<dt>header_name</dt>
-<dd><em>(required, string)</em> The header name to be queried from the request headers and used to
-populate the descriptor value for the <em>descriptor_key</em>.</dd>
-<dt>descriptor_key</dt>
-<dd><em>(required, string)</em> The key to use in the descriptor.</dd>
-</dl>
-<p>The following descriptor is sent when a header contains a key that matches the <em>header_name</em>:</p>
-<blockquote>
-<div><ul class="simple">
-<li>(&#8220;&lt;descriptor_key&gt;&#8221;, &#8220;&lt;header_value_queried_from_header&gt;&#8221;)</li>
-</ul>
-</div></blockquote>
-<p>If <em>route_key</em> is set in the <a class="reference internal" href="../http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-rate-limit"><span class="std std-ref">route</span></a>, the following
-descriptor is sent as well:</p>
-<blockquote>
-<div><ul class="simple">
-<li>(&#8220;route_key&#8221;, &#8220;&lt;route_key&gt;&#8221;), (&#8220;&lt;descriptor_key&gt;&#8221;, &#8220;&lt;header_value_queried_from_header&gt;&#8221;)</li>
-</ul>
-</div></blockquote>
-</div>
-<div class="section" id="remote-address">
-<h3>Remote Address<a class="headerlink" href="#remote-address" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;remote_address&quot;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>The following descriptor is sent using the trusted address from <a class="reference internal" href="../http_conn_man/headers.html#config-http-conn-man-headers-x-forwarded-for"><span class="std std-ref">x-forwarded-for</span></a>:</p>
-<blockquote>
-<div><ul class="simple">
-<li>(&#8220;remote_address&#8221;, &#8220;&lt;<a class="reference internal" href="../http_conn_man/headers.html#config-http-conn-man-headers-x-forwarded-for"><span class="std std-ref">trusted address from x-forwarded-for</span></a>&gt;&#8221;)</li>
-</ul>
-</div></blockquote>
-<p>If <em>route_key</em> is set in the <a class="reference internal" href="../http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-rate-limit"><span class="std std-ref">route</span></a>, the following
-descriptor is sent as well:</p>
-<blockquote>
-<div><ul class="simple">
-<li>(&#8220;route_key&#8221;, &#8220;&lt;route_key&gt;&#8221;),
-(&#8220;remote_address&#8221;, &#8220;&lt;<a class="reference internal" href="../http_conn_man/headers.html#config-http-conn-man-headers-x-forwarded-for"><span class="std std-ref">trusted address from x-forwarded-for</span></a>&gt;&#8221;)</li>
-</ul>
-</div></blockquote>
-</div>
-</div>
 <div class="section" id="statistics">
 <h2>Statistics<a class="headerlink" href="#statistics" title="Permalink to this headline">¶</a></h2>
 <p>The buffer filter outputs statistics in the <em>cluster.&lt;route target cluster&gt;.ratelimit.</em> namespace.
@@ -311,7 +230,7 @@ descriptor is sent as well:</p>
 This can be used to test what would happen before fully enforcing the outcome.</dd>
 <dt>ratelimit.&lt;route_key&gt;.http_filter_enabled</dt>
 <dd>% of requests that will call the rate limit service for a given <em>route_key</em> specified in the
-<a class="reference internal" href="../http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-rate-limit"><span class="std std-ref">route</span></a>. Defaults to 100.</dd>
+<a class="reference internal" href="../http_conn_man/route_config/rate_limits.html#config-http-conn-man-route-table-rate-limit-config"><span class="std std-ref">rate limit configuration</span></a>. Defaults to 100.</dd>
 </dl>
 </div>
 </div>
@@ -357,7 +276,7 @@ This can be used to test what would happen before fully enforcing the outcome.</
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-ac8ed5',
+            VERSION:'1.2.0-c6e827',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

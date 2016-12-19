@@ -1,0 +1,351 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Rate limit configuration &mdash; envoy 1.2.0-c6e827 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="envoy 1.2.0-c6e827 documentation" href="../../../index.html"/>
+        <link rel="up" title="Route configuration" href="route_config.html"/>
+        <link rel="next" title="Route matching" href="route_matching.html"/>
+        <link rel="prev" title="Virtual cluster" href="vcluster.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> envoy
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.2.0-c6e827
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../about_docs.html">About the documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../install/install.html">Building and installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../configuration.html">Configuration reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../overview/overview.html">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../listeners/listeners.html">Listeners</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../network_filters/network_filters.html">Network filters</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../http_conn_man.html">HTTP connection manager</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="route_config.html">Route configuration</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="vhost.html">Virtual host</a></li>
+<li class="toctree-l4"><a class="reference internal" href="route.html">Route</a></li>
+<li class="toctree-l4"><a class="reference internal" href="vcluster.html">Virtual cluster</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Rate limit configuration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="route_matching.html">Route matching</a></li>
+<li class="toctree-l4"><a class="reference internal" href="traffic_shifting.html">Traffic Shifting</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../filters.html">Filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../access_log.html">Access logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tracing.html">Tracing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../headers.html">HTTP header manipulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stats.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../runtime.html">Runtime</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../http_filters/http_filters.html">HTTP filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../cluster_manager/cluster_manager.html">Cluster manager</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../operations/operations.html">Operations and administration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../extending/extending.html">Extending Envoy for custom use cases</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">envoy</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../configuration.html">Configuration reference</a> &raquo;</li>
+      
+          <li><a href="../http_conn_man.html">HTTP connection manager</a> &raquo;</li>
+      
+          <li><a href="route_config.html">Route configuration</a> &raquo;</li>
+      
+    <li>Rate limit configuration</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../../_sources/configuration/http_conn_man/route_config/rate_limits.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="rate-limit-configuration">
+<span id="config-http-conn-man-route-table-rate-limit-config"></span><h1>Rate limit configuration<a class="headerlink" href="#rate-limit-configuration" title="Permalink to this headline">¶</a></h1>
+<p>Global rate limiting <a class="reference internal" href="../../../intro/arch_overview/global_rate_limiting.html#arch-overview-rate-limit"><span class="std std-ref">architecture overview</span></a>.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;stage&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;kill_switch_key&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;route_key&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;actions&quot;</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>stage</dt>
+<dd><p class="first"><em>(optional, integer)</em> Refers to the stage set in the filter. If set, the rate limit configuration
+only applies to filters with the same stage number and for filters set to default. If not set,
+the rate limit configuration will apply for all rate limit filters set to default. The default
+value is 0.</p>
+<p class="last"><strong>NOTE:</strong> This functionality hasn&#8217;t been implemented yet and stage values are currently ignored.</p>
+</dd>
+<dt>kill_switch_key</dt>
+<dd><em>(optional, string)</em> The key to be set in runtime to disable this rate limit configuration.</dd>
+<dt>route_key</dt>
+<dd><em>(optional, string)</em> Specifies a descriptor value to be used when rate limiting for a route.
+This information is used by the actions if it is set.</dd>
+<dt>actions</dt>
+<dd><em>(required, array)</em> A list of actions that are to be applied for this rate limit configuration.
+Order matters as the actions are processed sequentially and the descriptors will be composed in
+that sequence.</dd>
+</dl>
+<div class="section" id="actions">
+<span id="config-http-conn-man-route-table-rate-limit-actions"></span><h2>Actions<a class="headerlink" href="#actions" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>type</dt>
+<dd><em>(required, string)</em> The type of rate limit action to perform. The currently supported action
+types are <em>service_to_service</em> , <em>request_headers</em> and <em>remote_address</em>.</dd>
+</dl>
+<div class="section" id="service-to-service">
+<h3>Service to service<a class="headerlink" href="#service-to-service" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;service_to_service&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The following descriptors are sent:</p>
+<blockquote>
+<div><ul class="simple">
+<li>(&#8220;to_cluster&#8221;, &#8220;&lt;<a class="reference internal" href="route.html#config-http-conn-man-route-table-route-cluster"><span class="std std-ref">route target cluster</span></a>&gt;&#8221;)</li>
+<li>(&#8220;to_cluster&#8221;, &#8220;&lt;<a class="reference internal" href="route.html#config-http-conn-man-route-table-route-cluster"><span class="std std-ref">route target cluster</span></a>&gt;&#8221;),
+(&#8220;from_cluster&#8221;, &#8220;&lt;local service cluster&gt;&#8221;)</li>
+</ul>
+</div></blockquote>
+<p>&lt;local service cluster&gt; is derived from the <a class="reference internal" href="../../../operations/cli.html#cmdoption-service-cluster"><code class="xref std std-option docutils literal"><span class="pre">--service-cluster</span></code></a> option.</p>
+</div>
+<div class="section" id="request-headers">
+<h3>Request Headers<a class="headerlink" href="#request-headers" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;request_headers&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;header_name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;descriptor_key&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>header_name</dt>
+<dd><em>(required, string)</em> The header name to be queried from the request headers and used to
+populate the descriptor value for the <em>descriptor_key</em>.</dd>
+<dt>descriptor_key</dt>
+<dd><em>(required, string)</em> The key to use in the descriptor.</dd>
+</dl>
+<p>The following descriptor is sent when a header contains a key that matches the <em>header_name</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>(&#8220;&lt;descriptor_key&gt;&#8221;, &#8220;&lt;header_value_queried_from_header&gt;&#8221;)</li>
+</ul>
+</div></blockquote>
+<p>If <em>route_key</em> is set in the rate limit configuration, the following
+descriptor is sent as well:</p>
+<blockquote>
+<div><ul class="simple">
+<li>(&#8220;route_key&#8221;, &#8220;&lt;route_key&gt;&#8221;), (&#8220;&lt;descriptor_key&gt;&#8221;, &#8220;&lt;header_value_queried_from_header&gt;&#8221;)</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="remote-address">
+<h3>Remote Address<a class="headerlink" href="#remote-address" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;remote_address&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The following descriptor is sent using the trusted address from <a class="reference internal" href="../headers.html#config-http-conn-man-headers-x-forwarded-for"><span class="std std-ref">x-forwarded-for</span></a>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>(&#8220;remote_address&#8221;, &#8220;&lt;<a class="reference internal" href="../headers.html#config-http-conn-man-headers-x-forwarded-for"><span class="std std-ref">trusted address from x-forwarded-for</span></a>&gt;&#8221;)</li>
+</ul>
+</div></blockquote>
+<p>If <em>route_key</em> is set in the rate limit configuration, the following
+descriptor is sent as well:</p>
+<blockquote>
+<div><ul class="simple">
+<li>(&#8220;route_key&#8221;, &#8220;&lt;route_key&gt;&#8221;),
+(&#8220;remote_address&#8221;, &#8220;&lt;<a class="reference internal" href="../headers.html#config-http-conn-man-headers-x-forwarded-for"><span class="std std-ref">trusted address from x-forwarded-for</span></a>&gt;&#8221;)</li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="route_matching.html" class="btn btn-neutral float-right" title="Route matching" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="vcluster.html" class="btn btn-neutral" title="Virtual cluster" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Lyft.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'1.2.0-c6e827',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
