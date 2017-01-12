@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Cluster &mdash; envoy 1.2.0-c6e827 documentation</title>
+  <title>Cluster &mdash; envoy 1.2.0-389909 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-c6e827 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-389909 documentation" href="../../index.html"/>
         <link rel="up" title="Cluster manager" href="cluster_manager.html"/>
         <link rel="next" title="Health checking" href="cluster_hc.html"/>
         <link rel="prev" title="Cluster manager" href="cluster_manager.html"/> 
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                1.2.0-c6e827
+                1.2.0-389909
               </div>
             
           
@@ -176,7 +176,6 @@
   <span class="nt">&quot;ssl_context&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
   <span class="nt">&quot;features&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;http_codec_options&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;alt_stat_name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;dns_refresh_rate_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;outlier_detection&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
 <span class="p">}</span>
@@ -271,9 +270,6 @@ HTTP connection pool connections. These are the same options supported in the HT
 manager <a class="reference internal" href="../http_conn_man/http_conn_man.html#config-http-conn-man-http-codec-options"><span class="std std-ref">http_codec_options</span></a> option. When building
 an HTTP/2 mesh, if it&#8217;s desired to disable HTTP/2 header compression the <em>no_compression</em>
 option should be specified both here as well as in the HTTP connection manager.</dd>
-<dt>alt_stat_name</dt>
-<dd><em>(optional, string)</em> If an alternate stat name is specified, some <a class="reference internal" href="cluster_stats.html#config-cluster-manager-cluster-stats"><span class="std std-ref">statistics</span></a> will be duplicated between the standard statistics and a
-tree specified by this parameter (e.g., <em>cluster.&lt;alt_stat_name&gt;.</em>).</dd>
 </dl>
 <dl class="docutils" id="config-cluster-manager-cluster-dns-refresh-rate-ms">
 <dt>dns_refresh_rate_ms</dt>
@@ -334,7 +330,7 @@ detection.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-c6e827',
+            VERSION:'1.2.0-389909',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

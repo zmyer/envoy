@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Access logging &mdash; envoy 1.2.0-c6e827 documentation</title>
+  <title>Access logging &mdash; envoy 1.2.0-389909 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-c6e827 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-389909 documentation" href="../../index.html"/>
         <link rel="up" title="HTTP connection manager" href="http_conn_man.html"/>
         <link rel="next" title="Tracing" href="tracing.html"/>
         <link rel="prev" title="Filters" href="filters.html"/> 
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                1.2.0-c6e827
+                1.2.0-389909
               </div>
             
           
@@ -229,6 +229,7 @@ beginning of a response. This generally means that the (downstream) client disco
 <li><strong>NR</strong>: No <a class="reference internal" href="../../intro/arch_overview/http_routing.html#arch-overview-http-routing"><span class="std std-ref">route configured</span></a> for a given request in addition to 404 response code.</li>
 <li><strong>DI</strong>: The request processing was delayed for a period specified via <a class="reference internal" href="../http_filters/fault_filter.html#config-http-filters-fault-injection"><span class="std std-ref">fault injection</span></a>.</li>
 <li><strong>FI</strong>: The request was aborted with a response code specified via <a class="reference internal" href="../http_filters/fault_filter.html#config-http-filters-fault-injection"><span class="std std-ref">fault injection</span></a>.</li>
+<li><strong>RL</strong>: The request was ratelimited locally by the <a class="reference internal" href="../http_filters/rate_limit_filter.html#config-http-filters-rate-limit"><span class="std std-ref">HTTP rate limit filter</span></a> in addition to 429 response code.</li>
 </ul>
 </dd>
 <dt>%UPSTREAM_HOST%</dt>
@@ -285,7 +286,7 @@ the headers are present &#8216;-&#8216; symbol will be in the log.</dd>
 <p>Filters on HTTP response/status code.</p>
 <dl class="docutils">
 <dt>op</dt>
-<dd><em>(required, string)</em> Comparison operator. Currently <em>&gt;=</em> is the only supported operator.</dd>
+<dd><em>(required, string)</em> Comparison operator. Currently <em>&gt;=</em>  and <em>=</em> are the only supported operators.</dd>
 <dt>value</dt>
 <dd><em>(required, integer)</em> Default value to compare against if runtime value is not available.</dd>
 <dt>runtime_key</dt>
@@ -408,7 +409,7 @@ sequentially and if one of them returns true, the filter returns true immediatel
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-c6e827',
+            VERSION:'1.2.0-389909',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Virtual host &mdash; envoy 1.2.0-c6e827 documentation</title>
+  <title>Virtual host &mdash; envoy 1.2.0-389909 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-c6e827 documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-389909 documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Route" href="route.html"/>
         <link rel="prev" title="Route configuration" href="route_config.html"/> 
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                1.2.0-c6e827
+                1.2.0-389909
               </div>
             
           
@@ -179,7 +179,8 @@ upstream cluster to route to or whether to perform a redirect.</p>
   <span class="nt">&quot;domains&quot;</span><span class="p">:</span> <span class="p">[],</span>
   <span class="nt">&quot;routes&quot;</span><span class="p">:</span> <span class="p">[],</span>
   <span class="nt">&quot;require_ssl&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;virtual_clusters&quot;</span><span class="p">:</span> <span class="p">[]</span>
+  <span class="nt">&quot;virtual_clusters&quot;</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="nt">&quot;rate_limits&quot;</span><span class="p">:</span> <span class="p">[]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -214,6 +215,9 @@ will be sent telling the client to use HTTPS.</dd>
 <dt><a class="reference internal" href="vcluster.html#config-http-conn-man-route-table-vcluster"><span class="std std-ref">virtual_clusters</span></a></dt>
 <dd><em>(optional, array)</em> A list of virtual clusters defined for this virtual host. Virtual clusters
 are used for additional statistics gathering.</dd>
+<dt><a class="reference internal" href="rate_limits.html#config-http-conn-man-route-table-rate-limit-config"><span class="std std-ref">rate_limits</span></a></dt>
+<dd><em>(optional, array)</em> Specifies a set of rate limit configurations that will be applied to the
+virtual host.</dd>
 </dl>
 </div>
 
@@ -258,7 +262,7 @@ are used for additional statistics gathering.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.2.0-c6e827',
+            VERSION:'1.2.0-389909',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

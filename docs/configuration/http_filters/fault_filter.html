@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Fault Injection &mdash; envoy 1.2.0-c6e827 documentation</title>
+  <title>Fault Injection &mdash; envoy 1.2.0-389909 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-c6e827 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-389909 documentation" href="../../index.html"/>
         <link rel="up" title="HTTP filters" href="http_filters.html"/>
         <link rel="next" title="DynamoDB" href="dynamodb_filter.html"/>
         <link rel="prev" title="Buffer" href="buffer_filter.html"/> 
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                1.2.0-c6e827
+                1.2.0-389909
               </div>
             
           
@@ -262,7 +262,7 @@ actual fault injection further depend on the values of <em>abort_percent</em> an
 <em>fixed_delay_percent</em> parameters. Each element of the array in the
 <em>headers</em> field should be in the following format:</p>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">[</span>
-  <span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span> <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">}</span>
+  <span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span> <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span> <span class="nt">&quot;regex&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">}</span>
 <span class="p">]</span>
 </pre></div>
 </div>
@@ -273,6 +273,10 @@ actual fault injection further depend on the values of <em>abort_percent</em> an
 <dd><em>(optional, string)</em> Specifies the value of the header. If the value is
 absent a request that has the <em>name</em> header will match, regardless of the
 header&#8217;s value.</dd>
+<dt>regex</dt>
+<dd><em>(optional, boolean)</em> Specifies whether the header value is a regular expression
+or not. Defaults to false. The regex grammar used in the value field
+is defined <a class="reference external" href="http://en.cppreference.com/w/cpp/regex/ecmascript">here</a>.</dd>
 </dl>
 <p>The filter will check the request&#8217;s headers against all the specified
 headers in the filter config. A match will happen if all the headers in the
@@ -350,7 +354,7 @@ prefix</span></a> comes from the owning HTTP connection manager.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-c6e827',
+            VERSION:'1.2.0-389909',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

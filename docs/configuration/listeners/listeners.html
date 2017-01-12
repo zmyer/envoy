@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Listeners &mdash; envoy 1.2.0-c6e827 documentation</title>
+  <title>Listeners &mdash; envoy 1.2.0-389909 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-c6e827 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-389909 documentation" href="../../index.html"/>
         <link rel="up" title="Configuration reference" href="../configuration.html"/>
         <link rel="next" title="Filters" href="filters.html"/>
         <link rel="prev" title="Runtime" href="../overview/runtime.html"/> 
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                1.2.0-c6e827
+                1.2.0-389909
               </div>
             
           
@@ -160,7 +160,9 @@ Each individual listener configuration has the following format:</p>
   <span class="nt">&quot;port&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;filters&quot;</span><span class="p">:</span> <span class="p">[],</span>
   <span class="nt">&quot;ssl_context&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;use_proxy_proto&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
+  <span class="nt">&quot;bind_to_port&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;use_proxy_proto&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;use_original_dst&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -175,6 +177,10 @@ filters are processed sequentially as connection events happen.</dd>
 <dt><a class="reference internal" href="ssl.html#config-listener-ssl-context"><span class="std std-ref">ssl_context</span></a></dt>
 <dd><em>(optional, object)</em> The <a class="reference internal" href="../../intro/arch_overview/ssl.html#arch-overview-ssl"><span class="std std-ref">TLS</span></a> context configuration for a TLS listener.
 If no TLS context block is defined, the listener is a plain text listener.</dd>
+<dt>bind_to_port</dt>
+<dd><em>(optional, boolean)</em> Whether the listener should bind to the port. A listener that doesn&#8217;t bind
+can only receive connections redirected from other listeners that set use_origin_dst parameter to
+true. Default is true.</dd>
 <dt>use_proxy_proto</dt>
 <dd><em>(optional, boolean)</em> Whether the listener should expect a
 <a class="reference external" href="http://www.haproxy.org/download/1.5/doc/proxy-protocol.txt">PROXY protocol V1</a> header on new
@@ -182,6 +188,12 @@ connections. If this option is enabled, the listener will assume that that remot
 connection is the one specified in the header. Some load balancers including the AWS ELB support
 this option. If the option is absent or set to false, Envoy will use the physical peer address
 of the connection as the remote address.</dd>
+<dt>use_original_dst</dt>
+<dd><em>(optional, boolean)</em> If a connection is redirected using <em>iptables</em>, the port on which the proxy
+receives it might be different from the original destination port. When this flag is set to true,
+the listener hands off redirected connections to the listener associated with the original
+destination port. If there is no listener associated with the original destination port, the
+connection is handled by the listener that receives it. Default is false.</dd>
 </dl>
 <div class="toctree-wrapper compound">
 </div>
@@ -228,7 +240,7 @@ of the connection as the remote address.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-c6e827',
+            VERSION:'1.2.0-389909',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
