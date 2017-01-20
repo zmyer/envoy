@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Client TLS authentication &mdash; envoy 1.2.0-389909 documentation</title>
+  <title>Client TLS authentication &mdash; envoy 1.2.0-0c96fe documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-389909 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-0c96fe documentation" href="../../index.html"/>
         <link rel="up" title="Network filters" href="network_filters.html"/>
         <link rel="next" title="Echo" href="echo_filter.html"/>
         <link rel="prev" title="Network filters" href="network_filters.html"/> 
@@ -45,6 +45,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -64,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-389909
+                1.2.0-0c96fe
               </div>
             
           
@@ -95,7 +96,6 @@
 <li class="toctree-l2 current"><a class="reference internal" href="network_filters.html">Network filters</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Client TLS authentication</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#statistics">Statistics</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#runtime">Runtime</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#rest-api">REST API</a></li>
 </ul>
 </li>
@@ -124,8 +124,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../index.html">envoy</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">envoy</a>
+        
       </nav>
 
 
@@ -134,27 +136,44 @@
         <div class="rst-content">
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../configuration.html">Configuration reference</a> &raquo;</li>
-      
+        
           <li><a href="network_filters.html">Network filters</a> &raquo;</li>
-      
-    <li>Client TLS authentication</li>
+        
+      <li>Client TLS authentication</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
             <a href="../../_sources/configuration/network_filters/client_ssl_auth_filter.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -169,6 +188,7 @@
   <span class="nt">&quot;config&quot;</span><span class="p">:</span> <span class="p">{</span>
     <span class="nt">&quot;auth_api_cluster&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
     <span class="nt">&quot;stat_prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;refresh_interval_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
     <span class="nt">&quot;ip_white_list&quot;</span><span class="p">:</span> <span class="p">[]</span>
   <span class="p">}</span>
 <span class="p">}</span>
@@ -181,6 +201,10 @@ the authentication service. The filter will connect to the service every 60s to 
 of principals. The service must support the expected <a class="reference internal" href="#config-network-filters-client-ssl-auth-rest-api"><span class="std std-ref">REST API</span></a>.</dd>
 <dt>stat_prefix</dt>
 <dd><em>(required, string)</em> The prefix to use when emitting <a class="reference internal" href="#config-network-filters-client-ssl-auth-stats"><span class="std std-ref">statistics</span></a>.</dd>
+<dt>refresh_interval_ms</dt>
+<dd><em>(optional, integer)</em> Time in milliseconds between principal refreshes from the authentication
+service. Default is 60000 (60s). The actual fetch time will be this value plus a random jittered
+value between 0-refresh_interval_ms milliseconds.</dd>
 <dt>ip_white_list</dt>
 <dd><p class="first"><em>(optional, array)</em> An optional list of IP address and subnet masks that should be white listed
 for access by the filter. If no list is provided, there is no IP white list. The list is
@@ -241,15 +265,6 @@ specified as in the following example:</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="runtime">
-<h2>Runtime<a class="headerlink" href="#runtime" title="Permalink to this headline">¶</a></h2>
-<p>The client TLS authentication filter supports the following runtime settings:</p>
-<dl class="docutils">
-<dt>auth.clientssl.refresh_interval_ms</dt>
-<dd>Time in milliseconds between principal refreshes from the authentication service. Default is
-60000 (60s).</dd>
-</dl>
 </div>
 <div class="section" id="rest-api">
 <span id="config-network-filters-client-ssl-auth-rest-api"></span><h2>REST API<a class="headerlink" href="#rest-api" title="Permalink to this headline">¶</a></h2>
@@ -324,10 +339,11 @@ hash to the presented client certificate to determine whether there is a digest 
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-389909',
+            VERSION:'1.2.0-0c96fe',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../../_static/jquery.js"></script>

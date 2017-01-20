@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Sandboxes &mdash; envoy 1.2.0-389909 documentation</title>
+  <title>Sandboxes &mdash; envoy 1.2.0-0c96fe documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="envoy 1.2.0-389909 documentation" href="../index.html"/>
+    <link rel="top" title="envoy 1.2.0-0c96fe documentation" href="../index.html"/>
         <link rel="up" title="Building and installation" href="install.html"/>
         <link rel="next" title="Configuration reference" href="../configuration/configuration.html"/>
         <link rel="prev" title="Reference configurations" href="ref_configs.html"/> 
@@ -45,6 +45,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -64,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-389909
+                1.2.0-0c96fe
               </div>
             
           
@@ -100,9 +101,9 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#grpc-bridge">gRPC bridge</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#envoy-grpc">Envoy gRPC</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#building-the-go-service">Building the Go service</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id1">Docker compose</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#sending-requests-to-the-key-value-store">Sending requests to the Key/Value store</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#building-the-go-service">Building the Go service</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#locally-building-a-docker-image-with-an-envoy-binary">Locally building a docker image with an envoy binary</a></li>
@@ -125,8 +126,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../index.html">envoy</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">envoy</a>
+        
       </nav>
 
 
@@ -135,25 +138,42 @@
         <div class="rst-content">
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="install.html">Building and installation</a> &raquo;</li>
-      
-    <li>Sandboxes</li>
+        
+      <li>Sandboxes</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
             <a href="../_sources/install/sandboxes.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -386,34 +406,40 @@ buffered and sent back to the client as a HTTP/1 header payload.</p>
 <p>Another Envoy feature demonstrated in this example is Envoy&#8217;s ability to do authority
 base routing via its route configuration.</p>
 </div>
+<div class="section" id="building-the-go-service">
+<h3>Building the Go service<a class="headerlink" href="#building-the-go-service" title="Permalink to this headline">¶</a></h3>
+<p>To build the Go gRPC service run:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ pwd
+~/src/envoy/examples/grpc-bridge
+$ script/bootstrap
+$ script/build
+</pre></div>
+</div>
+</div>
 <div class="section" id="id1">
 <h3>Docker compose<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>To run the docker compose file, and set up both the Python and the gRPC containers
 run:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="n">up</span> <span class="o">--</span><span class="n">build</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ pwd
+~/src/envoy/examples/grpc-bridge
+$ docker-compose up --build
 </pre></div>
 </div>
 </div>
 <div class="section" id="sending-requests-to-the-key-value-store">
 <h3>Sending requests to the Key/Value store<a class="headerlink" href="#sending-requests-to-the-key-value-store" title="Permalink to this headline">¶</a></h3>
-<p>To use the python service and sent gRPC requests:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># set a key</span>
-<span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="n">exec</span> <span class="n">python</span> <span class="o">/</span><span class="n">client</span><span class="o">/</span><span class="n">client</span><span class="o">.</span><span class="n">py</span> <span class="nb">set</span> <span class="n">foo</span> <span class="n">bar</span>
-<span class="o">=&gt;</span> <span class="n">setf</span> <span class="n">foo</span> <span class="n">to</span> <span class="n">bar</span>
-
-<span class="c1"># get a key</span>
-<span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="n">exec</span> <span class="n">python</span> <span class="o">/</span><span class="n">client</span><span class="o">/</span><span class="n">client</span><span class="o">.</span><span class="n">py</span> <span class="n">get</span> <span class="n">foo</span>
-<span class="o">=&gt;</span> <span class="n">bar</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="building-the-go-service">
-<h3>Building the Go service<a class="headerlink" href="#building-the-go-service" title="Permalink to this headline">¶</a></h3>
-<p>To build the Go gRPC service run:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">script</span><span class="o">/</span><span class="n">bootstrap</span>
-<span class="n">script</span><span class="o">/</span><span class="n">build</span>
-</pre></div>
-</div>
+<dl class="docutils">
+<dt>To use the python service and sent gRPC requests::</dt>
+<dd><p class="first">$ pwd
+~/src/envoy/examples/grpc-bridge
+# set a key
+$ docker-compose exec python /client/client.py set foo bar
+setf foo to bar</p>
+<p class="last"># get a key
+$ docker-compose exec python /client/client.py get foo
+bar</p>
+</dd>
+</dl>
 </div>
 </div>
 <div class="section" id="locally-building-a-docker-image-with-an-envoy-binary">
@@ -485,10 +511,11 @@ your changes.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.2.0-389909',
+            VERSION:'1.2.0-0c96fe',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../_static/jquery.js"></script>
