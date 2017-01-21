@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Service discovery service REST API &mdash; envoy 1.2.0-212505 documentation</title>
+  <title>Cluster discovery service &mdash; envoy 1.2.0-212505 documentation</title>
   
 
   
@@ -35,8 +35,8 @@
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="envoy 1.2.0-212505 documentation" href="../../index.html"/>
         <link rel="up" title="Cluster manager" href="cluster_manager.html"/>
-        <link rel="next" title="Outlier detection" href="outlier.html"/>
-        <link rel="prev" title="Service discovery service" href="sds.html"/> 
+        <link rel="next" title="Operations and administration" href="../../operations/operations.html"/>
+        <link rel="prev" title="Outlier detection" href="outlier.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -99,12 +99,13 @@
 <li class="toctree-l2 current"><a class="reference internal" href="cluster_manager.html">Cluster manager</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="cluster.html">Cluster</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sds.html">Service discovery service</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Service discovery service REST API</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#host-json">Host JSON</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sds_api.html">Service discovery service REST API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="outlier.html">Outlier detection</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Cluster discovery service</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rest-api">REST API</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#statistics">Statistics</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="outlier.html">Outlier detection</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cds.html">Cluster discovery service</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cluster_manager.html#statistics">Statistics</a></li>
 </ul>
 </li>
@@ -160,13 +161,13 @@
         
           <li><a href="cluster_manager.html">Cluster manager</a> &raquo;</li>
         
-      <li>Service discovery service REST API</li>
+      <li>Cluster discovery service</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/configuration/cluster_manager/sds_api.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/configuration/cluster_manager/cds.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -179,58 +180,82 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="service-discovery-service-rest-api">
-<span id="config-cluster-manager-sds-api"></span><h1>Service discovery service REST API<a class="headerlink" href="#service-discovery-service-rest-api" title="Permalink to this headline">¶</a></h1>
-<p>Envoy expects the service discovery service to expose the following API (See Lyft&#8217;s
-<a class="reference external" href="https://github.com/lyft/discovery">reference implementation</a>):</p>
+  <div class="section" id="cluster-discovery-service">
+<span id="config-cluster-manager-cds"></span><h1>Cluster discovery service<a class="headerlink" href="#cluster-discovery-service" title="Permalink to this headline">¶</a></h1>
+<p>The cluster discovery service (CDS) is an optional API that Envoy will call to dynamically fetch
+cluster manager members. Envoy will reconcile the API response and add, modify, or remove known
+clusters depending on what is required.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;cluster&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;refresh_delay_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt><a class="reference internal" href="cluster.html#config-cluster-manager-cluster"><span class="std std-ref">cluster</span></a></dt>
+<dd><em>(required, object)</em> A standard definition of an upstream cluster that hosts the cluster
+discovery service. The cluster must run a REST service that implements the <a class="reference internal" href="#config-cluster-manager-cds-api"><span class="std std-ref">CDS HTTP API</span></a>.</dd>
+<dt>refresh_delay_ms</dt>
+<dd><em>(required, integer)</em> The delay, in milliseconds, between fetches to the CDS API for each
+configured CDS cluster. Envoy will add an additional random jitter to the delay that is between
+zero and <em>refresh_delay_ms</em> milliseconds. Thus the longest possible refresh delay is
+2 * <em>refresh_delay_ms</em>.</dd>
+</dl>
+<div class="section" id="rest-api">
+<span id="config-cluster-manager-cds-api"></span><h2>REST API<a class="headerlink" href="#rest-api" title="Permalink to this headline">¶</a></h2>
 <dl class="get">
-<dt id="get--v1-registration-(string- service_name)">
-<code class="descname">GET </code><code class="descname">/v1/registration/(string: service_name)</code><a class="headerlink" href="#get--v1-registration-(string- service_name)" title="Permalink to this definition">¶</a></dt>
-<dd><p>Asks the discovery service to return all hosts for a particular <cite>service_name</cite>. <cite>service_name</cite>
-corresponds to the <a class="reference internal" href="cluster.html#config-cluster-manager-cluster-service-name"><span class="std std-ref">service_name</span></a> cluster
-parameter. Responses use the following JSON schema:</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;hosts&quot;</span><span class="p">:</span> <span class="p">[]</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<dl class="docutils">
-<dt>hosts</dt>
-<dd><em>(Required, array)</em> A list of <a class="reference internal" href="#config-cluster-manager-sds-api-host"><span class="std std-ref">hosts</span></a> that make up
-the service.</dd>
-</dl>
-</dd></dl>
+<dt id="get--v1-clusters-(string- service_cluster)-(string- service_node)">
+<code class="descname">GET </code><code class="descname">/v1/clusters/(string: service_cluster)/(string: service_node)</code><a class="headerlink" href="#get--v1-clusters-(string- service_cluster)-(string- service_node)" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-<div class="section" id="host-json">
-<span id="config-cluster-manager-sds-api-host"></span><h2>Host JSON<a class="headerlink" href="#host-json" title="Permalink to this headline">¶</a></h2>
+<p>Asks the discovery service to return all clusters for a particular <cite>service_cluster</cite> and
+<cite>service_node</cite>. <cite>service_cluster</cite> corresponds to the <a class="reference internal" href="../../operations/cli.html#cmdoption-service-cluster"><code class="xref std std-option docutils literal"><span class="pre">--service-cluster</span></code></a> CLI option.
+<cite>service_node</cite> corresponds to the <a class="reference internal" href="../../operations/cli.html#cmdoption-service-node"><code class="xref std std-option docutils literal"><span class="pre">--service-node</span></code></a> CLI option. Responses use the following
+JSON schema:</p>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;ip_address&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;port&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;tags&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;az&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;canary&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;load_balancing_weight&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
-  <span class="p">}</span>
+  <span class="nt">&quot;clusters&quot;</span><span class="p">:</span> <span class="p">[]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <dl class="docutils">
-<dt>ip_address</dt>
-<dd><em>(required, string)</em> The IP address of the upstream host.</dd>
-<dt>port</dt>
-<dd><em>(required, integer)</em> The port of the upstream host.</dd>
+<dt>clusters</dt>
+<dd><em>(Required, array)</em> A list of <a class="reference internal" href="cluster.html#config-cluster-manager-cluster"><span class="std std-ref">clusters</span></a> that will be
+dynamically added/modified within the cluster manager. Envoy will reconcile this list with the
+clusters that are currently loaded and either add/modify/remove clusters as necessary. Note that
+any clusters that are statically defined within the Envoy configuration cannot be modified via
+the CDS API.</dd>
 </dl>
-<dl class="docutils" id="config-cluster-manager-sds-api-host-az">
-<dt>az</dt>
-<dd><em>(optional, string)</em> The optional zone of the upstream host. Envoy uses the zone for various
-statistics and load balancing tasks documented elsewhere.</dd>
-<dt>canary</dt>
-<dd><em>(optional, boolean)</em> The optional canary status of the upstream host. Envoy uses the canary
-status for various statistics and load balancing tasks documented elsewhere.</dd>
-<dt>load_balancing_weight</dt>
-<dd><em>(optional, integer)</em> The optional load balancing weight of the upstream host, in the range
-1 - 100. Envoy uses the load balancing weight in some of the built in load balancers.</dd>
-</dl>
+</div>
+<div class="section" id="statistics">
+<h2>Statistics<a class="headerlink" href="#statistics" title="Permalink to this headline">¶</a></h2>
+<p>CDS has a statistics tree rooted at <em>cluster_manager.cds.</em> with the following statistics:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>update_attempt</td>
+<td>Counter</td>
+<td>Total API fetches attempted</td>
+</tr>
+<tr class="row-odd"><td>update_success</td>
+<td>Counter</td>
+<td>Total API fetches completed successfully</td>
+</tr>
+<tr class="row-even"><td>update_failure</td>
+<td>Counter</td>
+<td>Total API fetches that failed (either network or schema errors)</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 
@@ -241,10 +266,10 @@ status for various statistics and load balancing tasks documented elsewhere.</dd
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="outlier.html" class="btn btn-neutral float-right" title="Outlier detection" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../../operations/operations.html" class="btn btn-neutral float-right" title="Operations and administration" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="sds.html" class="btn btn-neutral" title="Service discovery service" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="outlier.html" class="btn btn-neutral" title="Outlier detection" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
