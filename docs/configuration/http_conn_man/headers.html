@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>HTTP header manipulation &mdash; envoy 1.2.0-212505 documentation</title>
+  <title>HTTP header manipulation &mdash; envoy 1.2.0-eab299 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-212505 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-eab299 documentation" href="../../index.html"/>
         <link rel="up" title="HTTP connection manager" href="http_conn_man.html"/>
         <link rel="next" title="Statistics" href="stats.html"/>
         <link rel="prev" title="Tracing" href="tracing.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-212505
+                1.2.0-eab299
               </div>
             
           
@@ -232,7 +232,8 @@ external requests, but for internal requests will contain the service cluster of
 that in the current implementation, this should be considered a hint as it is set by the caller and
 could be easily spoofed by any internal entity. In the future Envoy will support a mutual
 authentication TLS mesh which will make this header fully secure. Like <em>user-agent</em>, the value
-is determined by the <a class="reference internal" href="../../operations/cli.html#cmdoption-service-cluster"><code class="xref std std-option docutils literal"><span class="pre">--service-cluster</span></code></a> command line option.</p>
+is determined by the <a class="reference internal" href="../../operations/cli.html#cmdoption-service-cluster"><code class="xref std std-option docutils literal"><span class="pre">--service-cluster</span></code></a> command line option. In order to enable this
+feature you need to set the <a class="reference internal" href="http_conn_man.html#config-http-conn-man-add-user-agent"><span class="std std-ref">user_agent</span></a> option to true.</p>
 </div>
 <div class="section" id="x-envoy-external-address">
 <span id="config-http-conn-man-headers-x-envoy-external-address"></span><h2><a class="toc-backref" href="#id5">x-envoy-external-address</a><a class="headerlink" href="#x-envoy-external-address" title="Permalink to this headline">¶</a></h2>
@@ -370,7 +371,7 @@ following features are available:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-212505',
+            VERSION:'1.2.0-eab299',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

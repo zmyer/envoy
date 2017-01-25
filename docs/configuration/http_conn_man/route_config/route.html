@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Route &mdash; envoy 1.2.0-212505 documentation</title>
+  <title>Route &mdash; envoy 1.2.0-eab299 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-212505 documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-eab299 documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Virtual cluster" href="vcluster.html"/>
         <link rel="prev" title="Virtual host" href="vhost.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-212505
+                1.2.0-eab299
               </div>
             
           
@@ -102,6 +102,7 @@
 <li class="toctree-l4"><a class="reference internal" href="rate_limits.html">Rate limit configuration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="route_matching.html">Route matching</a></li>
 <li class="toctree-l4"><a class="reference internal" href="traffic_shifting.html">Traffic Shifting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="weighted_routing.html">Traffic splitting across multiple upstreams</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../filters.html">Filters</a></li>
@@ -195,6 +196,7 @@ next (e.g., redirect, forward, rewrite, etc.).</p>
   <span class="nt">&quot;prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;cluster&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;weighted_clusters&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;host_redirect&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;path_redirect&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;prefix_rewrite&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
@@ -222,8 +224,16 @@ must be specified.</dd>
 <dl class="docutils" id="config-http-conn-man-route-table-route-cluster">
 <dt>cluster</dt>
 <dd><em>(sometimes required, string)</em> If the route is not a redirect (<em>host_redirect</em> and/or
-<em>path_redirect</em> is specified), <em>cluster</em> must be specified and indicates which upstream cluster
-the request should be forwarded to.</dd>
+<em>path_redirect</em> is not specified), one of <em>cluster</em> or <em>weighted_clusters</em> must be specified.
+When a <em>cluster</em> is specified, its value indicates the upstream cluster to which the request
+should be forwarded to.</dd>
+<dt><a class="reference internal" href="#config-http-conn-man-route-table-route-weighted-clusters"><span class="std std-ref">weighted_clusters</span></a></dt>
+<dd><em>(sometimes required, string)</em> If the route is not a redirect (<em>host_redirect</em> and/or
+<em>path_redirect</em> is not specified), one of <em>cluster</em> or <em>weighted_clusters</em> must be specified.
+With the <em>weighted_clusters</em> option, multiple upstream clusters can be specified for a given route.
+The request is forwarded to one of the upstream clusters based on weights assigned
+to each cluster. See <a class="reference internal" href="weighted_routing.html#config-http-conn-man-route-table-weighted-routing"><span class="std std-ref">traffic splitting</span></a>
+for additional documentation.</dd>
 </dl>
 <dl class="docutils" id="config-http-conn-man-route-table-route-host-redirect">
 <dt>host_redirect</dt>
@@ -368,6 +378,51 @@ is defined <a class="reference external" href="http://en.cppreference.com/w/cpp/
 headers in the route config. A match will happen if all the headers in the route are present in
 the request with the same values (or based on presence if the <code class="docutils literal"><span class="pre">value</span></code> field is not in the config).</p>
 </div>
+<div class="section" id="weighted-clusters">
+<span id="config-http-conn-man-route-table-route-weighted-clusters"></span><h2>Weighted Clusters<a class="headerlink" href="#weighted-clusters" title="Permalink to this headline">¶</a></h2>
+<p>Compared to the <code class="docutils literal"><span class="pre">cluster</span></code> field that specifies a single upstream cluster as the target
+of a request, the <code class="docutils literal"><span class="pre">weighted_clusters</span></code> option allows for specification of multiple upstream clusters
+along with weights that indicate the <strong>percentage</strong> of traffic to be forwarded to each cluster.
+The router selects an upstream cluster based on the weights.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;clusters&quot;</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="nt">&quot;runtime_key_prefix&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>clusters</dt>
+<dd><p class="first"><em>(required, array)</em> Specifies one or more upstream clusters associated with the route.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;name&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;weight&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="last docutils">
+<dt>name</dt>
+<dd><em>(required, string)</em> Name of the upstream cluster. The cluster must exist in the
+<a class="reference internal" href="../../cluster_manager/cluster_manager.html#config-cluster-manager"><span class="std std-ref">cluster manager configuration</span></a>.</dd>
+<dt>weight</dt>
+<dd><em>(required, integer)</em> An integer between 0-100. When a request matches the route,
+the choice of an upstream cluster is determined by its weight. The sum of
+weights across all entries in the <code class="docutils literal"><span class="pre">clusters</span></code> array must add up to 100.</dd>
+</dl>
+</dd>
+<dt>runtime_key_prefix</dt>
+<dd><p class="first"><em>(optional, string)</em> Specifies the runtime key prefix that should be used to construct the runtime
+keys associated with each cluster. When the <code class="docutils literal"><span class="pre">runtime_key_prefix</span></code> is specified, the router will
+look for weights associated with each upstream cluster under the key
+<code class="docutils literal"><span class="pre">runtime_key_prefix</span> <span class="pre">+</span> <span class="pre">&quot;.&quot;</span> <span class="pre">+</span> <span class="pre">cluster[i].name</span></code> where <code class="docutils literal"><span class="pre">cluster[i]</span></code>  denotes an entry in the
+<code class="docutils literal"><span class="pre">clusters</span></code> array field. If the runtime key for the cluster does not exist, the value specified
+in the configuration file will be used as the default weight.
+See the <a class="reference internal" href="../../../operations/runtime.html#operations-runtime"><span class="std std-ref">runtime documentation</span></a> for how key names map to the
+underlying implementation.</p>
+<p class="last"><strong>Note:</strong> If the sum of runtime weights exceed 100, the traffic splitting behavior
+is undefined (although the request will be routed to one of the clusters).</p>
+</dd>
+</dl>
+</div>
 </div>
 
 
@@ -411,7 +466,7 @@ the request with the same values (or based on presence if the <code class="docut
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.2.0-212505',
+            VERSION:'1.2.0-eab299',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

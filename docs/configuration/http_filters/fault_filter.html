@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Fault Injection &mdash; envoy 1.2.0-212505 documentation</title>
+  <title>Fault Injection &mdash; envoy 1.2.0-eab299 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-212505 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-eab299 documentation" href="../../index.html"/>
         <link rel="up" title="HTTP filters" href="http_filters.html"/>
         <link rel="next" title="DynamoDB" href="dynamodb_filter.html"/>
         <link rel="prev" title="Buffer" href="buffer_filter.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-212505
+                1.2.0-eab299
               </div>
             
           
@@ -191,13 +191,13 @@ inject delays and abort requests with user-specified error codes, thereby
 providing the ability to stage different failure scenarios such as service
 failures, service overloads, high network latency, network partitions,
 etc. Faults injection can be limited to a specific set of requests based on
-a set of pre-defined request headers.</p>
+the (destination) upstream cluster of a request and/or a set of pre-defined
+request headers.</p>
 <p>The scope of failures is restricted to those that are observable by an
 application communicating over the network. CPU and disk failures on the
 local host cannot be emulated.</p>
 <p>Currently, the fault injection filter has the following limitations:</p>
 <ul class="simple">
-<li>Faults will be injected on all configured routes in the Envoy instance</li>
 <li>Abort codes are restricted to HTTP status codes only</li>
 <li>Delays are restricted to fixed duration.</li>
 </ul>
@@ -221,6 +221,7 @@ including the router filter.</em></p>
       <span class="nt">&quot;fixed_delay_percent&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
       <span class="nt">&quot;fixed_duration_ms&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span>
     <span class="p">},</span>
+    <span class="nt">&quot;upstream_cluster&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
     <span class="nt">&quot;headers&quot;</span> <span class="p">:</span> <span class="p">[]</span>
   <span class="p">}</span>
 <span class="p">}</span>
@@ -244,6 +245,10 @@ values range from 0 to 100.</dd>
 <dt>delay.fixed_duration_ms:</dt>
 <dd><em>(required, integer)</em> The delay duration in
 milliseconds. Must be greater than 0.</dd>
+<dt>upstream_cluster:</dt>
+<dd><em>(optional, string)</em> Specifies the name of the (destination) upstream
+cluster that the filter should match on. Fault injection will be
+restricted to requests bound to the specific upstream cluster.</dd>
 <dt><a class="reference internal" href="#config-http-filters-fault-injection-headers"><span class="std std-ref">headers</span></a></dt>
 <dd><em>(optional, array)</em> Specifies a set of headers that the filter should match on.</dd>
 </dl>
@@ -374,7 +379,7 @@ prefix</span></a> comes from the owning HTTP connection manager.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-212505',
+            VERSION:'1.2.0-eab299',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
