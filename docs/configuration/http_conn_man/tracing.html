@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Tracing &mdash; envoy 1.2.0-eab299 documentation</title>
+  <title>Tracing &mdash; envoy 1.2.0-c1920c documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-eab299 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-c1920c documentation" href="../../index.html"/>
         <link rel="up" title="HTTP connection manager" href="http_conn_man.html"/>
         <link rel="next" title="HTTP header manipulation" href="headers.html"/>
         <link rel="prev" title="Access logging" href="access_log.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-eab299
+                1.2.0-c1920c
               </div>
             
           
@@ -181,8 +181,7 @@
 <span id="config-http-conn-man-tracing"></span><h1>Tracing<a class="headerlink" href="#tracing" title="Permalink to this headline">¶</a></h1>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="nt">&quot;tracing&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;operation_name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
+    <span class="nt">&quot;operation_name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
   <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -190,16 +189,6 @@
 <dl class="docutils">
 <dt>operation_name</dt>
 <dd><em>(required, string)</em> Span name that will be emitted on completed request.</dd>
-<dt>type</dt>
-<dd><p class="first"><em>(optional, string)</em> Allows filtering of requests so that only some of them are traced. Default
-value is <em>all</em>. Possible values are:</p>
-<dl class="last docutils">
-<dt>all</dt>
-<dd>Trace all requests.</dd>
-<dt>upstream_failure</dt>
-<dd>Trace only requests for which an upstream failure occurred.</dd>
-</dl>
-</dd>
 </dl>
 </div>
 
@@ -244,7 +233,7 @@ value is <em>all</em>. Possible values are:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-eab299',
+            VERSION:'1.2.0-c1920c',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
