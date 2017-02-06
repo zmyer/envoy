@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Fault Injection &mdash; envoy 1.2.0-c1920c documentation</title>
+  <title>Fault Injection &mdash; envoy 1.2.0-18d39e documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-c1920c documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-18d39e documentation" href="../../index.html"/>
         <link rel="up" title="HTTP filters" href="http_filters.html"/>
         <link rel="next" title="DynamoDB" href="dynamodb_filter.html"/>
         <link rel="prev" title="Buffer" href="buffer_filter.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-c1920c
+                1.2.0-18d39e
               </div>
             
           
@@ -99,6 +99,8 @@
 <li class="toctree-l3"><a class="reference internal" href="buffer_filter.html">Buffer</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Fault Injection</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#configuration">Configuration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#abort">Abort</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#delay">Delay</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#runtime">Runtime</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#headers">Headers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#statistics">Statistics</a></li>
@@ -212,15 +214,8 @@ including the router filter.</em></p>
   <span class="nt">&quot;type&quot;</span> <span class="p">:</span> <span class="s2">&quot;decoder&quot;</span><span class="p">,</span>
   <span class="nt">&quot;name&quot;</span> <span class="p">:</span> <span class="s2">&quot;fault&quot;</span><span class="p">,</span>
   <span class="nt">&quot;config&quot;</span> <span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;abort&quot;</span> <span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;abort_percent&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;http_status&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span>
-    <span class="p">},</span>
-    <span class="nt">&quot;delay&quot;</span> <span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;type&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;fixed_delay_percent&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;fixed_duration_ms&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span>
-    <span class="p">},</span>
+    <span class="nt">&quot;abort&quot;</span> <span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;delay&quot;</span> <span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
     <span class="nt">&quot;upstream_cluster&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
     <span class="nt">&quot;headers&quot;</span> <span class="p">:</span> <span class="p">[]</span>
   <span class="p">}</span>
@@ -228,23 +223,12 @@ including the router filter.</em></p>
 </pre></div>
 </div>
 <dl class="docutils">
-<dt>abort.abort_percent</dt>
-<dd><em>(required, integer)</em> The percentage of requests that
-should be aborted with the specified <em>http_status</em> code. Valid values
-range from 0 to 100.</dd>
-<dt>abort.http_status</dt>
-<dd><em>(required, integer)</em> The HTTP status code that will be used as the
-response code for the request being aborted.</dd>
-<dt>delay.type:</dt>
-<dd><em>(required, string)</em> Specifies the type of delay being
-injected. Currently only <em>fixed</em> delay type (step function) is supported.</dd>
-<dt>delay.fixed_delay_percent:</dt>
-<dd><em>(required, integer)</em> The percentage of requests that will
-be delayed for the duration specified by <em>fixed_duration_ms</em>. Valid
-values range from 0 to 100.</dd>
-<dt>delay.fixed_duration_ms:</dt>
-<dd><em>(required, integer)</em> The delay duration in
-milliseconds. Must be greater than 0.</dd>
+<dt><a class="reference internal" href="#config-http-filters-fault-injection-abort"><span class="std std-ref">abort</span></a></dt>
+<dd><em>(sometimes required, object)</em> If specified, the filter will abort requests based on
+the values in the object. At least <em>abort</em> or <em>delay</em> must be specified.</dd>
+<dt><a class="reference internal" href="#config-http-filters-fault-injection-delay"><span class="std std-ref">delay</span></a></dt>
+<dd><em>(sometimes required, object)</em> If specified, the filter will inject delays based on the values
+in the object. At least <em>abort</em> or <em>delay</em> must be specified.</dd>
 <dt>upstream_cluster:</dt>
 <dd><em>(optional, string)</em> Specifies the name of the (destination) upstream
 cluster that the filter should match on. Fault injection will be
@@ -255,6 +239,45 @@ restricted to requests bound to the specific upstream cluster.</dd>
 <p>The abort and delay blocks can be omitted. If they are not specified in the
 configuration file, their respective values will be obtained from the
 runtime.</p>
+</div>
+<div class="section" id="abort">
+<span id="config-http-filters-fault-injection-abort"></span><h2>Abort<a class="headerlink" href="#abort" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;abort_percent&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;http_status&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>abort_percent</dt>
+<dd><em>(required, integer)</em> The percentage of requests that
+should be aborted with the specified <em>http_status</em> code. Valid values
+range from 0 to 100.</dd>
+<dt>http_status</dt>
+<dd><em>(required, integer)</em> The HTTP status code that will be used as the
+response code for the request being aborted.</dd>
+</dl>
+</div>
+<div class="section" id="delay">
+<span id="config-http-filters-fault-injection-delay"></span><h2>Delay<a class="headerlink" href="#delay" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;type&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;fixed_delay_percent&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;fixed_duration_ms&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>type:</dt>
+<dd><em>(required, string)</em> Specifies the type of delay being
+injected. Currently only <em>fixed</em> delay type (step function) is supported.</dd>
+<dt>fixed_delay_percent:</dt>
+<dd><em>(required, integer)</em> The percentage of requests that will
+be delayed for the duration specified by <em>fixed_duration_ms</em>. Valid
+values range from 0 to 100.</dd>
+<dt>fixed_duration_ms:</dt>
+<dd><em>(required, integer)</em> The delay duration in milliseconds. Must be greater than 0.</dd>
+</dl>
 </div>
 <div class="section" id="runtime">
 <h2>Runtime<a class="headerlink" href="#runtime" title="Permalink to this headline">¶</a></h2>
@@ -379,7 +402,7 @@ prefix</span></a> comes from the owning HTTP connection manager.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-c1920c',
+            VERSION:'1.2.0-18d39e',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

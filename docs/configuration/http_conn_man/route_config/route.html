@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Route &mdash; envoy 1.2.0-c1920c documentation</title>
+  <title>Route &mdash; envoy 1.2.0-18d39e documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-c1920c documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-18d39e documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Virtual cluster" href="vcluster.html"/>
         <link rel="prev" title="Virtual host" href="vhost.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-c1920c
+                1.2.0-18d39e
               </div>
             
           
@@ -102,8 +102,6 @@
 <li class="toctree-l4"><a class="reference internal" href="rate_limits.html">Rate limit configuration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="route_matching.html">Route matching</a></li>
 <li class="toctree-l4"><a class="reference internal" href="traffic_splitting.html">Traffic Shifting/Splitting</a></li>
-<li class="toctree-l4"><a class="reference internal" href="traffic_splitting.html#traffic-shifting-between-two-upstreams">Traffic shifting between two upstreams</a></li>
-<li class="toctree-l4"><a class="reference internal" href="traffic_splitting.html#traffic-splitting-across-multiple-upstreams">Traffic splitting across multiple upstreams</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../filters.html">Filters</a></li>
@@ -197,7 +195,7 @@ next (e.g., redirect, forward, rewrite, etc.).</p>
   <span class="nt">&quot;prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;cluster&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;weighted_clusters&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;weighted_clusters&quot;</span> <span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
   <span class="nt">&quot;host_redirect&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;path_redirect&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;prefix_rewrite&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
@@ -229,7 +227,7 @@ must be specified.</dd>
 When a <em>cluster</em> is specified, its value indicates the upstream cluster to which the request
 should be forwarded to.</dd>
 <dt><a class="reference internal" href="#config-http-conn-man-route-table-route-weighted-clusters"><span class="std std-ref">weighted_clusters</span></a></dt>
-<dd><em>(sometimes required, string)</em> If the route is not a redirect (<em>host_redirect</em> and/or
+<dd><em>(sometimes required, object)</em> If the route is not a redirect (<em>host_redirect</em> and/or
 <em>path_redirect</em> is not specified), one of <em>cluster</em> or <em>weighted_clusters</em> must be specified.
 With the <em>weighted_clusters</em> option, multiple upstream clusters can be specified for a given route.
 The request is forwarded to one of the upstream clusters based on weights assigned
@@ -474,7 +472,7 @@ is undefined (although the request will be routed to one of the clusters).</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.2.0-c1920c',
+            VERSION:'1.2.0-18d39e',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

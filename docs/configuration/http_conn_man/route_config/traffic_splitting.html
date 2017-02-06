@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Traffic Shifting/Splitting &mdash; envoy 1.2.0-c1920c documentation</title>
+  <title>Traffic Shifting/Splitting &mdash; envoy 1.2.0-18d39e documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-c1920c documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-18d39e documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Filters" href="../filters.html"/>
         <link rel="prev" title="Route matching" href="route_matching.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-c1920c
+                1.2.0-18d39e
               </div>
             
           
@@ -102,8 +102,6 @@
 <li class="toctree-l4"><a class="reference internal" href="rate_limits.html">Rate limit configuration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="route_matching.html">Route matching</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">Traffic Shifting/Splitting</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#traffic-shifting-between-two-upstreams">Traffic shifting between two upstreams</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#traffic-splitting-across-multiple-upstreams">Traffic splitting across multiple upstreams</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../filters.html">Filters</a></li>
@@ -191,6 +189,16 @@
             
   <div class="section" id="traffic-shifting-splitting">
 <span id="config-http-conn-man-route-table-traffic-splitting"></span><h1>Traffic Shifting/Splitting<a class="headerlink" href="#traffic-shifting-splitting" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><a class="reference internal" href="#traffic-shifting-between-two-upstreams" id="id1">Traffic shifting between two upstreams</a></li>
+<li><a class="reference internal" href="#traffic-splitting-across-multiple-upstreams" id="id2">Traffic splitting across multiple upstreams</a><ul>
+<li><a class="reference internal" href="#a-weight-based-cluster-selection" id="id3">(a) Weight-based cluster selection</a></li>
+<li><a class="reference internal" href="#b-probabilistic-route-selection" id="id4">(b) Probabilistic route selection</a></li>
+</ul>
+</li>
+</ul>
+</div>
 <p>Envoy&#8217;s router can split traffic to a route in a virtual host across
 two or more upstream clusters. There are two common use cases.</p>
 <p>1. Version upgrades: traffic to a route is shifted gradually
@@ -203,9 +211,8 @@ be <em>split</em> between clusters running different versions of the same
 service. The
 <a class="reference internal" href="#config-http-conn-man-route-table-traffic-splitting-split"><span class="std std-ref">traffic splitting</span></a>
 section describes this scenario in more detail.</p>
-</div>
 <div class="section" id="traffic-shifting-between-two-upstreams">
-<span id="config-http-conn-man-route-table-traffic-splitting-shift"></span><h1>Traffic shifting between two upstreams<a class="headerlink" href="#traffic-shifting-between-two-upstreams" title="Permalink to this headline">¶</a></h1>
+<span id="config-http-conn-man-route-table-traffic-splitting-shift"></span><h2><a class="toc-backref" href="#id1">Traffic shifting between two upstreams</a><a class="headerlink" href="#traffic-shifting-between-two-upstreams" title="Permalink to this headline">¶</a></h2>
 <p>The <a class="reference internal" href="route.html#config-http-conn-man-route-table-route-runtime"><span class="std std-ref">runtime</span></a> object
 in the route configuration determines the probability of selecting a
 particular route (and hence its cluster). By using the runtime
@@ -266,12 +273,12 @@ traffic would now fall through to the v2 route and be served by the
 </ol>
 </div>
 <div class="section" id="traffic-splitting-across-multiple-upstreams">
-<span id="config-http-conn-man-route-table-traffic-splitting-split"></span><h1>Traffic splitting across multiple upstreams<a class="headerlink" href="#traffic-splitting-across-multiple-upstreams" title="Permalink to this headline">¶</a></h1>
+<span id="config-http-conn-man-route-table-traffic-splitting-split"></span><h2><a class="toc-backref" href="#id2">Traffic splitting across multiple upstreams</a><a class="headerlink" href="#traffic-splitting-across-multiple-upstreams" title="Permalink to this headline">¶</a></h2>
 <p>Consider the <code class="docutils literal"><span class="pre">helloworld</span></code> example again with three versions (v1, v2 and
 v3). Envoy provides two ways to split traffic evenly across the three
 versions (i.e., <code class="docutils literal"><span class="pre">33%,</span> <span class="pre">33%,</span> <span class="pre">34%</span></code>):</p>
 <div class="section" id="a-weight-based-cluster-selection">
-<span id="config-http-conn-man-route-table-traffic-splitting-split-percentages"></span><h2>(a) Weight-based cluster selection<a class="headerlink" href="#a-weight-based-cluster-selection" title="Permalink to this headline">¶</a></h2>
+<span id="config-http-conn-man-route-table-traffic-splitting-split-percentages"></span><h3><a class="toc-backref" href="#id3">(a) Weight-based cluster selection</a><a class="headerlink" href="#a-weight-based-cluster-selection" title="Permalink to this headline">¶</a></h3>
 <p>The first option is to use a <strong>single</strong> <a class="reference internal" href="route.html#config-http-conn-man-route-table-route"><span class="std std-ref">route</span></a> with
 <a class="reference internal" href="route.html#config-http-conn-man-route-table-route-weighted-clusters"><span class="std std-ref">weighted_clusters</span></a>,
 where multiple upstream cluster targets are specified for a single route,
@@ -308,7 +315,7 @@ following runtime variables: <code class="docutils literal"><span class="pre">ro
 <code class="docutils literal"><span class="pre">routing.traffic_split.helloworld.helloworld_v3</span></code>.</p>
 </div>
 <div class="section" id="b-probabilistic-route-selection">
-<span id="config-http-conn-man-route-table-traffic-splitting-split-probabilities"></span><h2>(b) Probabilistic route selection<a class="headerlink" href="#b-probabilistic-route-selection" title="Permalink to this headline">¶</a></h2>
+<span id="config-http-conn-man-route-table-traffic-splitting-split-probabilities"></span><h3><a class="toc-backref" href="#id4">(b) Probabilistic route selection</a><a class="headerlink" href="#b-probabilistic-route-selection" title="Permalink to this headline">¶</a></h3>
 <p>The second option is to use <strong>multiple</strong> <a class="reference internal" href="route.html#config-http-conn-man-route-table-route"><span class="std std-ref">routes</span></a>
 as shown in the traffic shifting example, with <a class="reference internal" href="route.html#config-http-conn-man-route-table-route-runtime"><span class="std std-ref">runtimes</span></a>
 that specify the <strong>probability</strong> of selecting a route.
@@ -361,6 +368,7 @@ be selected by Envoy. If v2 is not selected the traffic falls through to the v3 
 all three routes (i.e. <code class="docutils literal"><span class="pre">33%,</span> <span class="pre">33%,</span> <span class="pre">34%</span></code>).</p>
 </div>
 </div>
+</div>
 
 
            </div>
@@ -403,7 +411,7 @@ all three routes (i.e. <code class="docutils literal"><span class="pre">33%,</sp
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.2.0-c1920c',
+            VERSION:'1.2.0-18d39e',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

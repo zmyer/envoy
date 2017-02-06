@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Listeners &mdash; envoy 1.2.0-c1920c documentation</title>
+  <title>Listeners &mdash; envoy 1.2.0-18d39e documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-c1920c documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-18d39e documentation" href="../../index.html"/>
         <link rel="up" title="Configuration reference" href="../configuration.html"/>
         <link rel="next" title="Filters" href="filters.html"/>
         <link rel="prev" title="Runtime" href="../overview/runtime.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-c1920c
+                1.2.0-18d39e
               </div>
             
           
@@ -191,9 +191,11 @@ Each individual listener configuration has the following format:</p>
 <dd><em>(required, integer)</em> The TCP port that the listener should listen on. Currently only TCP
 listeners are supported which bind to all local interfaces.</dd>
 <dt><a class="reference internal" href="filters.html#config-listener-filters"><span class="std std-ref">filters</span></a></dt>
-<dd><em>(required, array)</em> A list of individual <a class="reference internal" href="../../intro/arch_overview/network_filters.html#arch-overview-network-filters"><span class="std std-ref">network filters</span></a>
+<dd><p class="first"><em>(required, array)</em> A list of individual <a class="reference internal" href="../../intro/arch_overview/network_filters.html#arch-overview-network-filters"><span class="std std-ref">network filters</span></a>
 that make up the filter chain for connections established with the listener. Order matters as the
-filters are processed sequentially as connection events happen.</dd>
+filters are processed sequentially as connection events happen.</p>
+<p class="last"><strong>Note:</strong> If the filter list is empty, the connection will close by default.</p>
+</dd>
 <dt><a class="reference internal" href="ssl.html#config-listener-ssl-context"><span class="std std-ref">ssl_context</span></a></dt>
 <dd><em>(optional, object)</em> The <a class="reference internal" href="../../intro/arch_overview/ssl.html#arch-overview-ssl"><span class="std std-ref">TLS</span></a> context configuration for a TLS listener.
 If no TLS context block is defined, the listener is a plain text listener.</dd>
@@ -260,7 +262,7 @@ connection is handled by the listener that receives it. Default is false.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-c1920c',
+            VERSION:'1.2.0-18d39e',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
