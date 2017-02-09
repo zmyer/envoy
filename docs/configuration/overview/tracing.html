@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Tracing &mdash; envoy 1.2.0-18d39e documentation</title>
+  <title>Tracing &mdash; envoy 1.2.0-c9b062 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-18d39e documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-c9b062 documentation" href="../../index.html"/>
         <link rel="up" title="Overview" href="overview.html"/>
         <link rel="next" title="Rate limit service" href="rate_limit.html"/>
         <link rel="prev" title="Administration interface" href="admin.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-18d39e
+                1.2.0-c9b062
               </div>
             
           
@@ -93,7 +93,10 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../configuration.html">Configuration reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="overview.html">Overview</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="admin.html">Administration interface</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Tracing</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Tracing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#lightstep-driver">LightStep driver</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="rate_limit.html">Rate limit service</a></li>
 <li class="toctree-l3"><a class="reference internal" href="runtime.html">Runtime</a></li>
 </ul>
@@ -181,7 +184,7 @@ tracer used by Envoy. The configuration is defined on the <a class="reference in
 the only one supported.</p>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="nt">&quot;http&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;sinks&quot;</span><span class="p">:</span> <span class="p">[]</span>
+    <span class="nt">&quot;driver&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span>
   <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -189,11 +192,12 @@ the only one supported.</p>
 <dl class="docutils">
 <dt>http</dt>
 <dd><em>(optional, object)</em> Provides configuration for the HTTP tracer.</dd>
-<dt>sinks</dt>
-<dd><em>(optional, string)</em> Provides list of sinks traces are sent to.</dd>
+<dt>driver</dt>
+<dd><em>(optional, object)</em> Provides the driver that handles trace and span creation.</dd>
 </dl>
-<p>Each sink can be configured separately. Currently only the <a class="reference external" href="http://lightstep.com/">LightStep</a> sink
-is supported.</p>
+<p>Currently only <a class="reference external" href="http://lightstep.com/">LightStep</a> is supported.</p>
+<div class="section" id="lightstep-driver">
+<h2>LightStep driver<a class="headerlink" href="#lightstep-driver" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;lightstep&quot;</span><span class="p">,</span>
   <span class="nt">&quot;access_token_file&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
@@ -204,14 +208,13 @@ is supported.</p>
 </pre></div>
 </div>
 <dl class="docutils">
-<dt>type</dt>
-<dd><em>(required, string)</em> Sink type, the only currently supported value is <em>lightstep</em>.</dd>
 <dt>access_token_file</dt>
 <dd><em>(required, string)</em> File containing the access token to the <a class="reference external" href="http://lightstep.com/">LightStep</a>
 API.</dd>
 <dt>collector_cluster</dt>
 <dd><em>(required, string)</em> The cluster manager cluster that hosts the LightStep collectors.</dd>
 </dl>
+</div>
 </div>
 
 
@@ -255,7 +258,7 @@ API.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-18d39e',
+            VERSION:'1.2.0-c9b062',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

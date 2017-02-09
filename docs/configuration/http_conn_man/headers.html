@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>HTTP header manipulation &mdash; envoy 1.2.0-18d39e documentation</title>
+  <title>HTTP header manipulation &mdash; envoy 1.2.0-c9b062 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-18d39e documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-c9b062 documentation" href="../../index.html"/>
         <link rel="up" title="HTTP connection manager" href="http_conn_man.html"/>
         <link rel="next" title="Statistics" href="stats.html"/>
         <link rel="prev" title="Tracing" href="tracing.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-18d39e
+                1.2.0-c9b062
               </div>
             
           
@@ -322,7 +322,8 @@ is one of the few areas where a thin client library is needed to perform this du
 is out of scope for this documentation. If <em>x-request-id</em> is propagated across all hosts, the
 following features are available:</p>
 <ul class="simple">
-<li>Stable <a class="reference internal" href="access_log.html#config-http-conn-man-access-log"><span class="std std-ref">access logging</span></a> via the sampling filter.</li>
+<li>Stable <a class="reference internal" href="access_log.html#config-http-conn-man-access-log"><span class="std std-ref">access logging</span></a> via the
+<a class="reference internal" href="access_log.html#config-http-con-manager-access-log-filters-runtime"><span class="std std-ref">runtime filter</span></a>.</li>
 <li>Stable tracing when performing random sampling via the <a class="reference internal" href="runtime.html#config-http-conn-man-runtime-random-sampling"><span class="std std-ref">tracing.random_sampling</span></a> runtime setting or via forced tracing using the
 <a class="reference internal" href="#config-http-conn-man-headers-x-envoy-force-trace"><span class="std std-ref">x-envoy-force-trace</span></a> and
 <a class="reference internal" href="#config-http-conn-man-headers-x-client-trace-id"><span class="std std-ref">x-client-trace-id</span></a> headers.</li>
@@ -371,7 +372,7 @@ following features are available:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-18d39e',
+            VERSION:'1.2.0-c9b062',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

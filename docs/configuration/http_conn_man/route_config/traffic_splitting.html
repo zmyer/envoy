@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Traffic Shifting/Splitting &mdash; envoy 1.2.0-18d39e documentation</title>
+  <title>Traffic Shifting/Splitting &mdash; envoy 1.2.0-c9b062 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-18d39e documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-c9b062 documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Filters" href="../filters.html"/>
         <link rel="prev" title="Route matching" href="route_matching.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-18d39e
+                1.2.0-c9b062
               </div>
             
           
@@ -192,11 +192,7 @@
 <div class="contents local topic" id="contents">
 <ul class="simple">
 <li><a class="reference internal" href="#traffic-shifting-between-two-upstreams" id="id1">Traffic shifting between two upstreams</a></li>
-<li><a class="reference internal" href="#traffic-splitting-across-multiple-upstreams" id="id2">Traffic splitting across multiple upstreams</a><ul>
-<li><a class="reference internal" href="#a-weight-based-cluster-selection" id="id3">(a) Weight-based cluster selection</a></li>
-<li><a class="reference internal" href="#b-probabilistic-route-selection" id="id4">(b) Probabilistic route selection</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#traffic-splitting-across-multiple-upstreams" id="id2">Traffic splitting across multiple upstreams</a></li>
 </ul>
 </div>
 <p>Envoy&#8217;s router can split traffic to a route in a virtual host across
@@ -274,14 +270,13 @@ traffic would now fall through to the v2 route and be served by the
 </div>
 <div class="section" id="traffic-splitting-across-multiple-upstreams">
 <span id="config-http-conn-man-route-table-traffic-splitting-split"></span><h2><a class="toc-backref" href="#id2">Traffic splitting across multiple upstreams</a><a class="headerlink" href="#traffic-splitting-across-multiple-upstreams" title="Permalink to this headline">¶</a></h2>
-<p>Consider the <code class="docutils literal"><span class="pre">helloworld</span></code> example again with three versions (v1, v2 and
-v3). Envoy provides two ways to split traffic evenly across the three
-versions (i.e., <code class="docutils literal"><span class="pre">33%,</span> <span class="pre">33%,</span> <span class="pre">34%</span></code>):</p>
-<div class="section" id="a-weight-based-cluster-selection">
-<span id="config-http-conn-man-route-table-traffic-splitting-split-percentages"></span><h3><a class="toc-backref" href="#id3">(a) Weight-based cluster selection</a><a class="headerlink" href="#a-weight-based-cluster-selection" title="Permalink to this headline">¶</a></h3>
-<p>The first option is to use a <strong>single</strong> <a class="reference internal" href="route.html#config-http-conn-man-route-table-route"><span class="std std-ref">route</span></a> with
-<a class="reference internal" href="route.html#config-http-conn-man-route-table-route-weighted-clusters"><span class="std std-ref">weighted_clusters</span></a>,
-where multiple upstream cluster targets are specified for a single route,
+<p>Consider the <code class="docutils literal"><span class="pre">helloworld</span></code> example again, now with three versions (v1, v2 and
+v3) instead of two. To split traffic evenly across the three versions
+(i.e., <code class="docutils literal"><span class="pre">33%,</span> <span class="pre">33%,</span> <span class="pre">34%</span></code>), the <code class="docutils literal"><span class="pre">weighted_clusters</span></code> option can be used to
+specify the weight for each upstream cluster.</p>
+<p>Unlike the previous example, a <strong>single</strong> <a class="reference internal" href="route.html#config-http-conn-man-route-table-route"><span class="std std-ref">route</span></a> entry is sufficient. The
+<a class="reference internal" href="route.html#config-http-conn-man-route-table-route-weighted-clusters"><span class="std std-ref">weighted_clusters</span></a>
+configuration block in a route can be used to specify multiple upstream clusters
 along with weights that indicate the <strong>percentage</strong> of traffic to be sent
 to each upstream cluster.</p>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -313,60 +308,6 @@ to each upstream cluster.</p>
 following runtime variables: <code class="docutils literal"><span class="pre">routing.traffic_split.helloworld.helloworld_v1</span></code>,
 <code class="docutils literal"><span class="pre">routing.traffic_split.helloworld.helloworld_v2</span></code> and
 <code class="docutils literal"><span class="pre">routing.traffic_split.helloworld.helloworld_v3</span></code>.</p>
-</div>
-<div class="section" id="b-probabilistic-route-selection">
-<span id="config-http-conn-man-route-table-traffic-splitting-split-probabilities"></span><h3><a class="toc-backref" href="#id4">(b) Probabilistic route selection</a><a class="headerlink" href="#b-probabilistic-route-selection" title="Permalink to this headline">¶</a></h3>
-<p>The second option is to use <strong>multiple</strong> <a class="reference internal" href="route.html#config-http-conn-man-route-table-route"><span class="std std-ref">routes</span></a>
-as shown in the traffic shifting example, with <a class="reference internal" href="route.html#config-http-conn-man-route-table-route-runtime"><span class="std std-ref">runtimes</span></a>
-that specify the <strong>probability</strong> of selecting a route.
-Since Envoy matches routes with a <a class="reference internal" href="route_matching.html#config-http-conn-man-route-table-route-matching"><span class="std std-ref">first match</span></a>
-policy, the related routes (one for each upstream cluster) must be placed back-to-back,
-along with a runtime in all but the last route.</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;route_config&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;virtual_hosts&quot;</span><span class="p">:</span> <span class="p">[</span>
-      <span class="p">{</span>
-        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;helloworld&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;domains&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">],</span>
-        <span class="nt">&quot;routes&quot;</span><span class="p">:</span> <span class="p">[</span>
-          <span class="p">{</span>
-            <span class="nt">&quot;prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;cluster&quot;</span><span class="p">:</span> <span class="s2">&quot;helloworld_v1&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;runtime&quot;</span><span class="p">:</span> <span class="p">{</span>
-              <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;routing.traffic_split.helloworld.helloworld_v1&quot;</span><span class="p">,</span>
-              <span class="nt">&quot;default&quot;</span><span class="p">:</span> <span class="mi">33</span>
-            <span class="p">}</span>
-          <span class="p">},</span>
-          <span class="p">{</span>
-            <span class="nt">&quot;prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;cluster&quot;</span><span class="p">:</span> <span class="s2">&quot;helloworld_v2&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;runtime&quot;</span><span class="p">:</span> <span class="p">{</span>
-              <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;routing.traffic_split.helloworld.helloworld_v2&quot;</span><span class="p">,</span>
-              <span class="nt">&quot;default&quot;</span><span class="p">:</span> <span class="mi">50</span>
-            <span class="p">}</span>
-          <span class="p">},</span>
-          <span class="p">{</span>
-            <span class="nt">&quot;prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;cluster&quot;</span><span class="p">:</span> <span class="s2">&quot;helloworld_v3&quot;</span><span class="p">,</span>
-          <span class="p">}</span>
-        <span class="p">]</span>
-      <span class="p">}</span>
-    <span class="p">]</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>In the configuration above,</p>
-<ol class="arabic simple">
-<li><code class="docutils literal"><span class="pre">routing.traffic_split.helloworld.helloworld_v1</span></code> is set to <code class="docutils literal"><span class="pre">33</span></code>, so that there is a
-<em>33% probability</em> that the v1 route will be selected by Envoy.</li>
-<li><code class="docutils literal"><span class="pre">routing.traffic_split.helloworld.helloworld_v2</span></code> is set to <code class="docutils literal"><span class="pre">50</span></code>, so that if the v1 route
-is not selected, between v2 and v3, there is a <em>50% probability</em> that the v2 route will
-be selected by Envoy. If v2 is not selected the traffic falls through to the v3 route.</li>
-</ol>
-<p>This distribution of probabilities ensures that the traffic will be split evenly across
-all three routes (i.e. <code class="docutils literal"><span class="pre">33%,</span> <span class="pre">33%,</span> <span class="pre">34%</span></code>).</p>
-</div>
 </div>
 </div>
 
@@ -411,7 +352,7 @@ all three routes (i.e. <code class="docutils literal"><span class="pre">33%,</sp
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.2.0-18d39e',
+            VERSION:'1.2.0-c9b062',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

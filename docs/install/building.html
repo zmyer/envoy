@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Building &mdash; envoy 1.2.0-18d39e documentation</title>
+  <title>Building &mdash; envoy 1.2.0-c9b062 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="envoy 1.2.0-18d39e documentation" href="../index.html"/>
+    <link rel="top" title="envoy 1.2.0-c9b062 documentation" href="../index.html"/>
         <link rel="up" title="Building and installation" href="install.html"/>
         <link rel="next" title="Installation" href="installation.html"/>
         <link rel="prev" title="Requirements" href="requirements.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-18d39e
+                1.2.0-c9b062
               </div>
             
           
@@ -169,11 +169,7 @@
 <h1>Building<a class="headerlink" href="#building" title="Permalink to this headline">¶</a></h1>
 <p>The Envoy build system uses cmake. In order to ease initial building and for a quick start, we
 provide an Ubuntu 14 based docker container that has everything needed inside of it to build
-and <em>statically link</em> envoy. The following command will build the server.</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">docker run -t -i -v &lt;SOURCE_DIR&gt;:/source lyft/envoy-build:latest /bin/bash -c &quot;cd /source &amp;&amp; ci/do_ci.sh server_only&quot;</span>
-</pre></div>
-</div>
-<p>See <a class="reference external" href="https://github.com/lyft/envoy/blob/master/ci/do_ci.sh">ci/do_ci.sh</a> for other possible targets (to run tests, etc.).</p>
+and <em>statically link</em> envoy, see <a class="reference external" href="https://github.com/lyft/envoy/blob/master/ci/README.md">ci/README.md</a>.</p>
 <p>In order to build manually, cmake is used like so:</p>
 <div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">mkdir build</span>
 <span class="go">cd build</span>
@@ -232,7 +228,7 @@ available to turn on debug builds, address sanitizer, etc.).</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.2.0-18d39e',
+            VERSION:'1.2.0-c9b062',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
