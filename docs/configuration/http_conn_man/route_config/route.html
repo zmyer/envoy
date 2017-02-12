@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Route &mdash; envoy 1.2.0-c9b062 documentation</title>
+  <title>Route &mdash; envoy 1.2.0-b8d94f documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-c9b062 documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-b8d94f documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Virtual cluster" href="vcluster.html"/>
         <link rel="prev" title="Virtual host" href="vhost.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-c9b062
+                1.2.0-b8d94f
               </div>
             
           
@@ -195,6 +195,7 @@ next (e.g., redirect, forward, rewrite, etc.).</p>
   <span class="nt">&quot;prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;cluster&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;cluster_header&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;weighted_clusters&quot;</span> <span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
   <span class="nt">&quot;host_redirect&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;path_redirect&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
@@ -223,14 +224,27 @@ must be specified.</dd>
 <dl class="docutils" id="config-http-conn-man-route-table-route-cluster">
 <dt>cluster</dt>
 <dd><em>(sometimes required, string)</em> If the route is not a redirect (<em>host_redirect</em> and/or
-<em>path_redirect</em> is not specified), one of <em>cluster</em> or <em>weighted_clusters</em> must be specified.
-When a <em>cluster</em> is specified, its value indicates the upstream cluster to which the request
-should be forwarded to.</dd>
+<em>path_redirect</em> is not specified), one of <em>cluster</em>, <em>cluster_header</em>, or <em>weighted_clusters</em> must
+be specified. When <em>cluster</em> is specified, its value indicates the upstream cluster to which the
+request should be forwarded to.</dd>
+<dt>cluster_header</dt>
+<dd><p class="first"><em>(sometimes required, string)</em> If the route is not a redirect (<em>host_redirect</em> and/or
+<em>path_redirect</em> is not specified), one of <em>cluster</em>, <em>cluster_header</em>, or <em>weighted_clusters</em> must
+be specified. When <em>cluster_header</em> is specified, Envoy will determine the cluster to route to
+by reading the value of the HTTP header named by <em>cluster_header</em> from the request headers.
+If the header is not found or the referenced cluster does not exist, Envoy will return a 404
+response.</p>
+<div class="last admonition attention">
+<p class="first admonition-title">Attention</p>
+<p class="last">Internally, Envoy always uses the HTTP/2 <em>:authority</em> header to represent the HTTP/1 <em>Host</em>
+header. Thus, if attempting to match on <em>Host</em>, match on <em>:authority</em> instead.</p>
+</div>
+</dd>
 <dt><a class="reference internal" href="#config-http-conn-man-route-table-route-weighted-clusters"><span class="std std-ref">weighted_clusters</span></a></dt>
 <dd><em>(sometimes required, object)</em> If the route is not a redirect (<em>host_redirect</em> and/or
-<em>path_redirect</em> is not specified), one of <em>cluster</em> or <em>weighted_clusters</em> must be specified.
-With the <em>weighted_clusters</em> option, multiple upstream clusters can be specified for a given route.
-The request is forwarded to one of the upstream clusters based on weights assigned
+<em>path_redirect</em> is not specified), one of <em>cluster</em>, <em>cluster_header</em>, or <em>weighted_clusters</em> must
+be specified. With the <em>weighted_clusters</em> option, multiple upstream clusters can be specified for
+a given route. The request is forwarded to one of the upstream clusters based on weights assigned
 to each cluster. See <a class="reference internal" href="traffic_splitting.html#config-http-conn-man-route-table-traffic-splitting-split"><span class="std std-ref">traffic splitting</span></a>
 for additional documentation.</dd>
 </dl>
@@ -472,7 +486,7 @@ is undefined (although the request will be routed to one of the clusters).</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.2.0-c9b062',
+            VERSION:'1.2.0-b8d94f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
