@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>HTTP connection manager &mdash; envoy 1.2.0-b8d94f documentation</title>
+  <title>HTTP connection manager &mdash; envoy 1.2.0-569243 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-b8d94f documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-569243 documentation" href="../../index.html"/>
         <link rel="up" title="Configuration reference" href="../configuration.html"/>
         <link rel="next" title="Route configuration" href="route_config/route_config.html"/>
         <link rel="prev" title="TCP proxy" href="../network_filters/tcp_proxy_filter.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-b8d94f
+                1.2.0-569243
               </div>
             
           
@@ -102,6 +102,7 @@
 <li class="toctree-l3"><a class="reference internal" href="headers.html">HTTP header manipulation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="stats.html">Statistics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="runtime.html">Runtime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rds.html">Route discovery service</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../http_filters/http_filters.html">HTTP filters</a></li>
@@ -187,6 +188,7 @@
   <span class="nt">&quot;config&quot;</span><span class="p">:</span> <span class="p">{</span>
     <span class="nt">&quot;codec_type&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
     <span class="nt">&quot;stat_prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;rds&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
     <span class="nt">&quot;route_config&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
     <span class="nt">&quot;filters&quot;</span><span class="p">:</span> <span class="p">[],</span>
     <span class="nt">&quot;add_user_agent&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
@@ -225,9 +227,15 @@ all cases, this is the right option to choose for this setting.</dd>
 <dd><em>(required, string)</em> The human readable prefix to use when emitting statistics for the
 connection manager. See the <a class="reference internal" href="stats.html#config-http-conn-man-stats"><span class="std std-ref">statistics</span></a> documentation
 for more information.</dd>
+<dt><a class="reference internal" href="rds.html#config-http-conn-man-rds"><span class="std std-ref">rds</span></a></dt>
+<dd><em>(sometimes required, object)</em> The connection manager configuration must specify one of <em>rds</em> or
+<em>route_config</em>. If <em>rds</em> is specified, the connection manager&#8217;s route table will be dynamically
+loaded via the RDS API. See the <a class="reference internal" href="rds.html#config-http-conn-man-rds"><span class="std std-ref">documentation</span></a> for more
+information.</dd>
 <dt><a class="reference internal" href="route_config/route_config.html#config-http-conn-man-route-table"><span class="std std-ref">route_config</span></a></dt>
-<dd><em>(required, object)</em> The <a class="reference internal" href="../../intro/arch_overview/http_routing.html#arch-overview-http-routing"><span class="std std-ref">route table</span></a> for the connection
-manager. All connection managers must have a route table, even if it is empty.</dd>
+<dd><em>(sometimes required, object)</em> The connection manager configuration must specify one of <em>rds</em> or
+<em>route_config</em>. If <em>route_config</em> is specified, the <a class="reference internal" href="../../intro/arch_overview/http_routing.html#arch-overview-http-routing"><span class="std std-ref">route table</span></a>
+for the connection manager is static and is specified in this property.</dd>
 <dt><a class="reference internal" href="filters.html#config-http-conn-man-filters"><span class="std std-ref">filters</span></a></dt>
 <dd><em>(required, array)</em> A list of individual <a class="reference internal" href="../../intro/arch_overview/http_filters.html#arch-overview-http-filters"><span class="std std-ref">HTTP filters</span></a> that
 make up the filter chain for requests made to the connection manager. Order matters as the filters
@@ -341,7 +349,7 @@ feature is not desired it can be disabled.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-b8d94f',
+            VERSION:'1.2.0-569243',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

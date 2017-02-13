@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Cluster discovery service &mdash; envoy 1.2.0-b8d94f documentation</title>
+  <title>Cluster discovery service &mdash; envoy 1.2.0-569243 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-b8d94f documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-569243 documentation" href="../../index.html"/>
         <link rel="up" title="Cluster manager" href="cluster_manager.html"/>
         <link rel="next" title="Operations and administration" href="../../operations/operations.html"/>
         <link rel="prev" title="Outlier detection" href="outlier.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-b8d94f
+                1.2.0-569243
               </div>
             
           
@@ -187,7 +187,7 @@ cluster manager members. Envoy will reconcile the API response and add, modify, 
 clusters depending on what is required.</p>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="nt">&quot;cluster&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;refresh_interval_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span>
+  <span class="nt">&quot;refresh_delay_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -195,11 +195,11 @@ clusters depending on what is required.</p>
 <dt><a class="reference internal" href="cluster.html#config-cluster-manager-cluster"><span class="std std-ref">cluster</span></a></dt>
 <dd><em>(required, object)</em> A standard definition of an upstream cluster that hosts the cluster
 discovery service. The cluster must run a REST service that implements the <a class="reference internal" href="#config-cluster-manager-cds-api"><span class="std std-ref">CDS HTTP API</span></a>.</dd>
-<dt>refresh_interval_ms</dt>
-<dd><em>(optional, integer)</em> The delay, in milliseconds, between fetches to the CDS API for each
-configured CDS cluster. Envoy will add an additional random jitter to the delay that is between
-zero and <em>refresh_interval_ms</em> milliseconds. Thus the longest possible refresh delay is
-2 * <em>refresh_interval_ms</em>. Default value is 30000ms (30 seconds).</dd>
+<dt>refresh_delay_ms</dt>
+<dd><em>(optional, integer)</em> The delay, in milliseconds, between fetches to the CDS API. Envoy will add
+an additional random jitter to the delay that is between zero and <em>refresh_delay_ms</em>
+milliseconds. Thus the longest possible refresh delay is 2 * <em>refresh_delay_ms</em>. Default value
+is 30000ms (30 seconds).</dd>
 </dl>
 <div class="section" id="rest-api">
 <span id="config-cluster-manager-cds-api"></span><h2>REST API<a class="headerlink" href="#rest-api" title="Permalink to this headline">¶</a></h2>
@@ -300,7 +300,7 @@ the CDS API.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-b8d94f',
+            VERSION:'1.2.0-569243',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

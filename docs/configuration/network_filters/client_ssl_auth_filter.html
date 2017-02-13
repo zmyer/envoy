@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Client TLS authentication &mdash; envoy 1.2.0-b8d94f documentation</title>
+  <title>Client TLS authentication &mdash; envoy 1.2.0-569243 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-b8d94f documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-569243 documentation" href="../../index.html"/>
         <link rel="up" title="Network filters" href="network_filters.html"/>
         <link rel="next" title="Echo" href="echo_filter.html"/>
         <link rel="prev" title="Network filters" href="network_filters.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-b8d94f
+                1.2.0-569243
               </div>
             
           
@@ -188,7 +188,7 @@
   <span class="nt">&quot;config&quot;</span><span class="p">:</span> <span class="p">{</span>
     <span class="nt">&quot;auth_api_cluster&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
     <span class="nt">&quot;stat_prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;refresh_interval_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;refresh_delay_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
     <span class="nt">&quot;ip_white_list&quot;</span><span class="p">:</span> <span class="p">[]</span>
   <span class="p">}</span>
 <span class="p">}</span>
@@ -201,10 +201,10 @@ the authentication service. The filter will connect to the service every 60s to 
 of principals. The service must support the expected <a class="reference internal" href="#config-network-filters-client-ssl-auth-rest-api"><span class="std std-ref">REST API</span></a>.</dd>
 <dt>stat_prefix</dt>
 <dd><em>(required, string)</em> The prefix to use when emitting <a class="reference internal" href="#config-network-filters-client-ssl-auth-stats"><span class="std std-ref">statistics</span></a>.</dd>
-<dt>refresh_interval_ms</dt>
+<dt>refresh_delay_ms</dt>
 <dd><em>(optional, integer)</em> Time in milliseconds between principal refreshes from the authentication
 service. Default is 60000 (60s). The actual fetch time will be this value plus a random jittered
-value between 0-refresh_interval_ms milliseconds.</dd>
+value between 0-refresh_delay_ms milliseconds.</dd>
 <dt>ip_white_list</dt>
 <dd><p class="first"><em>(optional, array)</em> An optional list of IP address and subnet masks that should be white listed
 for access by the filter. If no list is provided, there is no IP white list. The list is
@@ -339,7 +339,7 @@ hash to the presented client certificate to determine whether there is a digest 
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-b8d94f',
+            VERSION:'1.2.0-569243',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
