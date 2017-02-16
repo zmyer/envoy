@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Connection pooling &mdash; envoy 1.2.0-fe8d4d documentation</title>
+  <title>Dynamic configuration &mdash; envoy 1.2.0-fe8d4d documentation</title>
   
 
   
@@ -35,8 +35,8 @@
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="envoy 1.2.0-fe8d4d documentation" href="../../index.html"/>
         <link rel="up" title="Architecture overview" href="arch_overview.html"/>
-        <link rel="next" title="Load balancing" href="load_balancing.html"/>
-        <link rel="prev" title="Health checking" href="health_checking.html"/> 
+        <link rel="next" title="Deployment types" href="../deployment_types/deployment_types.html"/>
+        <link rel="prev" title="Hot restart" href="hot_restart.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -102,11 +102,7 @@
 <li class="toctree-l3"><a class="reference internal" href="cluster_manager.html">Cluster manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="service_discovery.html">Service discovery</a></li>
 <li class="toctree-l3"><a class="reference internal" href="health_checking.html">Health checking</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Connection pooling</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#http-1-1">HTTP/1.1</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#http-2">HTTP/2</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="connection_pooling.html">Connection pooling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="load_balancing.html">Load balancing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="outlier.html">Outlier detection</a></li>
 <li class="toctree-l3"><a class="reference internal" href="circuit_breaking.html">Circuit breaking</a></li>
@@ -119,7 +115,13 @@
 <li class="toctree-l3"><a class="reference internal" href="mongo.html">MongoDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dynamo.html">DynamoDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="hot_restart.html">Hot restart</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dynamic_configuration.html">Dynamic configuration</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Dynamic configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#fully-static">Fully static</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sds-only">SDS only</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sds-and-cds">SDS and CDS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sds-cds-and-rds">SDS, CDS, and RDS</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../deployment_types/deployment_types.html">Deployment types</a></li>
@@ -181,13 +183,13 @@
         
           <li><a href="arch_overview.html">Architecture overview</a> &raquo;</li>
         
-      <li>Connection pooling</li>
+      <li>Dynamic configuration</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/intro/arch_overview/connection_pooling.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/intro/arch_overview/dynamic_configuration.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -200,26 +202,58 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="connection-pooling">
-<span id="arch-overview-conn-pool"></span><h1>Connection pooling<a class="headerlink" href="#connection-pooling" title="Permalink to this headline">¶</a></h1>
-<p>For HTTP traffic, Envoy supports abstract connection pools that are layered on top of the underlying
-wire protocol (HTTP/1.1 or HTTP/2). The utilizing filter code does not need to be aware of whether
-the underlying protocol supports true multiplexing or not. In practice the underlying
-implementations have the following high level properties:</p>
-<div class="section" id="http-1-1">
-<h2>HTTP/1.1<a class="headerlink" href="#http-1-1" title="Permalink to this headline">¶</a></h2>
-<p>The HTTP/1.1 connection pool acquires connections as needed to an upstream host (up to the circuit
-breaking limit). Requests are bound to connections as they become available, either because a
-connection is done processing a previous request or because a new connection is ready to receive its
-first request. The HTTP/1.1 connection pool does not make use of pipelining so that only a single
-downstream request must be reset if the upstream connection is severed.</p>
+  <div class="section" id="dynamic-configuration">
+<span id="arch-overview-dynamic-config"></span><h1>Dynamic configuration<a class="headerlink" href="#dynamic-configuration" title="Permalink to this headline">¶</a></h1>
+<p>Envoy is architected such that different types of configuration management approaches are possible.
+The approach taken in a deployment will be dependent on the needs of the implementor. Simple
+deployments are possible with a fully static configuration. More complicated deployments can
+incrementally add more complex dynamic configuration, the downside being that the implementor must
+provide one or more external REST based configuration provider APIs. This document gives an overview
+of the options currently available.</p>
+<ul class="simple">
+<li>Top level configuration <a class="reference internal" href="../../configuration/configuration.html#config"><span class="std std-ref">reference</span></a>.</li>
+<li><a class="reference internal" href="../../install/ref_configs.html#install-ref-configs"><span class="std std-ref">Reference configurations</span></a>.</li>
+</ul>
+<div class="section" id="fully-static">
+<h2>Fully static<a class="headerlink" href="#fully-static" title="Permalink to this headline">¶</a></h2>
+<p>In a fully static configuration, the implementor provides a set of <a class="reference internal" href="../../configuration/listeners/listeners.html#config-listeners"><span class="std std-ref">listeners</span></a> (and <a class="reference internal" href="../../configuration/listeners/filters.html#config-listener-filters"><span class="std std-ref">filter chains</span></a>), <a class="reference internal" href="../../configuration/cluster_manager/cluster_manager.html#config-cluster-manager"><span class="std std-ref">clusters</span></a>, and optionally <a class="reference internal" href="../../configuration/http_conn_man/route_config/route_config.html#config-http-conn-man-route-table"><span class="std std-ref">HTTP route configurations</span></a>. Dynamic host discovery is only possible via DNS based
+<a class="reference internal" href="service_discovery.html#arch-overview-service-discovery"><span class="std std-ref">service discovery</span></a>. Configuration reloads must take place
+via the built in <a class="reference internal" href="hot_restart.html#arch-overview-hot-restart"><span class="std std-ref">hot restart</span></a> mechanism.</p>
+<p>Though simplistic, fairly complicated deployments can be created using static configurations and
+graceful hot restarts.</p>
 </div>
-<div class="section" id="http-2">
-<h2>HTTP/2<a class="headerlink" href="#http-2" title="Permalink to this headline">¶</a></h2>
-<p>The HTTP/2 connection pool acquires a single connection to an upstream host. All requests are
-multiplexed over this connection. If a GOAWAY frame is received or if the connection reaches the
-maximum stream limit, the connection pool will create a new connection and drain the existing one.
-HTTP/2 is the preferred communication protocol as connections rarely if ever get severed.</p>
+<div class="section" id="sds-only">
+<h2>SDS only<a class="headerlink" href="#sds-only" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="../../configuration/cluster_manager/sds.html#config-cluster-manager-sds"><span class="std std-ref">service discovery service (SDS) API</span></a> provides a more advanced
+mechanism by which Envoy can discover members of an upstream cluster. Layered on top of a static
+configuration, SDS allows an Envoy deployment to circumvent the limitations of DNS (maximum records
+in a response, etc.) as well as consume more information used in load balancing and routing (e.g.,
+canary status, zone, etc.).</p>
+</div>
+<div class="section" id="sds-and-cds">
+<h2>SDS and CDS<a class="headerlink" href="#sds-and-cds" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="../../configuration/cluster_manager/cds.html#config-cluster-manager-cds"><span class="std std-ref">cluster discovery service (CDS) API</span></a> layers on a mechanism by
+which Envoy can discover upstream clusters used during routing. Envoy will gracefully add, update,
+and remove clusters as specified by the API. This API allows implementors to build a topology in
+which Envoy does not need to be aware of all upstream clusters at initial configuration time.
+Typically, when doing HTTP routing along with CDS (but without route discovery service), implementors will make use of
+the router&#8217;s ability to forward requests to a cluster specified in an <a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-cluster-header"><span class="std std-ref">HTTP request header</span></a>.</p>
+<p>Although it is possible to use CDS without SDS by specifying fully static clusters, we recommend
+still using the SDS API for clusters specified via CDS. Internally, when a cluster definition is
+updated, the operation is graceful. However, all existing connection pools will be drained and
+reconnected. SDS does not suffer from this limitation. When hosts are added and removed via SDS,
+the existing hosts in the cluster are unaffected.</p>
+</div>
+<div class="section" id="sds-cds-and-rds">
+<h2>SDS, CDS, and RDS<a class="headerlink" href="#sds-cds-and-rds" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="../../configuration/http_conn_man/rds.html#config-http-conn-man-rds"><span class="std std-ref">route discovery service (RDS) API</span></a> layers on a mechanism by which
+Envoy can discover the entire route configuration for an HTTP connection manager filter at runtime.
+The route configuration will be gracefully swapped in without affecting existing requests. This API,
+when used alongside SDS and CDS, allows implementors to build a complex routing topology
+(<a class="reference internal" href="../../configuration/http_conn_man/route_config/traffic_splitting.html#config-http-conn-man-route-table-traffic-splitting"><span class="std std-ref">traffic shifting</span></a>, blue/green
+deployment, etc.) that will not require any Envoy restarts other than to obtain a new Envoy binary.</p>
+<p>Note that currently, there is no dynamic mechanism by which Envoy can add, update, and remove
+listeners. In the future it likely that a listener discovery service (LDS) API will be added.</p>
 </div>
 </div>
 
@@ -230,10 +264,10 @@ HTTP/2 is the preferred communication protocol as connections rarely if ever get
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="load_balancing.html" class="btn btn-neutral float-right" title="Load balancing" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../deployment_types/deployment_types.html" class="btn btn-neutral float-right" title="Deployment types" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="health_checking.html" class="btn btn-neutral" title="Health checking" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="hot_restart.html" class="btn btn-neutral" title="Hot restart" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

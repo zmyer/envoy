@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>What is Envoy &mdash; envoy 1.2.0-569243 documentation</title>
+  <title>What is Envoy &mdash; envoy 1.2.0-fe8d4d documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="envoy 1.2.0-569243 documentation" href="../index.html"/>
+    <link rel="top" title="envoy 1.2.0-fe8d4d documentation" href="../index.html"/>
         <link rel="up" title="Introduction" href="intro.html"/>
         <link rel="next" title="Architecture overview" href="arch_overview/arch_overview.html"/>
         <link rel="prev" title="Introduction" href="intro.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-569243
+                1.2.0-fe8d4d
               </div>
             
           
@@ -222,7 +222,7 @@ be multiplexed over. Envoy does not support SPDY as the protocol is being phased
 requests based on path, authority, content type, <a class="reference internal" href="arch_overview/runtime.html#arch-overview-runtime"><span class="std std-ref">runtime</span></a> values, etc.
 This functionality is most useful when using Envoy as a front/edge proxy but is also leveraged when
 building a service to service mesh.</p>
-<p><strong>gRPC support:</strong> <a class="reference external" href="http://www.grpc.io/">gRPC</a> is a new RPC framework from Google that uses HTTP/2
+<p><strong>gRPC support:</strong> <a class="reference external" href="http://www.grpc.io/">gRPC</a> is an RPC framework from Google that uses HTTP/2
 as the underlying multiplexed transport. Envoy <a class="reference internal" href="arch_overview/grpc.html#arch-overview-grpc"><span class="std std-ref">supports</span></a> all of the
 HTTP/2 features required to be used as the routing and load balancing substrate for gRPC requests
 and responses. The two systems are very complementary.</p>
@@ -239,7 +239,8 @@ including asynchronous DNS resolution and REST based lookup via a <a class="refe
 way of building an Envoy mesh is to treat service discovery as an eventually consistent process.
 Envoy includes a <a class="reference internal" href="arch_overview/health_checking.html#arch-overview-health-checking"><span class="std std-ref">health checking</span></a> subsystem which can
 optionally perform active health checking of upstream service clusters. Envoy then uses the union of
-service discovery and health checking information to determine healthy load balancing targets.</p>
+service discovery and health checking information to determine healthy load balancing targets. Envoy
+also supports passive health checking via an <a class="reference internal" href="arch_overview/outlier.html#arch-overview-outlier-detection"><span class="std std-ref">outlier detection</span></a> subsystem.</p>
 <p><strong>Advanced load balancing:</strong> <a class="reference internal" href="arch_overview/load_balancing.html#arch-overview-load-balancing"><span class="std std-ref">Load balancing</span></a> among different
 components in a distributed system is a complex problem. Because Envoy is a self contained proxy
 instead of a library, it is able to implement advanced load balancing techniques in a single place
@@ -260,6 +261,9 @@ includes robust <a class="reference internal" href="arch_overview/statistics.htm
 sink, though plugging in a different one would not be difficult. Statistics are also viewable via
 the <a class="reference internal" href="../operations/admin.html#operations-admin-interface"><span class="std std-ref">administration</span></a> port. Envoy also supports distributed
 <a class="reference internal" href="arch_overview/tracing.html#arch-overview-tracing"><span class="std std-ref">tracing</span></a> via thirdparty providers.</p>
+<p><strong>Dynamic configuration:</strong> Envoy optionally consumes a layered set of <a class="reference internal" href="arch_overview/dynamic_configuration.html#arch-overview-dynamic-config"><span class="std std-ref">dynamic configuration
+APIs</span></a>. Implementors can use these APIs to build complex centrally
+managed deployments if desired.</p>
 <div class="section" id="design-goals">
 <h2>Design goals<a class="headerlink" href="#design-goals" title="Permalink to this headline">¶</a></h2>
 <p>A short note on the design goals of the code itself: Although Envoy is by no means slow (we have
@@ -311,7 +315,7 @@ runtimes many times slower and with many times greater memory usage.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.2.0-569243',
+            VERSION:'1.2.0-fe8d4d',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

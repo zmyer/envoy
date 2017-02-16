@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>HTTP routing &mdash; envoy 1.2.0-569243 documentation</title>
+  <title>HTTP routing &mdash; envoy 1.2.0-fe8d4d documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-569243 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-fe8d4d documentation" href="../../index.html"/>
         <link rel="up" title="Architecture overview" href="arch_overview.html"/>
         <link rel="next" title="gRPC" href="grpc.html"/>
         <link rel="prev" title="HTTP filters" href="http_filters.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-569243
+                1.2.0-fe8d4d
               </div>
             
           
@@ -120,6 +120,7 @@
 <li class="toctree-l3"><a class="reference internal" href="mongo.html">MongoDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dynamo.html">DynamoDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="hot_restart.html">Hot restart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dynamic_configuration.html">Dynamic configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../deployment_types/deployment_types.html">Deployment types</a></li>
@@ -216,18 +217,18 @@ matching is not currently supported, mainly because it makes it difficult/imposs
 programmatically determine whether routing rules conflict with each other. For this reason we
 don’t recommend regex/slug routing at the reverse proxy level, however we may add support in the
 future depending on demand.</li>
-<li><a class="reference internal" href="../../configuration/http_conn_man/route_config/vhost.html#config-http-conn-man-route-table-vhost-require-ssl"><span class="std std-ref">TLS redirection</span></a> at the virtual host level.</li>
+<li><a class="reference internal" href="../../configuration/http_conn_man/route_config/vhost.html#config-http-conn-man-route-table-vhost-require-ssl"><span class="std std-ref">TLS redirection</span></a> at the virtual host
+level.</li>
 <li><a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-path-redirect"><span class="std std-ref">Path</span></a>/<a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-host-redirect"><span class="std std-ref">host</span></a> redirection at the route level.</li>
 <li><a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-host-rewrite"><span class="std std-ref">Host rewriting</span></a>.</li>
 <li><a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-prefix-rewrite"><span class="std std-ref">Prefix rewriting</span></a>.</li>
-<li><a class="reference internal" href="#arch-overview-http-routing-retry"><span class="std std-ref">Request retries</span></a> specified either via HTTP header or via route configuration.</li>
+<li><a class="reference internal" href="#arch-overview-http-routing-retry"><span class="std std-ref">Request retries</span></a> specified either via HTTP header or via
+route configuration.</li>
 <li>Request timeout specified either via <a class="reference internal" href="../../configuration/http_filters/router_filter.html#config-http-filters-router-headers"><span class="std std-ref">HTTP
 header</span></a> or via <a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-timeout"><span class="std std-ref">route configuration</span></a>.</li>
-<li>Traffic shifting from one upstream cluster to another via <a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-runtime"><span class="std std-ref">runtime values</span></a>
-(see <a class="reference internal" href="../../configuration/http_conn_man/route_config/traffic_splitting.html#config-http-conn-man-route-table-traffic-splitting"><span class="std std-ref">traffic shifting/splitting</span></a>).</li>
-<li>Traffic splitting across multiple upstream clusters using <a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-weighted-clusters"><span class="std std-ref">weight/percentage-based routing</span></a>
-(see <a class="reference internal" href="../../configuration/http_conn_man/route_config/traffic_splitting.html#config-http-conn-man-route-table-traffic-splitting-split"><span class="std std-ref">traffic shifting/splitting</span></a>).</li>
-<li>Arbitrary headers <a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-headers"><span class="std std-ref">routing rules</span></a>.</li>
+<li>Traffic shifting from one upstream cluster to another via <a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-runtime"><span class="std std-ref">runtime values</span></a> (see <a class="reference internal" href="../../configuration/http_conn_man/route_config/traffic_splitting.html#config-http-conn-man-route-table-traffic-splitting"><span class="std std-ref">traffic shifting/splitting</span></a>).</li>
+<li>Traffic splitting across multiple upstream clusters using <a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-weighted-clusters"><span class="std std-ref">weight/percentage-based routing</span></a> (see <a class="reference internal" href="../../configuration/http_conn_man/route_config/traffic_splitting.html#config-http-conn-man-route-table-traffic-splitting-split"><span class="std std-ref">traffic shifting/splitting</span></a>).</li>
+<li>Arbitrary header matching <a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-headers"><span class="std std-ref">routing rules</span></a>.</li>
 <li>Virtual cluster specifications. A virtual cluster is specified at the virtual host level and is
 used by Envoy to generate additional statistics on top of the standard cluster level ones. Virtual
 clusters can use regex matching.</li>
@@ -314,7 +315,7 @@ priority traffic does not starve higher priority traffic.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-569243',
+            VERSION:'1.2.0-fe8d4d',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
