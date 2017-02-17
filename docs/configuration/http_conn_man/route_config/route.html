@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Route &mdash; envoy 1.2.0-fe8d4d documentation</title>
+  <title>Route &mdash; envoy 1.2.0-159791 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-fe8d4d documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-159791 documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Virtual cluster" href="vcluster.html"/>
         <link rel="prev" title="Virtual host" href="vhost.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-fe8d4d
+                1.2.0-159791
               </div>
             
           
@@ -243,6 +243,8 @@ response.</p>
 header. Thus, if attempting to match on <em>Host</em>, match on <em>:authority</em> instead.</p>
 </div>
 </dd>
+</dl>
+<dl class="docutils" id="config-http-conn-man-route-table-route-config-weighted-clusters">
 <dt><a class="reference internal" href="#config-http-conn-man-route-table-route-weighted-clusters"><span class="std std-ref">weighted_clusters</span></a></dt>
 <dd><em>(sometimes required, object)</em> If the route is not a redirect (<em>host_redirect</em> and/or
 <em>path_redirect</em> is not specified), one of <em>cluster</em>, <em>cluster_header</em>, or <em>weighted_clusters</em> must
@@ -254,13 +256,13 @@ for additional documentation.</dd>
 <dl class="docutils" id="config-http-conn-man-route-table-route-host-redirect">
 <dt>host_redirect</dt>
 <dd><em>(sometimes required, string)</em> Indicates that the route is a redirect rule. If there is a match,
-A 302 redirect response will be sent which swaps the host portion of the URL with this value.
+a 302 redirect response will be sent which swaps the host portion of the URL with this value.
 <em>path_redirect</em> can also be specified along with this option.</dd>
 </dl>
 <dl class="docutils" id="config-http-conn-man-route-table-route-path-redirect">
 <dt>path_redirect</dt>
 <dd><em>(sometimes required, string)</em> Indicates that the route is a redirect rule. If there is a match,
-A 302 redirect response will be sent which swaps the path portion of the URL with this value.
+a 302 redirect response will be sent which swaps the path portion of the URL with this value.
 <em>host_redirect</em>  can also be specified along with this option.</dd>
 </dl>
 <dl class="docutils" id="config-http-conn-man-route-table-route-prefix-rewrite">
@@ -489,7 +491,7 @@ is undefined (although the request will be routed to one of the clusters).</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.2.0-fe8d4d',
+            VERSION:'1.2.0-159791',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

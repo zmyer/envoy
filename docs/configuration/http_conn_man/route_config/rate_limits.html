@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Rate limit configuration &mdash; envoy 1.2.0-fe8d4d documentation</title>
+  <title>Rate limit configuration &mdash; envoy 1.2.0-159791 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-fe8d4d documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-159791 documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Route matching" href="route_matching.html"/>
         <link rel="prev" title="Virtual cluster" href="vcluster.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-fe8d4d
+                1.2.0-159791
               </div>
             
           
@@ -193,8 +193,7 @@
 <p>Global rate limiting <a class="reference internal" href="../../../intro/arch_overview/global_rate_limiting.html#arch-overview-rate-limit"><span class="std std-ref">architecture overview</span></a>.</p>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="nt">&quot;stage&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;kill_switch_key&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;route_key&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;disable_key&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;actions&quot;</span><span class="p">:</span> <span class="p">[]</span>
 <span class="p">}</span>
 </pre></div>
@@ -207,15 +206,12 @@ the rate limit configuration will apply for all rate limit filters set to defaul
 value is 0.</p>
 <p class="last"><strong>NOTE:</strong> This functionality hasn&#8217;t been implemented yet and stage values are currently ignored.</p>
 </dd>
-<dt>kill_switch_key</dt>
+<dt>disable_key</dt>
 <dd><em>(optional, string)</em> The key to be set in runtime to disable this rate limit configuration.</dd>
-<dt>route_key</dt>
-<dd><em>(optional, string)</em> Specifies a descriptor value to be used when rate limiting for a route.
-This information is used by the actions if it is set.</dd>
 <dt>actions</dt>
 <dd><em>(required, array)</em> A list of actions that are to be applied for this rate limit configuration.
-Order matters as the actions are processed sequentially and the descriptors will be composed in
-that sequence.</dd>
+Order matters as the actions are processed sequentially and the descriptor will be composed by
+appending decriptor entries in that sequence. See <a class="reference internal" href="#config-http-conn-man-route-table-rate-limit-composing-actions"><span class="std std-ref">composing actions</span></a> for additional documentation.</dd>
 </dl>
 <div class="section" id="actions">
 <span id="config-http-conn-man-route-table-rate-limit-actions"></span><h2>Actions<a class="headerlink" href="#actions" title="Permalink to this headline">¶</a></h2>
@@ -227,24 +223,50 @@ that sequence.</dd>
 <dl class="docutils">
 <dt>type</dt>
 <dd><em>(required, string)</em> The type of rate limit action to perform. The currently supported action
-types are <em>service_to_service</em> , <em>request_headers</em> and <em>remote_address</em>.</dd>
+types are <em>source_cluster</em>, <em>destination_cluster</em> , <em>request_headers</em>, <em>remote_address</em> and
+<em>generic_key</em>.</dd>
 </dl>
-<div class="section" id="service-to-service">
-<h3>Service to service<a class="headerlink" href="#service-to-service" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="source-cluster">
+<h3>Source Cluster<a class="headerlink" href="#source-cluster" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;service_to_service&quot;</span>
+  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;source_cluster&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>The following descriptors are sent:</p>
+<p>The following descriptor entry is appended to the descriptor:</p>
 <blockquote>
 <div><ul class="simple">
-<li>(&#8220;to_cluster&#8221;, &#8220;&lt;<a class="reference internal" href="route.html#config-http-conn-man-route-table-route-cluster"><span class="std std-ref">route target cluster</span></a>&gt;&#8221;)</li>
-<li>(&#8220;to_cluster&#8221;, &#8220;&lt;<a class="reference internal" href="route.html#config-http-conn-man-route-table-route-cluster"><span class="std std-ref">route target cluster</span></a>&gt;&#8221;),
-(&#8220;from_cluster&#8221;, &#8220;&lt;local service cluster&gt;&#8221;)</li>
+<li>(&#8220;source_cluster&#8221;, &#8220;&lt;local service cluster&gt;&#8221;)</li>
 </ul>
 </div></blockquote>
 <p>&lt;local service cluster&gt; is derived from the <a class="reference internal" href="../../../operations/cli.html#cmdoption-service-cluster"><code class="xref std std-option docutils literal"><span class="pre">--service-cluster</span></code></a> option.</p>
+</div>
+<div class="section" id="destination-cluster">
+<h3>Destination Cluster<a class="headerlink" href="#destination-cluster" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;destination_cluster&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The following descriptor entry is appended to the descriptor:</p>
+<blockquote>
+<div><ul class="simple">
+<li>(&#8220;destination_cluster&#8221;, &#8220;&lt;routed target cluster&gt;&#8221;)</li>
+</ul>
+</div></blockquote>
+<p>Once a request matches against a route table rule, a routed cluster is determined by one of the
+following <a class="reference internal" href="route.html#config-http-conn-man-route-table-route-cluster"><span class="std std-ref">route table configuration</span></a>
+settings:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="route.html#config-http-conn-man-route-table-route-cluster"><span class="std std-ref">cluster</span></a> indicates the upstream cluster
+to route to.</li>
+<li><a class="reference internal" href="route.html#config-http-conn-man-route-table-route-config-weighted-clusters"><span class="std std-ref">weighted_clusters</span></a>
+chooses a cluster randomly from a set of clusters with attributed weight.</li>
+<li><a class="reference internal" href="route.html#config-http-conn-man-route-table-route-cluster-header"><span class="std std-ref">cluster_header</span></a> indicates which
+header in the request contains the target cluster.</li>
+</ul>
+</div></blockquote>
 </div>
 <div class="section" id="request-headers">
 <h3>Request Headers<a class="headerlink" href="#request-headers" title="Permalink to this headline">¶</a></h3>
@@ -257,22 +279,16 @@ types are <em>service_to_service</em> , <em>request_headers</em> and <em>remote_
 </div>
 <dl class="docutils">
 <dt>header_name</dt>
-<dd><em>(required, string)</em> The header name to be queried from the request headers and used to
-populate the descriptor value for the <em>descriptor_key</em>.</dd>
+<dd><em>(required, string)</em> The header name to be queried from the request headers. The header&#8217;s value is
+used to populate the value of the descriptor entry for the descriptor_key.</dd>
 <dt>descriptor_key</dt>
-<dd><em>(required, string)</em> The key to use in the descriptor.</dd>
+<dd><em>(required, string)</em> The key to use in the descriptor entry.</dd>
 </dl>
-<p>The following descriptor is sent when a header contains a key that matches the <em>header_name</em>:</p>
+<p>The following descriptor entry is appended when a header contains a key that matches the
+<em>header_name</em>:</p>
 <blockquote>
 <div><ul class="simple">
 <li>(&#8220;&lt;descriptor_key&gt;&#8221;, &#8220;&lt;header_value_queried_from_header&gt;&#8221;)</li>
-</ul>
-</div></blockquote>
-<p>If <em>route_key</em> is set in the rate limit configuration, the following
-descriptor is sent as well:</p>
-<blockquote>
-<div><ul class="simple">
-<li>(&#8220;route_key&#8221;, &#8220;&lt;route_key&gt;&#8221;), (&#8220;&lt;descriptor_key&gt;&#8221;, &#8220;&lt;header_value_queried_from_header&gt;&#8221;)</li>
 </ul>
 </div></blockquote>
 </div>
@@ -283,21 +299,93 @@ descriptor is sent as well:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>The following descriptor is sent using the trusted address from <a class="reference internal" href="../headers.html#config-http-conn-man-headers-x-forwarded-for"><span class="std std-ref">x-forwarded-for</span></a>:</p>
+<p>The following descriptor entry is appended to the descriptor and is populated using the trusted
+address from <a class="reference internal" href="../headers.html#config-http-conn-man-headers-x-forwarded-for"><span class="std std-ref">x-forwarded-for</span></a>:</p>
 <blockquote>
 <div><ul class="simple">
 <li>(&#8220;remote_address&#8221;, &#8220;&lt;<a class="reference internal" href="../headers.html#config-http-conn-man-headers-x-forwarded-for"><span class="std std-ref">trusted address from x-forwarded-for</span></a>&gt;&#8221;)</li>
 </ul>
 </div></blockquote>
-<p>If <em>route_key</em> is set in the rate limit configuration, the following
-descriptor is sent as well:</p>
+</div>
+<div class="section" id="generic-key">
+<h3>Generic Key<a class="headerlink" href="#generic-key" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;generic_key&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;descriptor_value&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>descriptor_value</dt>
+<dd><em>(required, string)</em> The value to use in the descriptor entry.</dd>
+</dl>
+<p>The following descriptor entry is appended to the descriptor:</p>
 <blockquote>
 <div><ul class="simple">
-<li>(&#8220;route_key&#8221;, &#8220;&lt;route_key&gt;&#8221;),
-(&#8220;remote_address&#8221;, &#8220;&lt;<a class="reference internal" href="../headers.html#config-http-conn-man-headers-x-forwarded-for"><span class="std std-ref">trusted address from x-forwarded-for</span></a>&gt;&#8221;)</li>
+<li>(&#8220;generic_key&#8221;, &#8220;&lt;descriptor_value&gt;&#8221;)</li>
 </ul>
 </div></blockquote>
 </div>
+</div>
+<div class="section" id="composing-actions">
+<span id="config-http-conn-man-route-table-rate-limit-composing-actions"></span><h2>Composing Actions<a class="headerlink" href="#composing-actions" title="Permalink to this headline">¶</a></h2>
+<p>Each action populates a descriptor entry. A vector of descriptor entries compose a descriptor. To
+create more complex rate limit descriptors, actions can be composed in any order. The descriptor
+will be populated in the order the actions are specified in the configuration.</p>
+<p>For example, to generate the following descriptor:</p>
+<blockquote>
+<div><ul class="simple">
+<li>(&#8220;generic_key&#8221;, &#8220;some_value&#8221;), (&#8220;source_cluster&#8221;, &#8220;from_cluster&#8221;)</li>
+</ul>
+</div></blockquote>
+<p>The configuration would be:</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;actions&quot;</span> <span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;type&quot;</span> <span class="p">:</span> <span class="s2">&quot;generic_key&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;descriptor_value&quot;</span> <span class="p">:</span> <span class="s2">&quot;some_value&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;type&quot;</span> <span class="p">:</span> <span class="s2">&quot;source_cluster&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If an action doesn&#8217;t append a descriptor entry, the next item in the action list will
+be processed. For example given the following rate limit configuration, a request can
+generate a few possible descriptors depending on what is present in the request.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;actions&quot;</span> <span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;type&quot;</span> <span class="p">:</span> <span class="s2">&quot;generic_key&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;descriptor_value&quot;</span> <span class="p">:</span> <span class="s2">&quot;some_value&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;type&quot;</span> <span class="p">:</span> <span class="s2">&quot;remote_address&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;type&quot;</span> <span class="p">:</span> <span class="s2">&quot;souce_cluster&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>For a request with <a class="reference internal" href="../headers.html#config-http-conn-man-headers-x-forwarded-for"><span class="std std-ref">x-forwarded-for</span></a> set and the
+trusted address is for example <em>127.0.0.1</em>, the following descriptor would be generated:</p>
+<blockquote>
+<div><ul class="simple">
+<li>(&#8220;generic_key&#8221;, &#8220;some_value&#8221;), (&#8220;remote_address&#8221;, &#8220;127.0.0.1&#8221;), (&#8220;source_cluster&#8221;,
+&#8220;from_cluster&#8221;)</li>
+</ul>
+</div></blockquote>
+<p>If a request did not set <a class="reference internal" href="../headers.html#config-http-conn-man-headers-x-forwarded-for"><span class="std std-ref">x-forwarded-for</span></a>, the
+following descriptor would be generated:</p>
+<blockquote>
+<div><ul class="simple">
+<li>(&#8220;generic_key&#8221;, &#8220;some_value&#8221;), (&#8220;source_cluster&#8221;, &#8220;from_cluster&#8221;)</li>
+</ul>
+</div></blockquote>
 </div>
 </div>
 
@@ -342,7 +430,7 @@ descriptor is sent as well:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.2.0-fe8d4d',
+            VERSION:'1.2.0-159791',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
