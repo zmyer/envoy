@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Outlier detection &mdash; envoy 1.2.0-2e4daf documentation</title>
+  <title>Outlier detection &mdash; envoy 1.2.0-2e5b5f documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-2e4daf documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-2e5b5f documentation" href="../../index.html"/>
         <link rel="up" title="Architecture overview" href="arch_overview.html"/>
         <link rel="next" title="Circuit breaking" href="circuit_breaking.html"/>
         <link rel="prev" title="Load balancing" href="load_balancing.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-2e4daf
+                1.2.0-2e5b5f
               </div>
             
           
@@ -248,6 +248,7 @@ during daily operations since global stats do not provide enough information on 
 being ejected and for what reasons. The log uses a JSON format with one object per line:</p>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="nt">&quot;time&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;secs_since_last_action&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;cluster&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;upstream_url&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
@@ -259,6 +260,10 @@ being ejected and for what reasons. The log uses a JSON format with one object p
 <dl class="docutils">
 <dt>time</dt>
 <dd>The time that the event took place.</dd>
+<dt>secs_since_last_action</dt>
+<dd>The time in seconds since the last action (either an ejection or unejection)
+took place. This time will be -1 for the first ejection given there is no
+action before the first ejection.</dd>
 <dt>cluster</dt>
 <dd>The <a class="reference internal" href="../../configuration/cluster_manager/cluster.html#config-cluster-manager-cluster"><span class="std std-ref">cluster</span></a> that owns the ejected host.</dd>
 <dt>upstream_url</dt>
@@ -326,7 +331,7 @@ gets removed from the upstream cluster for any reason and then re-added).</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-2e4daf',
+            VERSION:'1.2.0-2e5b5f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
