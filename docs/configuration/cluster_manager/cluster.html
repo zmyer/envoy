@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Cluster &mdash; envoy 1.2.0-2e5b5f documentation</title>
+  <title>Cluster &mdash; envoy 1.2.0-c45f81 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-2e5b5f documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-c45f81 documentation" href="../../index.html"/>
         <link rel="up" title="Cluster manager" href="cluster_manager.html"/>
         <link rel="next" title="Health checking" href="cluster_hc.html"/>
         <link rel="prev" title="Cluster manager" href="cluster_manager.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-2e5b5f
+                1.2.0-c45f81
               </div>
             
           
@@ -216,8 +216,8 @@ use for resolving the cluster. Possible options are <em>static</em>, <em>strict_
 in milliseconds.</dd>
 <dt>lb_type</dt>
 <dd><em>(required, string)</em> The <a class="reference internal" href="../../intro/arch_overview/load_balancing.html#arch-overview-load-balancing-types"><span class="std std-ref">load balancer type</span></a> to use
-when picking a host in the cluster. Possible options are <em>round_robin</em>, <em>least_request</em>, and
-<em>random</em>.</dd>
+when picking a host in the cluster. Possible options are <em>round_robin</em>, <em>least_request</em>,
+<em>ring_hash</em>, and <em>random</em>.</dd>
 <dt>hosts</dt>
 <dd><p class="first"><em>(sometimes required, array)</em> If the service discovery type is <em>static</em>, <em>strict_dns</em>, or
 <em>logical_dns</em> the hosts array is required. How it is specified depends on the type of service
@@ -352,7 +352,7 @@ detection.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-2e5b5f',
+            VERSION:'1.2.0-c45f81',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

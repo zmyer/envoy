@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Route &mdash; envoy 1.2.0-2e5b5f documentation</title>
+  <title>Route &mdash; envoy 1.2.0-c45f81 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-2e5b5f documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-c45f81 documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Virtual cluster" href="vcluster.html"/>
         <link rel="prev" title="Virtual host" href="vhost.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-2e5b5f
+                1.2.0-c45f81
               </div>
             
           
@@ -209,7 +209,8 @@ next (e.g., redirect, forward, rewrite, etc.).</p>
   <span class="nt">&quot;shadow&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
   <span class="nt">&quot;priority&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;headers&quot;</span><span class="p">:</span> <span class="p">[],</span>
-  <span class="nt">&quot;rate_limits&quot;</span><span class="p">:</span> <span class="p">[]</span>
+  <span class="nt">&quot;rate_limits&quot;</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="nt">&quot;hash_policy&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -303,6 +304,9 @@ Note that this timeout includes all retries. See also
 <dt><a class="reference internal" href="rate_limits.html#config-http-conn-man-route-table-rate-limit-config"><span class="std std-ref">rate_limits</span></a></dt>
 <dd><em>(optional, array)</em> Specifies a set of rate limit configurations that could be applied to the
 route.</dd>
+<dt><a class="reference internal" href="#config-http-conn-man-route-table-hash-policy"><span class="std std-ref">hash_policy</span></a></dt>
+<dd><em>(optional, array)</em> Specifies the route&#8217;s hashing policy if the upstream cluster uses a hashing
+<a class="reference internal" href="../../../intro/arch_overview/load_balancing.html#arch-overview-load-balancing-types"><span class="std std-ref">load balancer</span></a>.</dd>
 </dl>
 <div class="section" id="runtime">
 <span id="config-http-conn-man-route-table-route-runtime"></span><h2>Runtime<a class="headerlink" href="#runtime" title="Permalink to this headline">¶</a></h2>
@@ -448,6 +452,21 @@ is undefined (although the request will be routed to one of the clusters).</p>
 </dd>
 </dl>
 </div>
+<div class="section" id="hash-policy">
+<span id="config-http-conn-man-route-table-hash-policy"></span><h2>Hash policy<a class="headerlink" href="#hash-policy" title="Permalink to this headline">¶</a></h2>
+<p>Specifies the route&#8217;s hashing policy if the upstream cluster uses a hashing <a class="reference internal" href="../../../intro/arch_overview/load_balancing.html#arch-overview-load-balancing-types"><span class="std std-ref">load balancer</span></a>.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;header_name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>header_name</dt>
+<dd><em>(required, string)</em> The name of the request header that will be used to obtain the hash key. If
+the request header is not present, the load balancer will use a random number as the hash,
+effectively making the load balancing policy random.</dd>
+</dl>
+</div>
 </div>
 
 
@@ -491,7 +510,7 @@ is undefined (although the request will be routed to one of the clusters).</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.2.0-2e5b5f',
+            VERSION:'1.2.0-c45f81',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
