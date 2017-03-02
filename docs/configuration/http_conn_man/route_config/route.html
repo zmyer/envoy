@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Route &mdash; envoy 1.2.0-70e5d6 documentation</title>
+  <title>Route &mdash; envoy 1.2.0-d162bc documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-70e5d6 documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-d162bc documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Virtual cluster" href="vcluster.html"/>
         <link rel="prev" title="Virtual host" href="vhost.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-70e5d6
+                1.2.0-d162bc
               </div>
             
           
@@ -211,7 +211,8 @@ next (e.g., redirect, forward, rewrite, etc.).</p>
   <span class="nt">&quot;priority&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;headers&quot;</span><span class="p">:</span> <span class="p">[],</span>
   <span class="nt">&quot;rate_limits&quot;</span><span class="p">:</span> <span class="p">[],</span>
-  <span class="nt">&quot;hash_policy&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span>
+  <span class="nt">&quot;hash_policy&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;opaque_config&quot;</span><span class="p">:</span> <span class="p">[]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -308,6 +309,8 @@ Note that this timeout includes all retries. See also
 <dd><em>(optional, string)</em> Optionally specifies the <a class="reference internal" href="../../../intro/arch_overview/http_routing.html#arch-overview-http-routing-priority"><span class="std std-ref">routing priority</span></a>.</dd>
 <dt><a class="reference internal" href="#config-http-conn-man-route-table-route-headers"><span class="std std-ref">headers</span></a></dt>
 <dd><em>(optional, array)</em> Specifies a set of headers that the route should match on.</dd>
+<dt><a class="reference internal" href="#config-http-conn-man-route-table-opaque-config"><span class="std std-ref">opaque_config</span></a></dt>
+<dd><em>(optional, array)</em> Specifies a set of optional route configuration values that can be accessed by filters.</dd>
 </dl>
 <dl class="docutils" id="config-http-conn-man-route-table-route-rate-limits">
 <dt><a class="reference internal" href="rate_limits.html#config-http-conn-man-route-table-rate-limit-config"><span class="std std-ref">rate_limits</span></a></dt>
@@ -476,6 +479,18 @@ the request header is not present, the load balancer will use a random number as
 effectively making the load balancing policy random.</dd>
 </dl>
 </div>
+<div class="section" id="opaque-config">
+<span id="config-http-conn-man-route-table-opaque-config"></span><h2>Opaque Config<a class="headerlink" href="#opaque-config" title="Permalink to this headline">¶</a></h2>
+<p>Additional configuration can be provided to filters through the &#8220;Opaque Config&#8221; mechanism. A
+list of properties are specified in the route config. The configuration is uninterpreted
+by envoy and can be accessed within a user-defined filter. The configuration is a generic
+string map.  Nested objects are not supported.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">[</span>
+  <span class="p">{</span><span class="nt">&quot;...&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -519,7 +534,7 @@ effectively making the load balancing policy random.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.2.0-70e5d6',
+            VERSION:'1.2.0-d162bc',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
