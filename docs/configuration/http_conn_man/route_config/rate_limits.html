@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Rate limit configuration &mdash; envoy 1.2.0-59e09f documentation</title>
+  <title>Rate limit configuration &mdash; envoy 1.2.0-5e5c7f documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-59e09f documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-5e5c7f documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Route matching" href="route_matching.html"/>
         <link rel="prev" title="Virtual cluster" href="vcluster.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-59e09f
+                1.2.0-5e5c7f
               </div>
             
           
@@ -223,8 +223,8 @@ appending decriptor entries in that sequence. See <a class="reference internal" 
 <dl class="docutils">
 <dt>type</dt>
 <dd><em>(required, string)</em> The type of rate limit action to perform. The currently supported action
-types are <em>source_cluster</em>, <em>destination_cluster</em> , <em>request_headers</em>, <em>remote_address</em> and
-<em>generic_key</em>.</dd>
+types are <em>source_cluster</em>, <em>destination_cluster</em> , <em>request_headers</em>, <em>remote_address</em>,
+<em>generic_key</em> and <em>header_value_match</em>.</dd>
 </dl>
 <div class="section" id="source-cluster">
 <h3>Source Cluster<a class="headerlink" href="#source-cluster" title="Permalink to this headline">¶</a></h3>
@@ -323,6 +323,32 @@ address from <a class="reference internal" href="../headers.html#config-http-con
 <blockquote>
 <div><ul class="simple">
 <li>(&#8220;generic_key&#8221;, &#8220;&lt;descriptor_value&gt;&#8221;)</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="header-value-match">
+<h3>Header Value Match<a class="headerlink" href="#header-value-match" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;header_value_match&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;descriptor_value&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;headers&quot;</span> <span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>descriptor_value</dt>
+<dd><em>(required, string)</em> The value to use in the descriptor entry.</dd>
+<dt><a class="reference internal" href="route.html#config-http-conn-man-route-table-route-headers"><span class="std std-ref">headers</span></a></dt>
+<dd><em>(required, array)</em> Specifies a set of headers that the rate limit action should match on. The
+action will check the request&#8217;s headers against all the specified headers in the config. A match
+will happen if all the headers in the config are present in the request with the same values (or
+based on presence if the <code class="docutils literal"><span class="pre">value</span></code> field is not in the config).</dd>
+</dl>
+<p>The following descriptor entry is appended to the descriptor if the request matches the headers
+specified in the action config:</p>
+<blockquote>
+<div><ul class="simple">
+<li>(&#8220;header_match&#8221;, &#8220;&lt;descriptor_value&gt;&#8221;)</li>
 </ul>
 </div></blockquote>
 </div>
@@ -430,7 +456,7 @@ following descriptor would be generated:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.2.0-59e09f',
+            VERSION:'1.2.0-5e5c7f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
