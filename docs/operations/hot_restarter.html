@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Hot restart Python wrapper &mdash; envoy 1.2.0-23474d documentation</title>
+  <title>Hot restart Python wrapper &mdash; envoy 1.2.0-3e4d2c documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="envoy 1.2.0-23474d documentation" href="../index.html"/>
+    <link rel="top" title="envoy 1.2.0-3e4d2c documentation" href="../index.html"/>
         <link rel="up" title="Operations and administration" href="operations.html"/>
         <link rel="next" title="Administration interface" href="admin.html"/>
         <link rel="prev" title="Command line options" href="cli.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-23474d
+                1.2.0-3e4d2c
               </div>
             
           
@@ -186,7 +186,7 @@ monit, runit, etc. We provide <a class="reference external" href="https://github
 to the <a class="reference internal" href="cli.html#cmdoption-restart-epoch"><code class="xref std std-option docutils literal"><span class="pre">--restart-epoch</span></code></a> option.</p>
 <p>The restarter handles the following signals:</p>
 <ul class="simple">
-<li><strong>SIGTERM</strong>: Will cleanly terminate all children and exit.</li>
+<li><strong>SIGTERM</strong>: Will cleanly terminate all child processes and exit.</li>
 <li><strong>SIGHUP</strong>: Will hot restart by re-invoking whatever is passed as the first argument to the
 hot restart script.</li>
 <li><strong>SIGCHLD</strong>: If any of the child processes shut down unexpectedly, the restart script will shut
@@ -238,7 +238,7 @@ atomic move and reopen log rotation.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.2.0-23474d',
+            VERSION:'1.2.0-3e4d2c',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
