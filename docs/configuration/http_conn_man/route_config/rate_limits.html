@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Rate limit configuration &mdash; envoy 1.2.0-3e4d2c documentation</title>
+  <title>Rate limit configuration &mdash; envoy 1.2.0-721586 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-3e4d2c documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-721586 documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Route matching" href="route_matching.html"/>
         <link rel="prev" title="Virtual cluster" href="vcluster.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-3e4d2c
+                1.2.0-721586
               </div>
             
           
@@ -200,11 +200,9 @@
 </div>
 <dl class="docutils">
 <dt>stage</dt>
-<dd><p class="first"><em>(optional, integer)</em> Refers to the stage set in the filter. If set, the rate limit configuration
-only applies to filters with the same stage number and for filters set to default. If not set,
-the rate limit configuration will apply for all rate limit filters set to default. The default
-value is 0.</p>
-<p class="last"><strong>NOTE:</strong> This functionality hasn&#8217;t been implemented yet and stage values are currently ignored.</p>
+<dd><p class="first"><em>(optional, integer)</em> Refers to the stage set in the filter. The rate limit configuration
+only applies to filters with the same stage number. The default stage number is 0.</p>
+<p class="last"><strong>NOTE:</strong> The filter supports a range of 0 - 10 inclusively for stage numbers.</p>
 </dd>
 <dt>disable_key</dt>
 <dd><em>(optional, string)</em> The key to be set in runtime to disable this rate limit configuration.</dd>
@@ -234,11 +232,9 @@ types are <em>source_cluster</em>, <em>destination_cluster</em> , <em>request_he
 </pre></div>
 </div>
 <p>The following descriptor entry is appended to the descriptor:</p>
-<blockquote>
-<div><ul class="simple">
-<li>(&#8220;source_cluster&#8221;, &#8220;&lt;local service cluster&gt;&#8221;)</li>
-</ul>
-</div></blockquote>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s">&quot;source_cluster&quot;</span><span class="p">,</span> <span class="s">&quot;&lt;local service cluster&gt;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>&lt;local service cluster&gt; is derived from the <a class="reference internal" href="../../../operations/cli.html#cmdoption-service-cluster"><code class="xref std std-option docutils literal"><span class="pre">--service-cluster</span></code></a> option.</p>
 </div>
 <div class="section" id="destination-cluster">
@@ -249,11 +245,9 @@ types are <em>source_cluster</em>, <em>destination_cluster</em> , <em>request_he
 </pre></div>
 </div>
 <p>The following descriptor entry is appended to the descriptor:</p>
-<blockquote>
-<div><ul class="simple">
-<li>(&#8220;destination_cluster&#8221;, &#8220;&lt;routed target cluster&gt;&#8221;)</li>
-</ul>
-</div></blockquote>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s">&quot;destination_cluster&quot;</span><span class="p">,</span> <span class="s">&quot;&lt;routed target cluster&gt;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>Once a request matches against a route table rule, a routed cluster is determined by one of the
 following <a class="reference internal" href="route.html#config-http-conn-man-route-table-route-cluster"><span class="std std-ref">route table configuration</span></a>
 settings:</p>
@@ -286,11 +280,9 @@ used to populate the value of the descriptor entry for the descriptor_key.</dd>
 </dl>
 <p>The following descriptor entry is appended when a header contains a key that matches the
 <em>header_name</em>:</p>
-<blockquote>
-<div><ul class="simple">
-<li>(&#8220;&lt;descriptor_key&gt;&#8221;, &#8220;&lt;header_value_queried_from_header&gt;&#8221;)</li>
-</ul>
-</div></blockquote>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s">&quot;&lt;descriptor_key&gt;&quot;</span><span class="p">,</span> <span class="s">&quot;&lt;header_value_queried_from_header&gt;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="remote-address">
 <h3>Remote Address<a class="headerlink" href="#remote-address" title="Permalink to this headline">¶</a></h3>
@@ -301,11 +293,9 @@ used to populate the value of the descriptor entry for the descriptor_key.</dd>
 </div>
 <p>The following descriptor entry is appended to the descriptor and is populated using the trusted
 address from <a class="reference internal" href="../headers.html#config-http-conn-man-headers-x-forwarded-for"><span class="std std-ref">x-forwarded-for</span></a>:</p>
-<blockquote>
-<div><ul class="simple">
-<li>(&#8220;remote_address&#8221;, &#8220;&lt;<a class="reference internal" href="../headers.html#config-http-conn-man-headers-x-forwarded-for"><span class="std std-ref">trusted address from x-forwarded-for</span></a>&gt;&#8221;)</li>
-</ul>
-</div></blockquote>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s">&quot;remote_address&quot;</span><span class="p">,</span> <span class="s">&quot;&lt;trusted address from x-forwarded-for&gt;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="generic-key">
 <h3>Generic Key<a class="headerlink" href="#generic-key" title="Permalink to this headline">¶</a></h3>
@@ -320,11 +310,9 @@ address from <a class="reference internal" href="../headers.html#config-http-con
 <dd><em>(required, string)</em> The value to use in the descriptor entry.</dd>
 </dl>
 <p>The following descriptor entry is appended to the descriptor:</p>
-<blockquote>
-<div><ul class="simple">
-<li>(&#8220;generic_key&#8221;, &#8220;&lt;descriptor_value&gt;&#8221;)</li>
-</ul>
-</div></blockquote>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s">&quot;generic_key&quot;</span><span class="p">,</span> <span class="s">&quot;&lt;descriptor_value&gt;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="header-value-match">
 <h3>Header Value Match<a class="headerlink" href="#header-value-match" title="Permalink to this headline">¶</a></h3>
@@ -346,11 +334,9 @@ based on presence if the <code class="docutils literal"><span class="pre">value<
 </dl>
 <p>The following descriptor entry is appended to the descriptor if the request matches the headers
 specified in the action config:</p>
-<blockquote>
-<div><ul class="simple">
-<li>(&#8220;header_match&#8221;, &#8220;&lt;descriptor_value&gt;&#8221;)</li>
-</ul>
-</div></blockquote>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s">&quot;header_match&quot;</span><span class="p">,</span> <span class="s">&quot;&lt;descriptor_value&gt;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="composing-actions">
@@ -359,11 +345,9 @@ specified in the action config:</p>
 create more complex rate limit descriptors, actions can be composed in any order. The descriptor
 will be populated in the order the actions are specified in the configuration.</p>
 <p>For example, to generate the following descriptor:</p>
-<blockquote>
-<div><ul class="simple">
-<li>(&#8220;generic_key&#8221;, &#8220;some_value&#8221;), (&#8220;source_cluster&#8221;, &#8220;from_cluster&#8221;)</li>
-</ul>
-</div></blockquote>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s">&quot;generic_key&quot;</span><span class="p">,</span> <span class="s">&quot;some_value&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s">&quot;source_cluster&quot;</span><span class="p">,</span> <span class="s">&quot;from_cluster&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>The configuration would be:</p>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="nt">&quot;actions&quot;</span> <span class="p">:</span> <span class="p">[</span>
@@ -399,19 +383,15 @@ generate a few possible descriptors depending on what is present in the request.
 </div>
 <p>For a request with <a class="reference internal" href="../headers.html#config-http-conn-man-headers-x-forwarded-for"><span class="std std-ref">x-forwarded-for</span></a> set and the
 trusted address is for example <em>127.0.0.1</em>, the following descriptor would be generated:</p>
-<blockquote>
-<div><ul class="simple">
-<li>(&#8220;generic_key&#8221;, &#8220;some_value&#8221;), (&#8220;remote_address&#8221;, &#8220;127.0.0.1&#8221;), (&#8220;source_cluster&#8221;,
-&#8220;from_cluster&#8221;)</li>
-</ul>
-</div></blockquote>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s">&quot;generic_key&quot;</span><span class="p">,</span> <span class="s">&quot;some_value&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s">&quot;remote_address&quot;</span><span class="p">,</span> <span class="s">&quot;127.0.0.1&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s">&quot;source_cluster&quot;</span><span class="p">,</span>
+  <span class="s">&quot;from_cluster&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>If a request did not set <a class="reference internal" href="../headers.html#config-http-conn-man-headers-x-forwarded-for"><span class="std std-ref">x-forwarded-for</span></a>, the
 following descriptor would be generated:</p>
-<blockquote>
-<div><ul class="simple">
-<li>(&#8220;generic_key&#8221;, &#8220;some_value&#8221;), (&#8220;source_cluster&#8221;, &#8220;from_cluster&#8221;)</li>
-</ul>
-</div></blockquote>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s">&quot;generic_key&quot;</span><span class="p">,</span> <span class="s">&quot;some_value&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s">&quot;source_cluster&quot;</span><span class="p">,</span> <span class="s">&quot;from_cluster&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </div>
 
@@ -456,7 +436,7 @@ following descriptor would be generated:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.2.0-3e4d2c',
+            VERSION:'1.2.0-721586',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

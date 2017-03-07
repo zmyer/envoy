@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Rate limit &mdash; envoy 1.2.0-3e4d2c documentation</title>
+  <title>Rate limit &mdash; envoy 1.2.0-721586 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.2.0-3e4d2c documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.2.0-721586 documentation" href="../../index.html"/>
         <link rel="up" title="HTTP filters" href="http_filters.html"/>
         <link rel="next" title="Router" href="router_filter.html"/>
         <link rel="prev" title="Health check" href="health_check_filter.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.2.0-3e4d2c
+                1.2.0-721586
               </div>
             
           
@@ -204,8 +204,10 @@ results in a descriptor being sent to the rate limit service.</p>
 <dt>domain</dt>
 <dd><em>(required, string)</em> The rate limit domain to use when calling the rate limit service.</dd>
 <dt>stage</dt>
-<dd><em>(optional, integer)</em> If set, rate limit configurations will only be applied with the same stage
-number. If not set, all rate limit configurations will be applied.</dd>
+<dd><p class="first"><em>(optional, integer)</em> Specifies the rate limit configurations to be applied with the same stage
+number. If not set, the default stage number is 0.</p>
+<p class="last"><strong>NOTE:</strong> The filter supports a range of 0 - 10 inclusively for stage numbers.</p>
+</dd>
 </dl>
 <div class="section" id="statistics">
 <h2>Statistics<a class="headerlink" href="#statistics" title="Permalink to this headline">¶</a></h2>
@@ -296,7 +298,7 @@ This can be used to test what would happen before fully enforcing the outcome.</
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2.0-3e4d2c',
+            VERSION:'1.2.0-721586',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
