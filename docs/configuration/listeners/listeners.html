@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Listeners &mdash; envoy 1.3.0-504913 documentation</title>
+  <title>Listeners &mdash; envoy 1.3.0-fb4291 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.3.0-504913 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.3.0-fb4291 documentation" href="../../index.html"/>
         <link rel="up" title="Configuration reference" href="../configuration.html"/>
         <link rel="next" title="Filters" href="filters.html"/>
         <link rel="prev" title="Runtime" href="../overview/runtime.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.3.0-504913
+                1.3.0-fb4291
               </div>
             
           
@@ -177,7 +177,7 @@
 <p>The top level Envoy configuration contains a list of <a class="reference internal" href="../../intro/arch_overview/listeners.html#arch-overview-listeners"><span class="std std-ref">listeners</span></a>.
 Each individual listener configuration has the following format:</p>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;port&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;address&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;filters&quot;</span><span class="p">:</span> <span class="p">[],</span>
   <span class="nt">&quot;ssl_context&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
   <span class="nt">&quot;bind_to_port&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
@@ -188,9 +188,10 @@ Each individual listener configuration has the following format:</p>
 </pre></div>
 </div>
 <dl class="docutils">
-<dt>port</dt>
-<dd><em>(required, integer)</em> The TCP port that the listener should listen on. Currently only TCP
-listeners are supported which bind to all local interfaces.</dd>
+<dt>address</dt>
+<dd><em>(required, string)</em> The address that the listener should listen on. Currently only TCP
+listeners are supported, e.g., &#8220;<a class="reference external" href="tcp://127.0.0.1:80">tcp://127.0.0.1:80</a>&#8221;. Note, &#8220;<a class="reference external" href="tcp://0.0.0.0:80">tcp://0.0.0.0:80</a>&#8221; is the wild card
+match for any IPv4 address with port 80.</dd>
 <dt><a class="reference internal" href="filters.html#config-listener-filters"><span class="std std-ref">filters</span></a></dt>
 <dd><p class="first"><em>(required, array)</em> A list of individual <a class="reference internal" href="../../intro/arch_overview/network_filters.html#arch-overview-network-filters"><span class="std std-ref">network filters</span></a>
 that make up the filter chain for connections established with the listener. Order matters as the
@@ -266,7 +267,7 @@ If unspecified, an implementation defined default is applied (1MiB).</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-504913',
+            VERSION:'1.3.0-fb4291',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
