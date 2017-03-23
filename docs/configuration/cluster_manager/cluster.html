@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Cluster &mdash; envoy 1.3.0-5e6a97 documentation</title>
+  <title>Cluster &mdash; envoy 1.3.0-6fbc85 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.3.0-5e6a97 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.3.0-6fbc85 documentation" href="../../index.html"/>
         <link rel="up" title="Cluster manager" href="cluster_manager.html"/>
         <link rel="next" title="Health checking" href="cluster_hc.html"/>
         <link rel="prev" title="Cluster manager" href="cluster_manager.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.3.0-5e6a97
+                1.3.0-6fbc85
               </div>
             
           
@@ -327,10 +327,29 @@ the number of times the host has been ejected. Defaults to 30000ms or 30s.</dd>
 <dt>max_ejection_percent</dt>
 <dd>The maximum % of an upstream cluster that can be ejected due to outlier detection. Defaults to 10%.</dd>
 </dl>
-<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection-enforcing">
-<dt>enforcing</dt>
-<dd>The % chance that a host will be actually ejected when an outlier status is detected. This setting
-can be used to disable ejection or to ramp it up slowly. Defaults to 100.</dd>
+<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection-enforcing-consecutive-5xx">
+<dt>enforcing_consecutive_5xx</dt>
+<dd>The % chance that a host will be actually ejected when an outlier status is detected through
+consecutive 5xx. This setting can be used to disable ejection or to ramp it up slowly. Defaults to 100.</dd>
+</dl>
+<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection-enforcing-success-rate">
+<dt>enforcing_success_rate</dt>
+<dd>The % chance that a host will be actually ejected when an outlier status is detected through
+success rate statistics. This setting can be used to disable ejection or to ramp it up slowly.
+Defaults to 100.</dd>
+</dl>
+<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection-success-rate-minimum-hosts">
+<dt>success_rate_minimum_hosts</dt>
+<dd>The number of hosts in a cluster that must have enough request volume to detect success rate outliers.
+If the number of hosts is less than this setting, outlier detection via success rate statistics is not
+performed for any host in the cluster. Defaults to 5.</dd>
+</dl>
+<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection-success-rate-request-volume">
+<dt>success_rate_request_volume</dt>
+<dd>The minimum number of total requests that must be collected in one interval
+(as defined by <a class="reference internal" href="#config-cluster-manager-cluster-outlier-detection-interval-ms"><span class="std std-ref">interval_ms</span></a> above)
+to include this host in success rate based outlier detection. If the volume is lower than this setting,
+outlier detection via success rate statistics is not performed for that host. Defaults to 100.</dd>
 </dl>
 <p class="last">Each of the above configuration values can be overridden via
 <a class="reference internal" href="cluster_runtime.html#config-cluster-manager-cluster-runtime-outlier-detection"><span class="std std-ref">runtime values</span></a>.</p>
@@ -381,7 +400,7 @@ can be used to disable ejection or to ramp it up slowly. Defaults to 100.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-5e6a97',
+            VERSION:'1.3.0-6fbc85',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
