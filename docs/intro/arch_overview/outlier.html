@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Outlier detection &mdash; envoy 1.3.0-a9bdb7 documentation</title>
+  <title>Outlier detection &mdash; envoy 1.3.0-0f5d9f documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.3.0-a9bdb7 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.3.0-0f5d9f documentation" href="../../index.html"/>
         <link rel="up" title="Architecture overview" href="arch_overview.html"/>
         <link rel="next" title="Circuit breaking" href="circuit_breaking.html"/>
         <link rel="prev" title="Load balancing" href="load_balancing.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.3.0-a9bdb7
+                1.3.0-0f5d9f
               </div>
             
           
@@ -264,7 +264,11 @@ being ejected and for what reasons. The log uses a JSON format with one object p
   <span class="nt">&quot;upstream_url&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;num_ejections&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
+  <span class="nt">&quot;num_ejections&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;enforced&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;host_success_rate&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;cluster_success_rate_average&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;cluster_success_rate_ejection_threshold&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -273,7 +277,7 @@ being ejected and for what reasons. The log uses a JSON format with one object p
 <dd>The time that the event took place.</dd>
 <dt>secs_since_last_action</dt>
 <dd>The time in seconds since the last action (either an ejection or unejection)
-took place. This time will be -1 for the first ejection given there is no
+took place. This value will be <code class="docutils literal"><span class="pre">-1</span></code> for the first ejection given there is no
 action before the first ejection.</dd>
 <dt>cluster</dt>
 <dd>The <a class="reference internal" href="../../configuration/cluster_manager/cluster.html#config-cluster-manager-cluster"><span class="std std-ref">cluster</span></a> that owns the ejected host.</dd>
@@ -283,11 +287,28 @@ action before the first ejection.</dd>
 <dd>The action that took place. Either <code class="docutils literal"><span class="pre">eject</span></code> if a host was ejected or <code class="docutils literal"><span class="pre">uneject</span></code> if it was
 brought back into service.</dd>
 <dt>type</dt>
-<dd>If <code class="docutils literal"><span class="pre">action</span></code> is <code class="docutils literal"><span class="pre">eject</span></code>, species the type of ejection that took place. Currently this can
-only be <code class="docutils literal"><span class="pre">5xx</span></code>.</dd>
+<dd>If <code class="docutils literal"><span class="pre">action</span></code> is <code class="docutils literal"><span class="pre">eject</span></code>, specifies the type of ejection that took place. Currently type can
+be either <code class="docutils literal"><span class="pre">5xx</span></code> or <code class="docutils literal"><span class="pre">SuccessRate</span></code>.</dd>
 <dt>num_ejections</dt>
-<dd>The number of times the host has been ejected (local to that Envoy and gets reset if the host
-gets removed from the upstream cluster for any reason and then re-added).</dd>
+<dd>If <code class="docutils literal"><span class="pre">action</span></code> is <code class="docutils literal"><span class="pre">eject</span></code>, specifies the number of times the host has been ejected
+(local to that Envoy and gets reset if the host gets removed from the upstream cluster for any
+reason and then re-added).</dd>
+<dt>enforced</dt>
+<dd>If <code class="docutils literal"><span class="pre">action</span></code> is <code class="docutils literal"><span class="pre">eject</span></code>, specifies if the ejection was enforced. <code class="docutils literal"><span class="pre">true</span></code> means the host was ejected.
+<code class="docutils literal"><span class="pre">false</span></code> means the event was logged but the host was not actually ejected.</dd>
+<dt>host_success_rate</dt>
+<dd>If <code class="docutils literal"><span class="pre">action</span></code> is <code class="docutils literal"><span class="pre">eject</span></code>, and <code class="docutils literal"><span class="pre">type</span></code> is <code class="docutils literal"><span class="pre">SuccessRate</span></code>, specifies the host&#8217;s success rate
+at the time of the ejection event on a <code class="docutils literal"><span class="pre">0-100</span></code> range.</dd>
+</dl>
+<dl class="docutils" id="arch-overview-outlier-detection-ejection-event-logging-cluster-success-rate-average">
+<dt>cluster_success_rate_average</dt>
+<dd>If <code class="docutils literal"><span class="pre">action</span></code> is <code class="docutils literal"><span class="pre">eject</span></code>, and <code class="docutils literal"><span class="pre">type</span></code> is <code class="docutils literal"><span class="pre">SuccessRate</span></code>, specifies the average success
+rate of the hosts in the cluster at the time of the ejection event on a <code class="docutils literal"><span class="pre">0-100</span></code> range.</dd>
+</dl>
+<dl class="docutils" id="arch-overview-outlier-detection-ejection-event-logging-cluster-success-rate-ejection-threshold">
+<dt>cluster_success_rate_ejection_threshold</dt>
+<dd>If <code class="docutils literal"><span class="pre">action</span></code> is <code class="docutils literal"><span class="pre">eject</span></code>, and <code class="docutils literal"><span class="pre">type</span></code> is <code class="docutils literal"><span class="pre">SuccessRate</span></code>, specifies success rate ejection
+threshold at the time of the ejection event.</dd>
 </dl>
 </div>
 <div class="section" id="configuration-reference">
@@ -342,7 +363,7 @@ gets removed from the upstream cluster for any reason and then re-added).</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-a9bdb7',
+            VERSION:'1.3.0-0f5d9f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

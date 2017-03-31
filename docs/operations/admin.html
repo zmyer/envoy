@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Administration interface &mdash; envoy 1.3.0-a9bdb7 documentation</title>
+  <title>Administration interface &mdash; envoy 1.3.0-0f5d9f documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="envoy 1.3.0-a9bdb7 documentation" href="../index.html"/>
+    <link rel="top" title="envoy 1.3.0-0f5d9f documentation" href="../index.html"/>
         <link rel="up" title="Operations and administration" href="operations.html"/>
         <link rel="next" title="Statistics overview" href="stats_overview.html"/>
         <link rel="prev" title="Hot restart Python wrapper" href="hot_restarter.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.3.0-a9bdb7
+                1.3.0-0f5d9f
               </div>
             
           
@@ -188,8 +188,20 @@ expiration.</p>
 <code class="descname">GET </code><code class="descname">/clusters</code><a class="headerlink" href="#get--clusters" title="Permalink to this definition">¶</a></dt>
 <dd><p>List out all configured <a class="reference internal" href="../intro/arch_overview/cluster_manager.html#arch-overview-cluster-manager"><span class="std std-ref">cluster manager</span></a> clusters. This
 information includes all discovered upstream hosts in each cluster along with per host statistics.
-This is useful for debugging service discovery issues. The per host statistics include:</p>
-<table border="1" class="docutils">
+This is useful for debugging service discovery issues.</p>
+<dl class="docutils">
+<dt>Cluster wide information</dt>
+<dd><ul class="first last simple">
+<li><a class="reference internal" href="../configuration/cluster_manager/cluster_circuit_breakers.html#config-cluster-manager-cluster-circuit-breakers"><span class="std std-ref">circuit breakers</span></a> settings for all priority settings.</li>
+<li>Information about <a class="reference internal" href="../intro/arch_overview/outlier.html#arch-overview-outlier-detection"><span class="std std-ref">outlier detection</span></a> if a detector is installed. Currently
+<a class="reference internal" href="../intro/arch_overview/outlier.html#arch-overview-outlier-detection-ejection-event-logging-cluster-success-rate-average"><span class="std std-ref">success rate average</span></a>,
+and <a class="reference internal" href="../intro/arch_overview/outlier.html#arch-overview-outlier-detection-ejection-event-logging-cluster-success-rate-ejection-threshold"><span class="std std-ref">ejection threshold</span></a>
+are presented. Both of these values could be <code class="docutils literal"><span class="pre">-1</span></code> if there was not enough data to calculate them in the last
+<a class="reference internal" href="../configuration/cluster_manager/cluster.html#config-cluster-manager-cluster-outlier-detection-interval-ms"><span class="std std-ref">interval</span></a>.</li>
+</ul>
+</dd>
+<dt>Per host statistics</dt>
+<dd><table border="1" class="first last docutils">
 <colgroup>
 <col width="25%" />
 <col width="25%" />
@@ -242,9 +254,16 @@ This is useful for debugging service discovery issues. The per host statistics i
 <td>Boolean</td>
 <td>Whether the host is a canary</td>
 </tr>
+<tr class="row-even"><td>success_rate</td>
+<td>Double</td>
+<td>Request success rate (0-100). -1 if there was not enough
+<a class="reference internal" href="../configuration/cluster_manager/cluster.html#config-cluster-manager-cluster-outlier-detection-success-rate-request-volume"><span class="std std-ref">request volume</span></a>
+in the <a class="reference internal" href="../configuration/cluster_manager/cluster.html#config-cluster-manager-cluster-outlier-detection-interval-ms"><span class="std std-ref">interval</span></a>
+to calculate it</td>
+</tr>
 </tbody>
 </table>
-<dl class="docutils">
+</dd>
 <dt>Host health status</dt>
 <dd><p class="first">A host is either healthy or unhealthy because of one or more different failing health states.
 If the host is healthy the <code class="docutils literal"><span class="pre">healthy</span></code> output will be equal to <em>healthy</em>.</p>
@@ -374,7 +393,7 @@ information.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.3.0-a9bdb7',
+            VERSION:'1.3.0-0f5d9f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
