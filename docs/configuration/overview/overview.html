@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Overview &mdash; envoy 1.3.0-6a7897 documentation</title>
+  <title>Overview &mdash; envoy 1.3.0-55e327 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.3.0-6a7897 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.3.0-55e327 documentation" href="../../index.html"/>
         <link rel="up" title="Configuration reference" href="../configuration.html"/>
         <link rel="next" title="Administration interface" href="admin.html"/>
         <link rel="prev" title="Configuration reference" href="../configuration.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.3.0-6a7897
+                1.3.0-55e327
               </div>
             
           
@@ -186,6 +186,10 @@ specify miscellaneous configuration.</p>
   <span class="nt">&quot;statsd_local_udp_port&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;statsd_tcp_cluster_name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;stats_flush_interval_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;watchdog_miss_timeout_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;watchdog_megamiss_timeout_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;watchdog_kill_timeout_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;watchdog_multikill_timeout_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;tracing&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
   <span class="nt">&quot;rate_limit_service&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
   <span class="nt">&quot;runtime&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
@@ -217,6 +221,20 @@ listener. If specified, Envoy will connect to this cluster to flush <a class="re
 <dd><em>(optional, integer)</em> The time in milliseconds between flushes to configured stats sinks. For
 performance reasons Envoy latches counters and only flushes counters and gauges at a periodic
 interval. If not specified the default is 5000ms (5 seconds).</dd>
+<dt>watchdog_miss_timeout_ms</dt>
+<dd><em>(optional, integer)</em> The time in milliseconds after which Envoy counts a nonresponsive thread in the
+&#8220;server.watchdog_miss&#8221; statistic. If not specified the default is 200ms.</dd>
+<dt>watchdog_megamiss_timeout_ms</dt>
+<dd><em>(optional, integer)</em> The time in milliseconds after which Envoy counts a nonresponsive thread in the
+&#8220;server.watchdog_mega_miss&#8221; statistic. If not specified the default is 1000ms.</dd>
+<dt>watchdog_kill_timeout_ms</dt>
+<dd><em>(optional, integer)</em> If a watched thread has been nonresponsive for this many milliseconds assume
+a programming error and kill the entire Envoy process. Set to 0 to disable kill behavior. If not
+specified the default is 0 (disabled).</dd>
+<dt>watchdog_multikill_timeout_ms</dt>
+<dd><em>(optional, integer)</em> If at least two watched threads have been nonresponsive for at least this many
+milliseconds assume a true deadlock and kill the entire Envoy process. Set to 0 to disable this
+behavior. If not specified the default is 0 (disabled).</dd>
 <dt><a class="reference internal" href="tracing.html#config-tracing"><span class="std std-ref">tracing</span></a></dt>
 <dd><em>(optional, object)</em> Configuration for an external <a class="reference internal" href="../../intro/arch_overview/tracing.html#arch-overview-tracing"><span class="std std-ref">tracing</span></a>
 provider. If not specified, no tracing will be performed.</dd>
@@ -273,7 +291,7 @@ used.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-6a7897',
+            VERSION:'1.3.0-55e327',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
