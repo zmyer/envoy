@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Rate limit &mdash; envoy 1.3.0-4eeaf6 documentation</title>
+  <title>Rate limit &mdash; envoy 1.3.0-8f6635 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.3.0-4eeaf6 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.3.0-8f6635 documentation" href="../../index.html"/>
         <link rel="up" title="HTTP filters" href="http_filters.html"/>
         <link rel="next" title="Router" href="router_filter.html"/>
         <link rel="prev" title="Health check" href="health_check_filter.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.3.0-4eeaf6
+                1.3.0-8f6635
               </div>
             
           
@@ -184,10 +184,11 @@
   <div class="section" id="rate-limit">
 <span id="config-http-filters-rate-limit"></span><h1>Rate limit<a class="headerlink" href="#rate-limit" title="Permalink to this headline">¶</a></h1>
 <p>Global rate limiting <a class="reference internal" href="../../intro/arch_overview/global_rate_limiting.html#arch-overview-rate-limit"><span class="std std-ref">architecture overview</span></a>.</p>
-<p>The HTTP rate limit filter will call the rate limit service when the request&#8217;s route has one or
-more <a class="reference internal" href="../http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-rate-limits"><span class="std std-ref">rate limit configurations</span></a> that match the
-filter stage setting. More than one configuration can apply to a request. Each configuration
-results in a descriptor being sent to the rate limit service.</p>
+<p>The HTTP rate limit filter will call the rate limit service when the request&#8217;s route or virtual host
+has one or more <a class="reference internal" href="../http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-rate-limits"><span class="std std-ref">rate limit configurations</span></a>
+that match the filter stage setting. The <a class="reference internal" href="../http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-include-vh"><span class="std std-ref">route</span></a>
+can optionally include the virtual host rate limit configurations. More than one configuration can
+apply to a request. Each configuration results in a descriptor being sent to the rate limit service.</p>
 <p>If the rate limit service is called, and the response for any of the descriptors is over limit, a
 429 response is returned.</p>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -306,7 +307,7 @@ This can be used to test what would happen before fully enforcing the outcome.</
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-4eeaf6',
+            VERSION:'1.3.0-8f6635',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
