@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Runtime &mdash; envoy 1.3.0-70030e documentation</title>
+  <title>Runtime &mdash; envoy 1.3.0-466986 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.3.0-70030e documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.3.0-466986 documentation" href="../../index.html"/>
         <link rel="up" title="Cluster" href="cluster.html"/>
         <link rel="next" title="Service discovery service" href="sds.html"/>
         <link rel="prev" title="Statistics" href="cluster_stats.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.3.0-70030e
+                1.3.0-466986
               </div>
             
           
@@ -207,7 +207,7 @@ Default value is MAX_INT. The health checking interval will be between <em>min_i
 <span id="config-cluster-manager-cluster-runtime-outlier-detection"></span><h2>Outlier detection<a class="headerlink" href="#outlier-detection" title="Permalink to this headline">¶</a></h2>
 <p>See the outlier detection <a class="reference internal" href="../../intro/arch_overview/outlier.html#arch-overview-outlier-detection"><span class="std std-ref">architecture overview</span></a> for more
 information on outlier detection. The runtime parameters supported by outlier detection are the
-same as the <a class="reference internal" href="cluster.html#config-cluster-manager-cluster-outlier-detection"><span class="std std-ref">static configuration parameters</span></a>, namely</p>
+same as the <a class="reference internal" href="cluster.html#config-cluster-manager-cluster-outlier-detection"><span class="std std-ref">static configuration parameters</span></a>, namely:</p>
 <dl class="docutils">
 <dt>outlier_detection.consecutive_5xx</dt>
 <dd><a class="reference internal" href="cluster.html#config-cluster-manager-cluster-outlier-detection-consecutive-5xx"><span class="std std-ref">consecutive_5XX</span></a>
@@ -232,6 +232,9 @@ setting in outlier detection</dd>
 setting in outlier detection</dd>
 <dt>outlier_detection.success_rate_request_volume</dt>
 <dd><a class="reference internal" href="cluster.html#config-cluster-manager-cluster-outlier-detection-success-rate-request-volume"><span class="std std-ref">success_rate_request_volume</span></a>
+setting in outlier detection</dd>
+<dt>outlier_detection.success_rate_stdev_factor</dt>
+<dd><a class="reference internal" href="cluster.html#config-cluster-manager-cluster-outlier-detection-success-rate-stdev-factor"><span class="std std-ref">success_rate_stdev_factor</span></a>
 setting in outlier detection</dd>
 </dl>
 </div>
@@ -323,7 +326,7 @@ be performed.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-70030e',
+            VERSION:'1.3.0-466986',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
