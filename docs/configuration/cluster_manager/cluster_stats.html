@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Statistics &mdash; envoy 1.3.0-466986 documentation</title>
+  <title>Statistics &mdash; envoy 1.3.0-e56eef documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.3.0-466986 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.3.0-e56eef documentation" href="../../index.html"/>
         <link rel="up" title="Cluster" href="cluster.html"/>
         <link rel="next" title="Runtime" href="cluster_runtime.html"/>
         <link rel="prev" title="TLS context" href="cluster_ssl.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.3.0-466986
+                1.3.0-e56eef
               </div>
             
           
@@ -334,59 +334,63 @@
 <td>Counter</td>
 <td>Total requests cancelled before obtaining a connection pool connection</td>
 </tr>
-<tr class="row-even"><td>upstream_rq_timeout</td>
+<tr class="row-even"><td>upstream_rq_maintenance_mode</td>
+<td>Counter</td>
+<td>Total requests that resulted in an immediate 503 due to <a class="reference internal" href="../http_filters/router_filter.html#config-http-filters-router-runtime-maintenance-mode"><span class="std std-ref">maintenance mode</span></a></td>
+</tr>
+<tr class="row-odd"><td>upstream_rq_timeout</td>
 <td>Counter</td>
 <td>Total requests that timed out waiting for a response</td>
 </tr>
-<tr class="row-odd"><td>upstream_rq_per_try_timeout</td>
+<tr class="row-even"><td>upstream_rq_per_try_timeout</td>
 <td>Counter</td>
 <td>Total requests that hit the per try timeout</td>
 </tr>
-<tr class="row-even"><td>upstream_rq_rx_reset</td>
+<tr class="row-odd"><td>upstream_rq_rx_reset</td>
 <td>Counter</td>
 <td>Total requests that were reset remotely</td>
 </tr>
-<tr class="row-odd"><td>upstream_rq_tx_reset</td>
+<tr class="row-even"><td>upstream_rq_tx_reset</td>
 <td>Counter</td>
 <td>Total requests that were reset locally</td>
 </tr>
-<tr class="row-even"><td>upstream_rq_retry</td>
+<tr class="row-odd"><td>upstream_rq_retry</td>
 <td>Counter</td>
 <td>Total request retries</td>
 </tr>
-<tr class="row-odd"><td>upstream_rq_retry_success</td>
+<tr class="row-even"><td>upstream_rq_retry_success</td>
 <td>Counter</td>
 <td>Total request retry successes</td>
 </tr>
-<tr class="row-even"><td>upstream_rq_retry_overflow</td>
+<tr class="row-odd"><td>upstream_rq_retry_overflow</td>
 <td>Counter</td>
 <td>Total requests not retried due to circuit breaking</td>
 </tr>
-<tr class="row-odd"><td>membership_change</td>
+<tr class="row-even"><td>membership_change</td>
 <td>Counter</td>
 <td>Total cluster membership changes</td>
 </tr>
-<tr class="row-even"><td>membership_healthy</td>
+<tr class="row-odd"><td>membership_healthy</td>
 <td>Gauge</td>
 <td>Current cluster healthy total (inclusive of both health checking and outlier detection)</td>
 </tr>
-<tr class="row-odd"><td>membership_total</td>
+<tr class="row-even"><td>membership_total</td>
 <td>Gauge</td>
 <td>Current cluster membership total</td>
 </tr>
-<tr class="row-even"><td>update_attempt</td>
+<tr class="row-odd"><td>update_attempt</td>
 <td>Counter</td>
 <td>Total cluster membership update attempts</td>
 </tr>
-<tr class="row-odd"><td>update_success</td>
+<tr class="row-even"><td>update_success</td>
 <td>Counter</td>
 <td>Total cluster membership update successes</td>
 </tr>
-<tr class="row-even"><td>update_failure</td>
+<tr class="row-odd"><td>update_failure</td>
 <td>Counter</td>
 <td>Total cluster membership update failures</td>
 </tr>
-<tr class="row-odd"><td>max_host_weight</td>
+<tr class="row-even"><td>max_host_weight</td>
 <td>Gauge</td>
 <td>Maximum weight of any host in the cluster</td>
 </tr>
@@ -676,7 +680,7 @@ the following statistics:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-466986',
+            VERSION:'1.3.0-e56eef',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
