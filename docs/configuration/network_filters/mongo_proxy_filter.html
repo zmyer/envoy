@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Mongo proxy &mdash; envoy 1.3.0-e685bf documentation</title>
+  <title>Mongo proxy &mdash; envoy 1.3.0-6bcf6c documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.3.0-e685bf documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.3.0-6bcf6c documentation" href="../../index.html"/>
         <link rel="up" title="Network filters" href="network_filters.html"/>
         <link rel="next" title="Rate limit" href="rate_limit_filter.html"/>
         <link rel="prev" title="Echo" href="echo_filter.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.3.0-e685bf
+                1.3.0-6bcf6c
               </div>
             
           
@@ -255,39 +255,43 @@ following statistics:</p>
 <td>Counter</td>
 <td>Number of OP_QUERY with exhaust flag set</td>
 </tr>
-<tr class="row-odd"><td>op_query_scatter_get</td>
+<tr class="row-odd"><td>op_query_no_max_time</td>
+<td>Counter</td>
+<td>Number of queries without maxTimeMS set</td>
+</tr>
+<tr class="row-even"><td>op_query_scatter_get</td>
 <td>Counter</td>
 <td>Number of scatter get queries</td>
 </tr>
-<tr class="row-even"><td>op_query_multi_get</td>
+<tr class="row-odd"><td>op_query_multi_get</td>
 <td>Counter</td>
 <td>Number of multi get queries</td>
 </tr>
-<tr class="row-odd"><td>op_query_active</td>
+<tr class="row-even"><td>op_query_active</td>
 <td>Gauge</td>
 <td>Number of active queries</td>
 </tr>
-<tr class="row-even"><td>op_reply</td>
+<tr class="row-odd"><td>op_reply</td>
 <td>Counter</td>
 <td>Number of OP_REPLY messages</td>
 </tr>
-<tr class="row-odd"><td>op_reply_cursor_not_found</td>
+<tr class="row-even"><td>op_reply_cursor_not_found</td>
 <td>Counter</td>
 <td>Number of OP_REPLY with cursor not found flag set</td>
 </tr>
-<tr class="row-even"><td>op_reply_query_failure</td>
+<tr class="row-odd"><td>op_reply_query_failure</td>
 <td>Counter</td>
 <td>Number of OP_REPLY with query failure flag set</td>
 </tr>
-<tr class="row-odd"><td>op_reply_valid_cursor</td>
+<tr class="row-even"><td>op_reply_valid_cursor</td>
 <td>Counter</td>
 <td>Number of OP_REPLY with a valid cursor</td>
 </tr>
-<tr class="row-even"><td>cx_destroy_local_with_active_rq</td>
+<tr class="row-odd"><td>cx_destroy_local_with_active_rq</td>
 <td>Counter</td>
 <td>Connections destroyed locally with an active query</td>
 </tr>
-<tr class="row-odd"><td>cx_destroy_remote_with_active_rq</td>
+<tr class="row-even"><td>cx_destroy_remote_with_active_rq</td>
 <td>Counter</td>
 <td>Connections destroyed remotely with an active query</td>
 </tr>
@@ -480,7 +484,7 @@ filter is used along with the <a class="reference internal" href="tcp_proxy_filt
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-e685bf',
+            VERSION:'1.3.0-6bcf6c',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
