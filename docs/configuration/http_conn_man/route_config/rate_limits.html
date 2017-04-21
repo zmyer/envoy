@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Rate limit configuration &mdash; envoy 1.3.0-8c2b17 documentation</title>
+  <title>Rate limit configuration &mdash; envoy 1.3.0-995abf documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.3.0-8c2b17 documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.3.0-995abf documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Route matching" href="route_matching.html"/>
         <link rel="prev" title="Virtual cluster" href="vcluster.html"/> 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                1.3.0-8c2b17
+                1.3.0-995abf
               </div>
             
           
@@ -321,6 +321,7 @@ address from <a class="reference internal" href="../headers.html#config-http-con
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;header_value_match&quot;</span><span class="p">,</span>
   <span class="nt">&quot;descriptor_value&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;expect_match&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;headers&quot;</span> <span class="p">:</span> <span class="p">[]</span>
 <span class="p">}</span>
 </pre></div>
@@ -328,17 +329,21 @@ address from <a class="reference internal" href="../headers.html#config-http-con
 <dl class="docutils">
 <dt>descriptor_value</dt>
 <dd><em>(required, string)</em> The value to use in the descriptor entry.</dd>
+<dt>expect_match</dt>
+<dd><em>(optional, boolean)</em> If set to true, the action will append a descriptor entry when the request
+matches the <a class="reference internal" href="route.html#config-http-conn-man-route-table-route-headers"><span class="std std-ref">headers</span></a>. If set to false,
+the action will append a descriptor entry when the request does not match the
+<a class="reference internal" href="route.html#config-http-conn-man-route-table-route-headers"><span class="std std-ref">headers</span></a>. The default value is true.</dd>
 <dt><a class="reference internal" href="route.html#config-http-conn-man-route-table-route-headers"><span class="std std-ref">headers</span></a></dt>
 <dd><em>(required, array)</em> Specifies a set of headers that the rate limit action should match on. The
 action will check the request&#8217;s headers against all the specified headers in the config. A match
 will happen if all the headers in the config are present in the request with the same values (or
 based on presence if the <code class="docutils literal"><span class="pre">value</span></code> field is not in the config).</dd>
 </dl>
-<p>The following descriptor entry is appended to the descriptor if the request matches the headers
-specified in the action config:</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s">&quot;header_match&quot;</span><span class="p">,</span> <span class="s">&quot;&lt;descriptor_value&gt;&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<p>The following descriptor entry is appended to the descriptor:
+.. code-block:: cpp</p>
+<blockquote>
+<div>(&#8220;header_match&#8221;, &#8220;&lt;descriptor_value&gt;&#8221;)</div></blockquote>
 </div>
 </div>
 <div class="section" id="composing-actions">
@@ -443,7 +448,7 @@ the following descriptor is generated:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.3.0-8c2b17',
+            VERSION:'1.3.0-995abf',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
