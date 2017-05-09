@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Health checking &mdash; envoy 1.3.0-e91e1f documentation</title>
+  <title>Health checking &mdash; envoy 1.3.0-1a7b0f documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.3.0-e91e1f documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.3.0-1a7b0f documentation" href="../../index.html"/>
         <link rel="up" title="Cluster" href="cluster.html"/>
         <link rel="next" title="Circuit breakers" href="cluster_circuit_breakers.html"/>
         <link rel="prev" title="Cluster" href="cluster.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                1.3.0-e91e1f
+                1.3.0-1a7b0f
               </div>
             
           
@@ -239,17 +239,19 @@ HTTP path that will be requested during health checking. For example <em>/health
 <dd><p class="first"><em>(sometimes required, array)</em> This parameter is required if the type is <em>tcp</em>. It specifies
 the bytes to send for a health check request. It is an array of hex byte strings specified
 as in the following example:</p>
-<div class="last highlight-json"><div class="highlight"><pre><span></span><span class="p">[</span>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">[</span>
   <span class="p">{</span><span class="nt">&quot;binary&quot;</span><span class="p">:</span> <span class="s2">&quot;01&quot;</span><span class="p">},</span>
   <span class="p">{</span><span class="nt">&quot;binary&quot;</span><span class="p">:</span> <span class="s2">&quot;000000FF&quot;</span><span class="p">}</span>
 <span class="p">]</span>
 </pre></div>
 </div>
+<p class="last">The array is allowed to be empty in the case of &#8220;connect only&#8221; health checking.</p>
 </dd>
 <dt>receive</dt>
 <dd><em>(sometimes required, array)</em> This parameter is required if the type is <em>tcp</em>. It specified the
 bytes that are expected in a successful health check response. It is an array of hex byte strings
-specified similarly to the <em>send</em> parameter.</dd>
+specified similarly to the <em>send</em> parameter. The array is allowed to be empty in the case of
+&#8220;connect only&#8221; health checking.</dd>
 <dt>interval_jitter_ms</dt>
 <dd><em>(optional, integer)</em> An optional jitter amount in millseconds. If specified, during every
 internal Envoy will add 0 to <em>interval_jitter_ms</em> milliseconds to the wait time.</dd>
@@ -305,6 +307,9 @@ would still pass. This is done to support protocols that insert non-deterministi
 time, into the response.</p>
 <p>Health checks that require a more complex pattern such as send/receive/send/receive are not
 currently possible.</p>
+<p>If &#8220;receive&#8221; is an empty array, Envoy will perform &#8220;connect only&#8221; TCP health checking. During each
+cycle, Envoy will attempt to connect to the upstream host, and consider it a success if the
+connection succeeds. A new connection is created for each health check cycle.</p>
 </div>
 </div>
 
@@ -352,7 +357,7 @@ currently possible.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-e91e1f',
+            VERSION:'1.3.0-1a7b0f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
