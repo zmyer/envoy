@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Sandboxes &mdash; envoy 1.4.0-34d308 documentation</title>
+  <title>Front Proxy &mdash; envoy 1.4.0-115434 documentation</title>
   
 
   
@@ -26,22 +26,22 @@
 
   
   
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   
 
   
 
   
         <link rel="index" title="Index"
-              href="../genindex.html"/>
-        <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="envoy 1.4.0-34d308 documentation" href="../index.html"/>
-        <link rel="up" title="Building and installation" href="install.html"/>
-        <link rel="next" title="Route Table Check Tool" href="tools.html"/>
-        <link rel="prev" title="Reference configurations" href="ref_configs.html"/> 
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="envoy 1.4.0-115434 documentation" href="../../index.html"/>
+        <link rel="up" title="Sandboxes" href="sandboxes.html"/>
+        <link rel="next" title="Zipkin Tracing" href="zipkin_tracing.html"/>
+        <link rel="prev" title="Sandboxes" href="sandboxes.html"/> 
 
   
-  <script src="../_static/js/modernizr.min.js"></script>
+  <script src="../../_static/js/modernizr.min.js"></script>
 
 </head>
 
@@ -57,7 +57,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> envoy
+            <a href="../../index.html" class="icon icon-home"> envoy
           
 
           
@@ -67,14 +67,14 @@
             
             
               <div class="version">
-                1.4.0-34d308
+                1.4.0-115434
               </div>
             
           
 
           
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -92,34 +92,29 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../about_docs.html">About the documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../intro/intro.html">Introduction</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="install.html">Building and installation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="requirements.html">Requirements</a></li>
-<li class="toctree-l2"><a class="reference internal" href="building.html">Building</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ref_configs.html">Reference configurations</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Sandboxes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#front-proxy">Front Proxy</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../about_docs.html">About the documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/intro.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../install.html">Building and installation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../requirements.html">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../building.html">Building</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref_configs.html">Reference configurations</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="sandboxes.html">Sandboxes</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Front Proxy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#running-the-sandbox">Running the Sandbox</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#grpc-bridge">gRPC bridge</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#envoy-grpc">Envoy gRPC</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#building-the-go-service">Building the Go service</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id1">Docker compose</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#sending-requests-to-the-key-value-store">Sending requests to the Key/Value store</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zipkin_tracing.html">Zipkin Tracing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="grpc_bridge.html">gRPC Bridge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="local_docker_build.html">Building an Envoy Docker image</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#locally-building-a-docker-image-with-an-envoy-binary">Locally building a docker image with an envoy binary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools.html">Route Table Check Tool</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="tools.html">Route Table Check Tool</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../configuration/configuration.html">Configuration reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../operations/operations.html">Operations and administration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../extending/extending.html">Extending Envoy for custom use cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../configuration/configuration.html">Configuration reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../operations/operations.html">Operations and administration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../extending/extending.html">Extending Envoy for custom use cases</a></li>
 </ul>
 
             
@@ -134,7 +129,7 @@
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">envoy</a>
+          <a href="../../index.html">envoy</a>
         
       </nav>
 
@@ -162,17 +157,19 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="install.html">Building and installation</a> &raquo;</li>
+          <li><a href="../install.html">Building and installation</a> &raquo;</li>
         
-      <li>Sandboxes</li>
+          <li><a href="sandboxes.html">Sandboxes</a> &raquo;</li>
+        
+      <li>Front Proxy</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/install/sandboxes.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/install/sandboxes/front_proxy.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -185,20 +182,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="sandboxes">
-<span id="install-sandboxes"></span><h1>Sandboxes<a class="headerlink" href="#sandboxes" title="Permalink to this headline">¶</a></h1>
-<p>The docker-compose sandboxes give you different environments to test out Envoy&#8217;s
-features. As we gauge people&#8217;s interests we will add more sandboxes demonstrating
-different features.</p>
-<div class="section" id="front-proxy">
-<h2>Front Proxy<a class="headerlink" href="#front-proxy" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="front-proxy">
+<span id="install-sandboxes-front-proxy"></span><h1>Front Proxy<a class="headerlink" href="#front-proxy" title="Permalink to this headline">¶</a></h1>
 <p>To get a flavor of what Envoy has to offer as a front proxy, we are releasing a
 <a class="reference external" href="https://docs.docker.com/compose/">docker compose</a> sandbox that deploys a front
 envoy and a couple of services (simple flask apps) colocated with a running
 service envoy. The three containers will be deployed inside a virtual network
 called <code class="docutils literal"><span class="pre">envoymesh</span></code>.</p>
 <p>Below you can see a graphic showing the docker compose deployment:</p>
-<a class="reference internal image-reference" href="../_images/docker_compose_v0.1.svg"><img alt="../_images/docker_compose_v0.1.svg" src="../_images/docker_compose_v0.1.svg" width="100%" /></a>
+<a class="reference internal image-reference" href="../../_images/docker_compose_v0.1.svg"><img alt="../../_images/docker_compose_v0.1.svg" src="../../_images/docker_compose_v0.1.svg" width="100%" /></a>
 <p>All incoming requests are routed via the front envoy, which is acting as a reverse proxy sitting on
 the edge of the <code class="docutils literal"><span class="pre">envoymesh</span></code> network. Port <code class="docutils literal"><span class="pre">80</span></code> is mapped to  port <code class="docutils literal"><span class="pre">8000</span></code> by docker compose
 (see <a class="reference external" href="https://github.com/lyft/envoy/blob/master//examples/front-proxy/docker-compose.yml">/examples/front-proxy/docker-compose.yml</a>). Moreover, notice
@@ -209,7 +201,7 @@ envoys route the  request to the flask app via the loopback address (routes setu
 illustrates the advantage of running service envoys  collocated with your services: all requests are
 handled by the service envoy, and efficiently routed to your services.</p>
 <div class="section" id="running-the-sandbox">
-<h3>Running the Sandbox<a class="headerlink" href="#running-the-sandbox" title="Permalink to this headline">¶</a></h3>
+<h2>Running the Sandbox<a class="headerlink" href="#running-the-sandbox" title="Permalink to this headline">¶</a></h2>
 <p>The following documentation runs through the setup of an envoy cluster organized
 as is described in the image above.</p>
 <p><strong>Step 1: Install Docker</strong></p>
@@ -399,83 +391,6 @@ fulfilled by them, information about http ingress, and a plethora of other usefu
 stats.</p>
 </div>
 </div>
-<div class="section" id="grpc-bridge">
-<h2>gRPC bridge<a class="headerlink" href="#grpc-bridge" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="envoy-grpc">
-<h3>Envoy gRPC<a class="headerlink" href="#envoy-grpc" title="Permalink to this headline">¶</a></h3>
-<p>The gRPC bridge sandbox is an example usage of Envoy&#8217;s
-<a class="reference internal" href="../configuration/http_filters/grpc_http1_bridge_filter.html#config-http-filters-grpc-bridge"><span class="std std-ref">gRPC bridge filter</span></a>.
-Included in the sandbox is a gRPC in memory Key/Value store with a Python HTTP
-client. The Python client makes HTTP/1 requests through the Envoy sidecar
-process which are upgraded into HTTP/2 gRPC requests. Response trailers are then
-buffered and sent back to the client as a HTTP/1 header payload.</p>
-<p>Another Envoy feature demonstrated in this example is Envoy&#8217;s ability to do authority
-base routing via its route configuration.</p>
-</div>
-<div class="section" id="building-the-go-service">
-<h3>Building the Go service<a class="headerlink" href="#building-the-go-service" title="Permalink to this headline">¶</a></h3>
-<p>To build the Go gRPC service run:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ pwd
-~/src/envoy/examples/grpc-bridge
-$ script/bootstrap
-$ script/build
-</pre></div>
-</div>
-</div>
-<div class="section" id="id1">
-<h3>Docker compose<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<p>To run the docker compose file, and set up both the Python and the gRPC containers
-run:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ pwd
-~/src/envoy/examples/grpc-bridge
-$ docker-compose up --build
-</pre></div>
-</div>
-</div>
-<div class="section" id="sending-requests-to-the-key-value-store">
-<h3>Sending requests to the Key/Value store<a class="headerlink" href="#sending-requests-to-the-key-value-store" title="Permalink to this headline">¶</a></h3>
-<p>To use the python service and sent gRPC requests:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ pwd
-~/src/envoy/examples/grpc-bridge
-# set a key
-$ docker-compose exec python /client/client.py set foo bar
-setf foo to bar
-
-# get a key
-$ docker-compose exec python /client/client.py get foo
-bar
-</pre></div>
-</div>
-</div>
-</div>
-<div class="section" id="locally-building-a-docker-image-with-an-envoy-binary">
-<h2>Locally building a docker image with an envoy binary<a class="headerlink" href="#locally-building-a-docker-image-with-an-envoy-binary" title="Permalink to this headline">¶</a></h2>
-<p>The following steps guide you through building your own envoy binary, and
-putting that in a clean ubuntu container.</p>
-<p><strong>Step 1: Build Envoy</strong></p>
-<p>Using <code class="docutils literal"><span class="pre">lyft/envoy-build</span></code> you will compile envoy.
-This image has all software needed to build envoy. From your envoy directory:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ pwd
-src/envoy
-$ ./ci/run_envoy_docker.sh &#39;./ci/do_ci.sh bazel.dev&#39;
-</pre></div>
-</div>
-<p>That command will take some time to run because it is compiling an envoy binary and running tests.</p>
-<p>For more information on building and different build targets, please refer to <a class="reference external" href="https://github.com/lyft/envoy/blob/master/ci/README.md">ci/README.md</a>.</p>
-<p><strong>Step 2: Build image with only envoy binary</strong></p>
-<p>In this step we&#8217;ll build an image that only has the envoy binary, and none
-of the software used to build it.:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ pwd
-src/envoy/
-$ docker build -f ci/Dockerfile-envoy-image -t envoy .
-</pre></div>
-</div>
-<p>Now you can use this <code class="docutils literal"><span class="pre">envoy</span></code> image to build the any of the sandboxes if you change
-the <code class="docutils literal"><span class="pre">FROM</span></code> line in any dockerfile.</p>
-<p>This will be particularly useful if you are interested in modifying envoy, and testing
-your changes.</p>
-</div>
-</div>
 
 
            </div>
@@ -487,10 +402,10 @@ your changes.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="tools.html" class="btn btn-neutral float-right" title="Route Table Check Tool" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="zipkin_tracing.html" class="btn btn-neutral float-right" title="Zipkin Tracing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="ref_configs.html" class="btn btn-neutral" title="Reference configurations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="sandboxes.html" class="btn btn-neutral" title="Sandboxes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -520,23 +435,23 @@ your changes.</p>
 
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'1.4.0-34d308',
+            URL_ROOT:'../../',
+            VERSION:'1.4.0-115434',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
             SOURCELINK_SUFFIX: '.txt'
         };
     </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
 
   
 
   
   
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
   
 
   
