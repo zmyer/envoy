@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gRPC &mdash; envoy 1.4.0-3a466c documentation</title>
+  <title>gRPC &mdash; envoy 1.4.0-20bf9e documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.4.0-3a466c documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.4.0-20bf9e documentation" href="../../index.html"/>
         <link rel="up" title="Architecture overview" href="arch_overview.html"/>
         <link rel="next" title="Cluster manager" href="cluster_manager.html"/>
         <link rel="prev" title="HTTP routing" href="http_routing.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                1.4.0-3a466c
+                1.4.0-20bf9e
               </div>
             
           
@@ -217,6 +217,9 @@ HTTP/1.1. Envoy then translates the requests to HTTP/2 for transport to the targ
 The response is translated back to HTTP/1.1.</li>
 <li>When installed, the bridge filter gathers per RPC statistics in addition to the standard array
 of global HTTP statistics.</li>
+<li>gRPC-Web is supported by a <a class="reference internal" href="../../configuration/http_filters/grpc_web_filter.html#config-http-filters-grpc-web"><span class="std std-ref">filter</span></a> that allows a gRPC-Web
+client to send requests to Envoy over HTTP/1.1 and get proxied to a gRPC server. It&#8217;s under
+active development and is expected to be the successor to the gRPC <a class="reference internal" href="../../configuration/http_filters/grpc_http1_bridge_filter.html#config-http-filters-grpc-bridge"><span class="std std-ref">bridge filter</span></a>.</li>
 </ul>
 </div>
 
@@ -264,7 +267,7 @@ of global HTTP statistics.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.4.0-3a466c',
+            VERSION:'1.4.0-20bf9e',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
