@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Cluster &mdash; envoy 1.4.0-0791ec documentation</title>
+  <title>Cluster &mdash; envoy 1.4.0-fd81bd documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.4.0-0791ec documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.4.0-fd81bd documentation" href="../../index.html"/>
         <link rel="up" title="Cluster manager" href="cluster_manager.html"/>
         <link rel="next" title="Health checking" href="cluster_hc.html"/>
         <link rel="prev" title="Cluster manager" href="cluster_manager.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                1.4.0-0791ec
+                1.4.0-fd81bd
               </div>
             
           
@@ -206,6 +206,7 @@
   <span class="nt">&quot;features&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;http_codec_options&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;dns_refresh_rate_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;dns_lookup_family&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;outlier_detection&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -315,6 +316,16 @@ or <em>logical_dns</em>, this value is used as the cluster&#8217;s dns refresh r
 the value defaults to 5000. For cluster types other than <em>strict_dns</em> and <em>logical_dns</em> this setting is
 ignored.</dd>
 </dl>
+<dl class="docutils" id="config-cluster-manager-cluster-dns-lookup-family">
+<dt>dns_lookup_family</dt>
+<dd><em>(optional, string)</em> The DNS IP address resolution policy. The options are <em>v4_only</em>, <em>v6_only</em>,
+and <em>auto</em>. If this setting is not specified, the value defaults to <em>v4_only</em>. When <em>v4_only</em> is selected,
+the DNS resolver will only perform a lookup for addresses in the IPv4 family. If <em>v6_only</em> is selected,
+the DNS resolver will only perform a lookup for addresses in the IPv6 family. If <em>auto</em> is specified,
+the DNS resolver will first perform a lookup for addresses in the IPv6 family and fallback to a lookup for
+addresses in the IPv4 family. For cluster types other than <em>strict_dns</em> and <em>logical_dns</em>, this setting
+is ignored.</dd>
+</dl>
 <dl class="docutils" id="config-cluster-manager-cluster-outlier-detection">
 <dt>outlier_detection</dt>
 <dd><p class="first"><em>(optional, object)</em> If specified, outlier detection will be enabled for this upstream cluster.
@@ -423,7 +434,7 @@ Defaults to 1900.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.4.0-0791ec',
+            VERSION:'1.4.0-fd81bd',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
