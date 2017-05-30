@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>TLS context &mdash; envoy 1.4.0-fc5b5d documentation</title>
+  <title>Outlier detection &mdash; envoy 1.4.0-fc5b5d documentation</title>
   
 
   
@@ -37,8 +37,8 @@
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="envoy 1.4.0-fc5b5d documentation" href="../../index.html"/>
         <link rel="up" title="Cluster" href="cluster.html"/>
-        <link rel="next" title="Statistics" href="cluster_stats.html"/>
-        <link rel="prev" title="Circuit breakers" href="cluster_circuit_breakers.html"/> 
+        <link rel="next" title="Service discovery service" href="sds.html"/>
+        <link rel="prev" title="Runtime" href="cluster_runtime.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -105,10 +105,10 @@
 <li class="toctree-l3 current"><a class="reference internal" href="cluster.html">Cluster</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="cluster_hc.html">Health checking</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cluster_circuit_breakers.html">Circuit breakers</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">TLS context</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cluster_ssl.html">TLS context</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cluster_stats.html">Statistics</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cluster_runtime.html">Runtime</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cluster_outlier_detection.html">Outlier detection</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Outlier detection</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="sds.html">Service discovery service</a></li>
@@ -173,13 +173,13 @@
         
           <li><a href="cluster.html">Cluster</a> &raquo;</li>
         
-      <li>TLS context</li>
+      <li>Outlier detection</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/configuration/cluster_manager/cluster_ssl.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/configuration/cluster_manager/cluster_outlier_detection.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -192,79 +192,78 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="tls-context">
-<span id="config-cluster-manager-cluster-ssl"></span><h1>TLS context<a class="headerlink" href="#tls-context" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="outlier-detection">
+<span id="config-cluster-manager-cluster-outlier-detection"></span><h1>Outlier detection<a class="headerlink" href="#outlier-detection" title="Permalink to this headline">¶</a></h1>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;alpn_protocols&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;cert_chain_file&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;private_key_file&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;ca_cert_file&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;verify_certificate_hash&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;verify_subject_alt_name&quot;</span><span class="p">:</span> <span class="p">[],</span>
-  <span class="nt">&quot;cipher_suites&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;ecdh_curves&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;sni&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
+  <span class="nt">&quot;consecutive_5xx&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;interval_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;base_ejection_time_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;max_ejection_percent&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;enforcing_consecutive_5xx&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;enforcing_success_rate&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;success_rate_minimum_hosts&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;success_rate_request_volume&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;success_rate_stdev_factor&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<dl class="docutils">
-<dt>alpn_protocols</dt>
-<dd><p class="first"><em>(optional, string)</em> Supplies the list of ALPN protocols that connections should request. In
-practice this is likely to be set to a single value or not set at all:</p>
-<ul class="last simple">
-<li>&#8220;h2&#8221; If upstream connections should use HTTP/2. In the current implementation this must be set
-alongside the <em>http2</em> cluster <a class="reference internal" href="cluster.html#config-cluster-manager-cluster-features"><span class="std std-ref">features</span></a> option.
-The two options together will use ALPN to tell a server that expects ALPN that Envoy supports
-HTTP/2. Then the <em>http2</em> feature will cause new connections to use HTTP/2.</li>
-</ul>
-</dd>
-<dt>cert_chain_file</dt>
-<dd><em>(optional, string)</em> The certificate chain file that should be served by the connection. This is
-used to provide a client side TLS certificate to an upstream host.</dd>
-<dt>private_key_file</dt>
-<dd><em>(optional, string)</em> The private key that corresponds to the certificate chain file.</dd>
-<dt>ca_cert_file</dt>
-<dd><em>(optional, string)</em> A file containing certificate authority certificates to use in verifying
-a presented server certificate.</dd>
-<dt>verify_certificate_hash</dt>
-<dd><em>(optional, string)</em> If specified, Envoy will verify (pin) the hash of the presented server
-certificate.</dd>
-<dt>verify_subject_alt_name</dt>
-<dd><em>(optional, array)</em> An optional list of subject alt names. If specified, Envoy will verify
-that the server certificate&#8217;s subject alt name matches one of the specified values.</dd>
-<dt>cipher_suites</dt>
-<dd><em>(optional, string)</em> If specified, the TLS connection will only support the specified <a class="reference external" href="https://commondatastorage.googleapis.com/chromium-boringssl-docs/ssl.h.html#Cipher-suite-configuration">cipher list</a>.
-If not specified, the default list:</dd>
+<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection-consecutive-5xx">
+<dt>consecutive_5xx</dt>
+<dd><em>(optional, integer)</em> The number of consecutive 5xx responses before a consecutive 5xx ejection occurs. Defaults to 5.</dd>
 </dl>
-<div class="highlight-none"><div class="highlight"><pre><span></span>[ECDHE-ECDSA-AES128-GCM-SHA256|ECDHE-ECDSA-CHACHA20-POLY1305]
-[ECDHE-RSA-AES128-GCM-SHA256|ECDHE-RSA-CHACHA20-POLY1305]
-ECDHE-ECDSA-AES128-SHA256
-ECDHE-RSA-AES128-SHA256
-ECDHE-ECDSA-AES128-SHA
-ECDHE-RSA-AES128-SHA
-AES128-GCM-SHA256
-AES128-SHA256
-AES128-SHA
-ECDHE-ECDSA-AES256-GCM-SHA384
-ECDHE-RSA-AES256-GCM-SHA384
-ECDHE-ECDSA-AES256-SHA384
-ECDHE-RSA-AES256-SHA384
-ECDHE-ECDSA-AES256-SHA
-ECDHE-RSA-AES256-SHA
-AES256-GCM-SHA384
-AES256-SHA256
-AES256-SHA
-</pre></div>
-</div>
-<p>will be used.</p>
-<dl class="docutils">
-<dt>ecdh_curves</dt>
-<dd><em>(optional, string)</em> If specified, the TLS connection will only support the specified ECDH curves.
-If not specified, the default curves (X25519, P-256) will be used.</dd>
-<dt>sni</dt>
-<dd><em>(optional, string)</em> If specified, the string will be presented as the SNI during the TLS
-handshake.</dd>
+<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection-interval-ms">
+<dt>interval_ms</dt>
+<dd><em>(optional, integer)</em> The time interval between ejection analysis sweeps. This can result in both new ejections as well
+as hosts being returned to service. Defaults to 10000ms or 10s.</dd>
 </dl>
+<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection-base-ejection-time-ms">
+<dt>base_ejection_time_ms</dt>
+<dd><em>(optional, integer)</em> The base time that a host is ejected for. The real time is equal to the base time multiplied by
+the number of times the host has been ejected. Defaults to 30000ms or 30s.</dd>
+</dl>
+<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection-max-ejection-percent">
+<dt>max_ejection_percent</dt>
+<dd><em>(optional, integer)</em> The maximum % of hosts in an upstream cluster that can be ejected due to outlier detection.
+Defaults to 10%.</dd>
+</dl>
+<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection-enforcing-consecutive-5xx">
+<dt>enforcing_consecutive_5xx</dt>
+<dd><em>(optional, integer)</em> The % chance that a host will be actually ejected when an outlier status is detected through
+consecutive 5xx. This setting can be used to disable ejection or to ramp it up slowly.
+Defaults to 100 with 1% granularity.</dd>
+</dl>
+<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection-enforcing-success-rate">
+<dt>enforcing_success_rate</dt>
+<dd><em>(optional, integer)</em> The % chance that a host will be actually ejected when an outlier status is detected through
+success rate statistics. This setting can be used to disable ejection or to ramp it up slowly.
+Defaults to 100 with 1% granularity.</dd>
+</dl>
+<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection-success-rate-minimum-hosts">
+<dt>success_rate_minimum_hosts</dt>
+<dd><em>(optional, integer)</em> The number of hosts in a cluster that must have enough request volume to detect success rate outliers.
+If the number of hosts is less than this setting, outlier detection via success rate statistics is not
+performed for any host in the cluster. Defaults to 5.</dd>
+</dl>
+<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection-success-rate-request-volume">
+<dt>success_rate_request_volume</dt>
+<dd><em>(optional, integer)</em> The minimum number of total requests that must be collected in one interval
+(as defined by <a class="reference internal" href="#config-cluster-manager-cluster-outlier-detection-interval-ms"><span class="std std-ref">interval_ms</span></a> above)
+to include this host in success rate based outlier detection. If the volume is lower than this setting,
+outlier detection via success rate statistics is not performed for that host. Defaults to 100.</dd>
+</dl>
+<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection-success-rate-stdev-factor">
+<dt>success_rate_stdev_factor</dt>
+<dd><em>(optional, integer)</em> This factor is used to determine the ejection threshold for success rate outlier ejection.
+The ejection threshold is used as a measure to determine when a particular host has fallen below an acceptable
+success rate.
+The ejection threshold is the difference between the mean success rate, and the product of
+this factor and the standard deviation of the mean success rate:
+<code class="docutils literal"><span class="pre">mean</span> <span class="pre">-</span> <span class="pre">(stdev</span> <span class="pre">*</span> <span class="pre">success_rate_stdev_factor)</span></code>. This factor is divided by a thousand to
+get a <code class="docutils literal"><span class="pre">double</span></code>. That is, if the desired factor is <code class="docutils literal"><span class="pre">1.9</span></code>, the runtime value should be <code class="docutils literal"><span class="pre">1900</span></code>.
+Defaults to 1900.</dd>
+</dl>
+<p>Each of the above configuration values can be overridden via
+<a class="reference internal" href="cluster_runtime.html#config-cluster-manager-cluster-runtime-outlier-detection"><span class="std std-ref">runtime values</span></a>.</p>
 </div>
 
 
@@ -277,10 +276,10 @@ handshake.</dd>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="cluster_stats.html" class="btn btn-neutral float-right" title="Statistics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="sds.html" class="btn btn-neutral float-right" title="Service discovery service" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="cluster_circuit_breakers.html" class="btn btn-neutral" title="Circuit breakers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="cluster_runtime.html" class="btn btn-neutral" title="Runtime" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

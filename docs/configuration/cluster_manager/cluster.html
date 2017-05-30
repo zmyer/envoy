@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Cluster &mdash; envoy 1.4.0-b693c1 documentation</title>
+  <title>Cluster &mdash; envoy 1.4.0-fc5b5d documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.4.0-b693c1 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.4.0-fc5b5d documentation" href="../../index.html"/>
         <link rel="up" title="Cluster manager" href="cluster_manager.html"/>
         <link rel="next" title="Health checking" href="cluster_hc.html"/>
         <link rel="prev" title="Cluster manager" href="cluster_manager.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                1.4.0-b693c1
+                1.4.0-fc5b5d
               </div>
             
           
@@ -108,6 +108,7 @@
 <li class="toctree-l4"><a class="reference internal" href="cluster_ssl.html">TLS context</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cluster_stats.html">Statistics</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cluster_runtime.html">Runtime</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cluster_outlier_detection.html">Outlier detection</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="sds.html">Service discovery service</a></li>
@@ -325,66 +326,10 @@ the DNS resolver will only perform a lookup for addresses in the IPv6 family. If
 the DNS resolver will first perform a lookup for addresses in the IPv6 family and fallback to a lookup for
 addresses in the IPv4 family. For cluster types other than <em>strict_dns</em> and <em>logical_dns</em>, this setting
 is ignored.</dd>
-</dl>
-<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection">
-<dt>outlier_detection</dt>
-<dd><p class="first"><em>(optional, object)</em> If specified, outlier detection will be enabled for this upstream cluster.
+<dt><a class="reference internal" href="cluster_outlier_detection.html#config-cluster-manager-cluster-outlier-detection"><span class="std std-ref">outlier_detection</span></a></dt>
+<dd><em>(optional, object)</em> If specified, outlier detection will be enabled for this upstream cluster.
 See the <a class="reference internal" href="../../intro/arch_overview/outlier.html#arch-overview-outlier-detection"><span class="std std-ref">architecture overview</span></a> for more information on outlier
-detection. The following configuration values are supported:</p>
-<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection-consecutive-5xx">
-<dt>consecutive_5xx</dt>
-<dd>The number of consecutive 5xx responses before a consecutive 5xx ejection occurs. Defaults to 5.</dd>
-</dl>
-<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection-interval-ms">
-<dt>interval_ms</dt>
-<dd>The time interval between ejection analysis sweeps. This can result in both new ejections as well
-as hosts being returned to service. Defaults to 10000ms or 10s.</dd>
-</dl>
-<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection-base-ejection-time-ms">
-<dt>base_ejection_time_ms</dt>
-<dd>The base time that a host is ejected for. The real time is equal to the base time multiplied by
-the number of times the host has been ejected. Defaults to 30000ms or 30s.</dd>
-</dl>
-<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection-max-ejection-percent">
-<dt>max_ejection_percent</dt>
-<dd>The maximum % of an upstream cluster that can be ejected due to outlier detection. Defaults to 10%.</dd>
-</dl>
-<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection-enforcing-consecutive-5xx">
-<dt>enforcing_consecutive_5xx</dt>
-<dd>The % chance that a host will be actually ejected when an outlier status is detected through
-consecutive 5xx. This setting can be used to disable ejection or to ramp it up slowly. Defaults to 100.</dd>
-</dl>
-<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection-enforcing-success-rate">
-<dt>enforcing_success_rate</dt>
-<dd>The % chance that a host will be actually ejected when an outlier status is detected through
-success rate statistics. This setting can be used to disable ejection or to ramp it up slowly.
-Defaults to 100.</dd>
-</dl>
-<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection-success-rate-minimum-hosts">
-<dt>success_rate_minimum_hosts</dt>
-<dd>The number of hosts in a cluster that must have enough request volume to detect success rate outliers.
-If the number of hosts is less than this setting, outlier detection via success rate statistics is not
-performed for any host in the cluster. Defaults to 5.</dd>
-</dl>
-<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection-success-rate-request-volume">
-<dt>success_rate_request_volume</dt>
-<dd>The minimum number of total requests that must be collected in one interval
-(as defined by <a class="reference internal" href="#config-cluster-manager-cluster-outlier-detection-interval-ms"><span class="std std-ref">interval_ms</span></a> above)
-to include this host in success rate based outlier detection. If the volume is lower than this setting,
-outlier detection via success rate statistics is not performed for that host. Defaults to 100.</dd>
-</dl>
-<dl class="docutils" id="config-cluster-manager-cluster-outlier-detection-success-rate-stdev-factor">
-<dt>success_rate_stdev_factor</dt>
-<dd>This factor is used to determine the ejection threshold for success rate outlier ejection.
-The ejection threshold is the difference between the mean success rate, and the product of
-this factor and the standard deviation of the mean success rate:
-<code class="docutils literal"><span class="pre">mean</span> <span class="pre">-</span> <span class="pre">(stdev</span> <span class="pre">*</span> <span class="pre">success_rate_stdev_factor)</span></code>. This factor is divided by a thousand to
-get a <code class="docutils literal"><span class="pre">double</span></code>. That is, if the desired factor is <code class="docutils literal"><span class="pre">1.9</span></code>, the runtime value should be <code class="docutils literal"><span class="pre">1900</span></code>.
-Defaults to 1900.</dd>
-</dl>
-<p class="last">Each of the above configuration values can be overridden via
-<a class="reference internal" href="cluster_runtime.html#config-cluster-manager-cluster-runtime-outlier-detection"><span class="std std-ref">runtime values</span></a>.</p>
-</dd>
+detection.</dd>
 </dl>
 <div class="toctree-wrapper compound">
 </div>
@@ -434,7 +379,7 @@ Defaults to 1900.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.4.0-b693c1',
+            VERSION:'1.4.0-fc5b5d',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
