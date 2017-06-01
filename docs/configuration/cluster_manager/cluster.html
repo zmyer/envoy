@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Cluster &mdash; envoy 1.4.0-fc5b5d documentation</title>
+  <title>Cluster &mdash; envoy 1.4.0-ea46f1 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.4.0-fc5b5d documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.4.0-ea46f1 documentation" href="../../index.html"/>
         <link rel="up" title="Cluster manager" href="cluster_manager.html"/>
         <link rel="next" title="Health checking" href="cluster_hc.html"/>
         <link rel="prev" title="Cluster manager" href="cluster_manager.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                1.4.0-fc5b5d
+                1.4.0-ea46f1
               </div>
             
           
@@ -206,6 +206,7 @@
   <span class="nt">&quot;ssl_context&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
   <span class="nt">&quot;features&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;http_codec_options&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;http2_settings&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
   <span class="nt">&quot;dns_refresh_rate_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;dns_lookup_family&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;outlier_detection&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span>
@@ -310,6 +311,12 @@ manager <a class="reference internal" href="../http_conn_man/http_conn_man.html#
 an HTTP/2 mesh, if it&#8217;s desired to disable HTTP/2 header compression the <em>no_compression</em>
 option should be specified both here as well as in the HTTP connection manager.</dd>
 </dl>
+<dl class="docutils" id="config-cluster-manager-cluster-http2-settings">
+<dt>http2_settings</dt>
+<dd><em>(optional, object)</em> Additional HTTP/2 settings that are passed directly to the HTTP/2 codec when
+initiating HTTP connection pool connections. These are the same options supported in the HTTP connection
+manager <a class="reference internal" href="../http_conn_man/http_conn_man.html#config-http-conn-man-http2-settings"><span class="std std-ref">http2_settings</span></a> option.</dd>
+</dl>
 <dl class="docutils" id="config-cluster-manager-cluster-dns-refresh-rate-ms">
 <dt>dns_refresh_rate_ms</dt>
 <dd><em>(optional, integer)</em> If the dns refresh rate is specified and the cluster type is either <em>strict_dns</em>,
@@ -379,7 +386,7 @@ detection.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.4.0-fc5b5d',
+            VERSION:'1.4.0-ea46f1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
