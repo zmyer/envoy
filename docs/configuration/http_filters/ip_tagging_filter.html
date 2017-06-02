@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Administration interface &mdash; envoy 1.4.0-a75dce documentation</title>
+  <title>Ip tagging filter &mdash; envoy 1.4.0-a75dce documentation</title>
   
 
   
@@ -36,9 +36,9 @@
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="envoy 1.4.0-a75dce documentation" href="../../index.html"/>
-        <link rel="up" title="Overview" href="overview.html"/>
-        <link rel="next" title="Tracing" href="tracing.html"/>
-        <link rel="prev" title="Overview" href="overview.html"/> 
+        <link rel="up" title="HTTP filters" href="http_filters.html"/>
+        <link rel="next" title="Rate limit" href="rate_limit_filter.html"/>
+        <link rel="prev" title="Health check" href="health_check_filter.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -96,17 +96,25 @@
 <li class="toctree-l1"><a class="reference internal" href="../../intro/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../install/install.html">Building and installation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../configuration.html">Configuration reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="overview.html">Overview</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Administration interface</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tracing.html">Tracing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="rate_limit.html">Rate limit service</a></li>
-<li class="toctree-l3"><a class="reference internal" href="runtime.html">Runtime</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../overview/overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../listeners/listeners.html">Listeners</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../network_filters/network_filters.html">Network filters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../http_conn_man/http_conn_man.html">HTTP connection manager</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../http_filters/http_filters.html">HTTP filters</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="http_filters.html">HTTP filters</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="buffer_filter.html">Buffer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fault_filter.html">Fault Injection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dynamodb_filter.html">DynamoDB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="grpc_http1_bridge_filter.html">gRPC HTTP/1.1 bridge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="grpc_web_filter.html">gRPC-Web filter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="health_check_filter.html">Health check</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Ip tagging filter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ip-tags">Ip tags</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="rate_limit_filter.html">Rate limit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="router_filter.html">Router</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../cluster_manager/cluster_manager.html">Cluster manager</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tools/router_check.html">Route table check tool</a></li>
 </ul>
@@ -159,15 +167,15 @@
         
           <li><a href="../configuration.html">Configuration reference</a> &raquo;</li>
         
-          <li><a href="overview.html">Overview</a> &raquo;</li>
+          <li><a href="http_filters.html">HTTP filters</a> &raquo;</li>
         
-      <li>Administration interface</li>
+      <li>Ip tagging filter</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/configuration/overview/admin.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/configuration/http_filters/ip_tagging_filter.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -180,28 +188,49 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="administration-interface">
-<span id="config-admin"></span><h1>Administration interface<a class="headerlink" href="#administration-interface" title="Permalink to this headline">¶</a></h1>
-<p>Administration interface <a class="reference internal" href="../../operations/admin.html#operations-admin-interface"><span class="std std-ref">operations documentation</span></a>.</p>
+  <div class="section" id="ip-tagging-filter">
+<span id="config-http-filters-ip-tagging"></span><h1>Ip tagging filter<a class="headerlink" href="#ip-tagging-filter" title="Permalink to this headline">¶</a></h1>
+<p>This is an HTTP filter which enables Envoy to tag requests with extra information such as location, cloud source, and any
+extra data. This is useful to prevent against DDoS.</p>
+<p><strong>Note</strong>: this filter is under active development, and currently does not perform any tagging on requests. In other
+words, installing this filter is a no-op in the filter chain.</p>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;access_log_path&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;profile_path&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;address&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
+  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;decoder&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ip_tagging&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;config&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;request_type&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;ip_tags&quot;</span><span class="p">:</span> <span class="p">[]</span>
+  <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <dl class="docutils">
-<dt>access_log_path</dt>
-<dd><em>(required, string)</em> The path to write the access log for the administration server. If no
-access log is desired specify &#8216;/dev/null&#8217;.</dd>
-<dt>profile_path</dt>
-<dd><em>(optional, string)</em> The cpu profiler output path for the administration server. If no profile
-path is specified, the default is &#8216;/var/log/envoy/envoy.prof&#8217;.</dd>
-<dt>address</dt>
-<dd><em>(required, string)</em> The TCP address that the administration server will listen on, e.g.,
-&#8220;<a class="reference external" href="tcp://127.0.0.1:1234">tcp://127.0.0.1:1234</a>&#8221;. Note, &#8220;<a class="reference external" href="tcp://0.0.0.0:1234">tcp://0.0.0.0:1234</a>&#8221; is the wild card match for any IPv4 address
-with port 1234.</dd>
+<dt>request_type</dt>
+<dd><em>(optional, string)</em> The type of requests the filter should apply to. The supported
+types are <em>internal</em>, <em>external</em> or <em>both</em>. A request is considered internal if
+<a class="reference internal" href="../http_conn_man/headers.html#config-http-conn-man-headers-x-envoy-internal"><span class="std std-ref">x-envoy-internal</span></a> is set to true. If
+<a class="reference internal" href="../http_conn_man/headers.html#config-http-conn-man-headers-x-envoy-internal"><span class="std std-ref">x-envoy-internal</span></a> is not set or false, a
+request is considered external. The filter defaults to <em>both</em>, and it will apply to all request
+types.</dd>
+<dt>ip_tags:</dt>
+<dd><em>(optional, array)</em> Specifies the list of ip tags to set for a request.</dd>
 </dl>
+<div class="section" id="ip-tags">
+<h2>Ip tags<a class="headerlink" href="#ip-tags" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;ip_tag_name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;ip_list&quot;</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>ip_tag_name:</dt>
+<dd><em>(required, string)</em> Specifies the ip tag name to apply.</dd>
+<dt>ip_list:</dt>
+<dd><em>(required, list of strings)</em> A list of IP address and subnet masks that will be tagged with the <code class="docutils literal"><span class="pre">ip_tag_name</span></code>. Both
+IPv4 and IPv6 CIDR addresses are allowed here.</dd>
+</dl>
+</div>
 </div>
 
 
@@ -214,10 +243,10 @@ with port 1234.</dd>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="tracing.html" class="btn btn-neutral float-right" title="Tracing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="rate_limit_filter.html" class="btn btn-neutral float-right" title="Rate limit" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="overview.html" class="btn btn-neutral" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="health_check_filter.html" class="btn btn-neutral" title="Health check" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
