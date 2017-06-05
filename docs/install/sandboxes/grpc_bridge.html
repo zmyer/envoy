@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gRPC Bridge &mdash; envoy 1.4.0-feee2d documentation</title>
+  <title>gRPC Bridge &mdash; envoy 1.4.0-3d9b78 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.4.0-feee2d documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.4.0-3d9b78 documentation" href="../../index.html"/>
         <link rel="up" title="Sandboxes" href="sandboxes.html"/>
         <link rel="next" title="Building an Envoy Docker image" href="local_docker_build.html"/>
         <link rel="prev" title="Zipkin Tracing" href="zipkin_tracing.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                1.4.0-feee2d
+                1.4.0-3d9b78
               </div>
             
           
@@ -202,18 +202,19 @@ base routing via its route configuration.</p>
 <h2>Building the Go service<a class="headerlink" href="#building-the-go-service" title="Permalink to this headline">¶</a></h2>
 <p>To build the Go gRPC service run:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>$ pwd
-~/src/envoy/examples/grpc-bridge
+envoy/examples/grpc-bridge
 $ script/bootstrap
 $ script/build
 </pre></div>
 </div>
+<p>Note: <code class="docutils literal"><span class="pre">build</span></code> requires that your Envoy codebase (or a working copy thereof) is in <code class="docutils literal"><span class="pre">$GOPATH/src/github.com/lyft/envoy</span></code>.</p>
 </div>
 <div class="section" id="docker-compose">
 <h2>Docker compose<a class="headerlink" href="#docker-compose" title="Permalink to this headline">¶</a></h2>
 <p>To run the docker compose file, and set up both the Python and the gRPC containers
 run:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>$ pwd
-~/src/envoy/examples/grpc-bridge
+envoy/examples/grpc-bridge
 $ docker-compose up --build
 </pre></div>
 </div>
@@ -222,7 +223,7 @@ $ docker-compose up --build
 <h2>Sending requests to the Key/Value store<a class="headerlink" href="#sending-requests-to-the-key-value-store" title="Permalink to this headline">¶</a></h2>
 <p>To use the Python service and send gRPC requests:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>$ pwd
-~/src/envoy/examples/grpc-bridge
+envoy/examples/grpc-bridge
 # set a key
 $ docker-compose exec python /client/client.py set foo bar
 setf foo to bar
@@ -230,8 +231,21 @@ setf foo to bar
 # get a key
 $ docker-compose exec python /client/client.py get foo
 bar
+
+# modify an existing key
+$ docker-compose exec python /client/client.py set foo baz
+setf foo to baz
+
+# get the modified key
+$ docker-compose exec python /client/client.py get foo
+baz
 </pre></div>
 </div>
+<p>In the running docker-compose container, you should see the gRPC service printing a record of its activity:</p>
+<blockquote>
+<div>grpc_1    | 2017/05/30 12:05:09 set: foo = bar
+grpc_1    | 2017/05/30 12:05:12 get: foo
+grpc_1    | 2017/05/30 12:05:18 set: foo = baz</div></blockquote>
 </div>
 </div>
 
@@ -279,7 +293,7 @@ bar
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.4.0-feee2d',
+            VERSION:'1.4.0-3d9b78',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
