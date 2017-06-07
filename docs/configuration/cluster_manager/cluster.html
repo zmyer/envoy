@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Cluster &mdash; envoy 1.4.0-8b7b4b documentation</title>
+  <title>Cluster &mdash; envoy 1.4.0-1d922d documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.4.0-8b7b4b documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.4.0-1d922d documentation" href="../../index.html"/>
         <link rel="up" title="Cluster manager" href="cluster_manager.html"/>
         <link rel="next" title="Health checking" href="cluster_hc.html"/>
         <link rel="prev" title="Cluster manager" href="cluster_manager.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                1.4.0-8b7b4b
+                1.4.0-1d922d
               </div>
             
           
@@ -209,6 +209,7 @@
   <span class="nt">&quot;http2_settings&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
   <span class="nt">&quot;dns_refresh_rate_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;dns_lookup_family&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;dns_resolvers&quot;</span><span class="p">:</span> <span class="p">[],</span>
   <span class="nt">&quot;outlier_detection&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -333,6 +334,14 @@ the DNS resolver will only perform a lookup for addresses in the IPv6 family. If
 the DNS resolver will first perform a lookup for addresses in the IPv6 family and fallback to a lookup for
 addresses in the IPv4 family. For cluster types other than <em>strict_dns</em> and <em>logical_dns</em>, this setting
 is ignored.</dd>
+</dl>
+<dl class="docutils" id="config-cluster-manager-cluster-dns-resolvers">
+<dt>dns_resolvers</dt>
+<dd><em>(optional, array)</em> If DNS resolvers are specified and the cluster type is either <em>strict_dns</em>, or
+<em>logical_dns</em>, this value is used to specify the cluster&#8217;s dns resolvers. If this setting is not
+specified, the value defaults to the default resolver, which uses /etc/resolv.conf for
+configuration. For cluster types other than <em>strict_dns</em> and <em>logical_dns</em> this setting is
+ignored.</dd>
 <dt><a class="reference internal" href="cluster_outlier_detection.html#config-cluster-manager-cluster-outlier-detection"><span class="std std-ref">outlier_detection</span></a></dt>
 <dd><em>(optional, object)</em> If specified, outlier detection will be enabled for this upstream cluster.
 See the <a class="reference internal" href="../../intro/arch_overview/outlier.html#arch-overview-outlier-detection"><span class="std std-ref">architecture overview</span></a> for more information on outlier
@@ -386,7 +395,7 @@ detection.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.4.0-8b7b4b',
+            VERSION:'1.4.0-1d922d',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
