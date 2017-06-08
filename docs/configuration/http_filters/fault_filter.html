@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Fault Injection &mdash; envoy 1.4.0-bd525d documentation</title>
+  <title>Fault Injection &mdash; envoy 1.4.0-89e71b documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.4.0-bd525d documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.4.0-89e71b documentation" href="../../index.html"/>
         <link rel="up" title="HTTP filters" href="http_filters.html"/>
         <link rel="next" title="DynamoDB" href="dynamodb_filter.html"/>
         <link rel="prev" title="Buffer" href="buffer_filter.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                1.4.0-bd525d
+                1.4.0-89e71b
               </div>
             
           
@@ -224,7 +224,8 @@ including the router filter.</em></p>
     <span class="nt">&quot;abort&quot;</span> <span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
     <span class="nt">&quot;delay&quot;</span> <span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
     <span class="nt">&quot;upstream_cluster&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;headers&quot;</span> <span class="p">:</span> <span class="p">[]</span>
+    <span class="nt">&quot;headers&quot;</span> <span class="p">:</span> <span class="p">[],</span>
+    <span class="nt">&quot;downstream_nodes&quot;</span><span class="p">:</span> <span class="p">[]</span>
   <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -247,7 +248,13 @@ the fault filter config. The chances of actual fault injection further depend on
 <em>abort_percent</em> and <em>fixed_delay_percent</em> parameters.The filter will check the request&#8217;s headers
 against all the specified headers in the filter config. A match will happen if all the headers in
 the config are present in the request with the same values (or based on presence if the <code class="docutils literal"><span class="pre">value</span></code>
-field is not in the config).</dd>
+field is not in the config).
+TODO: allow runtime configuration on per entry basis for headers match.</dd>
+<dt>downstream_nodes:</dt>
+<dd><em>(optional, array)</em> Faults are injected for the specified list of downstream hosts. If this setting is
+not set, faults are injected for all downstream nodes. Downstream node name is taken from
+<a class="reference internal" href="../http_conn_man/headers.html#config-http-conn-man-headers-downstream-service-node"><span class="std std-ref">the HTTP x-envoy-downstream-service-node</span></a>
+header and compared against downstream_nodes list.</dd>
 </dl>
 <p>The abort and delay blocks can be omitted. If they are not specified in the
 configuration file, their respective values will be obtained from the
@@ -294,7 +301,7 @@ values range from 0 to 100.</dd>
 </div>
 <div class="section" id="runtime">
 <h2>Runtime<a class="headerlink" href="#runtime" title="Permalink to this headline">¶</a></h2>
-<p>The HTTP fault injection filter supports the following runtime settings:</p>
+<p>The HTTP fault injection filter supports the following global runtime settings:</p>
 <dl class="docutils">
 <dt>http.fault.abort.abort_percent</dt>
 <dd>% of requests that will be aborted if the headers match. Defaults to the
@@ -314,6 +321,17 @@ in the config. If the config does not contain an <em>abort</em> block, then
 is missing from both the runtime and the config, no delays will be
 injected.</dd>
 </dl>
+<p><em>Note</em>, fault filter runtime settings for the specific downstream cluster
+override the default ones if present. The following are downstream specific
+runtime keys:
+* http.fault.&lt;downstream-cluster&gt;.abort.abort_percent
+* http.fault.&lt;downstream-cluster&gt;.abort.http_status
+* http.fault.&lt;downstream-cluster&gt;.delay.fixed_delay_percent
+* http.fault.&lt;downstream-cluster&gt;.delay.fixed_duration_ms
+Downstream cluster name is taken from
+<a class="reference internal" href="../http_conn_man/headers.html#config-http-conn-man-headers-downstream-service-cluster"><span class="std std-ref">the HTTP x-envoy-downstream-service-cluster</span></a>
+header. If the following settings are not found in the runtime it defaults to the global runtime settings
+which defaults to the config settings.</p>
 </div>
 <div class="section" id="statistics">
 <h2>Statistics<a class="headerlink" href="#statistics" title="Permalink to this headline">¶</a></h2>
@@ -339,6 +357,14 @@ prefix</span></a> comes from the owning HTTP connection manager.</p>
 <tr class="row-odd"><td>aborts_injected</td>
 <td>Counter</td>
 <td>Total requests that were aborted</td>
+</tr>
+<tr class="row-even"><td>&lt;downstream-cluster&gt;.delays_injected</td>
+<td>Counter</td>
+<td>Total delayed requests for the given downstream cluster</td>
+</tr>
+<tr class="row-odd"><td>&lt;downstream-cluster&gt;.aborts_injected</td>
+<td>Counter</td>
+<td>Total aborted requests for the given downstream cluster</td>
 </tr>
 </tbody>
 </table>
@@ -389,7 +415,7 @@ prefix</span></a> comes from the owning HTTP connection manager.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.4.0-bd525d',
+            VERSION:'1.4.0-89e71b',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
