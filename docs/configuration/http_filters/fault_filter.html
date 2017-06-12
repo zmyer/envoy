@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Fault Injection &mdash; envoy 1.4.0-121a5f documentation</title>
+  <title>Fault Injection &mdash; envoy 1.4.0-0d4180 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.4.0-121a5f documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.4.0-0d4180 documentation" href="../../index.html"/>
         <link rel="up" title="HTTP filters" href="http_filters.html"/>
         <link rel="next" title="DynamoDB" href="dynamodb_filter.html"/>
         <link rel="prev" title="Buffer" href="buffer_filter.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                1.4.0-121a5f
+                1.4.0-0d4180
               </div>
             
           
@@ -303,19 +303,19 @@ values range from 0 to 100.</dd>
 <h2>Runtime<a class="headerlink" href="#runtime" title="Permalink to this headline">¶</a></h2>
 <p>The HTTP fault injection filter supports the following global runtime settings:</p>
 <dl class="docutils">
-<dt>http.fault.abort.abort_percent</dt>
+<dt>fault.http.abort.abort_percent</dt>
 <dd>% of requests that will be aborted if the headers match. Defaults to the
 <em>abort_percent</em> specified in config. If the config does not contain an
 <em>abort</em> block, then <em>abort_percent</em> defaults to 0.</dd>
-<dt>http.fault.abort.http_status</dt>
+<dt>fault.http.abort.http_status</dt>
 <dd>HTTP status code that will be used as the  of requests that will be
 aborted if the headers match. Defaults to the HTTP status code specified
 in the config. If the config does not contain an <em>abort</em> block, then
 <em>http_status</em> defaults to 0.</dd>
-<dt>http.fault.delay.fixed_delay_percent</dt>
+<dt>fault.http.delay.fixed_delay_percent</dt>
 <dd>% of requests that will be delayed if the headers match. Defaults to the
 <em>delay_percent</em> specified in the config or 0 otherwise.</dd>
-<dt>http.fault.delay.fixed_duration_ms</dt>
+<dt>fault.http.delay.fixed_duration_ms</dt>
 <dd>The delay duration in milliseconds. If not specified, the
 <em>fixed_duration_ms</em> specified in the config will be used. If this field
 is missing from both the runtime and the config, no delays will be
@@ -324,10 +324,10 @@ injected.</dd>
 <p><em>Note</em>, fault filter runtime settings for the specific downstream cluster
 override the default ones if present. The following are downstream specific
 runtime keys:
-* http.fault.&lt;downstream-cluster&gt;.abort.abort_percent
-* http.fault.&lt;downstream-cluster&gt;.abort.http_status
-* http.fault.&lt;downstream-cluster&gt;.delay.fixed_delay_percent
-* http.fault.&lt;downstream-cluster&gt;.delay.fixed_duration_ms
+* fault.http.&lt;downstream-cluster&gt;.abort.abort_percent
+* fault.http.&lt;downstream-cluster&gt;.abort.http_status
+* fault.http.&lt;downstream-cluster&gt;.delay.fixed_delay_percent
+* fault.http.&lt;downstream-cluster&gt;.delay.fixed_duration_ms
 Downstream cluster name is taken from
 <a class="reference internal" href="../http_conn_man/headers.html#config-http-conn-man-headers-downstream-service-cluster"><span class="std std-ref">the HTTP x-envoy-downstream-service-cluster</span></a>
 header. If the following settings are not found in the runtime it defaults to the global runtime settings
@@ -415,7 +415,7 @@ prefix</span></a> comes from the owning HTTP connection manager.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.4.0-121a5f',
+            VERSION:'1.4.0-0d4180',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
