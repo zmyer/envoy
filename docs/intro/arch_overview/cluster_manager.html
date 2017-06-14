@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Cluster manager &mdash; envoy 1.4.0-e1696d documentation</title>
+  <title>Cluster manager &mdash; envoy 1.4.0-bf5b76 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.4.0-e1696d documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.4.0-bf5b76 documentation" href="../../index.html"/>
         <link rel="up" title="Architecture overview" href="arch_overview.html"/>
         <link rel="next" title="Service discovery" href="service_discovery.html"/>
         <link rel="prev" title="gRPC" href="grpc.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                1.4.0-e1696d
+                1.4.0-bf5b76
               </div>
             
           
@@ -204,8 +204,8 @@
   <div class="section" id="cluster-manager">
 <span id="arch-overview-cluster-manager"></span><h1>Cluster manager<a class="headerlink" href="#cluster-manager" title="Permalink to this headline">¶</a></h1>
 <p>Envoy’s cluster manager manages all configured upstream clusters. Just as the Envoy configuration
-can contain any number of listeners, the configuration can also contain any number of upstream
-clusters each with different service discovery, health checking, and other settings.</p>
+can contain any number of listeners, the configuration can also contain any number of independently
+configured upstream clusters.</p>
 <p>Upstream clusters and hosts are abstracted from the network/HTTP filter stack given that upstream
 clusters and hosts may be used for any number of different proxy tasks. The cluster manager exposes
 APIs to the filter stack that allow filters to obtain a L3/L4 connection to an upstream cluster, or
@@ -269,7 +269,7 @@ distribution.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.4.0-e1696d',
+            VERSION:'1.4.0-bf5b76',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
