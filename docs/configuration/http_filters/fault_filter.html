@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Fault Injection &mdash; envoy 1.4.0-7384a3 documentation</title>
+  <title>Fault Injection &mdash; envoy 1.4.0-19cf8a documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.4.0-7384a3 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.4.0-19cf8a documentation" href="../../index.html"/>
         <link rel="up" title="HTTP filters" href="http_filters.html"/>
         <link rel="next" title="DynamoDB" href="dynamodb_filter.html"/>
         <link rel="prev" title="Buffer" href="buffer_filter.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.4.0-7384a3
+                1.4.0-19cf8a
               </div>
             
           
@@ -325,12 +325,14 @@ injected.</dd>
 </dl>
 <p><em>Note</em>, fault filter runtime settings for the specific downstream cluster
 override the default ones if present. The following are downstream specific
-runtime keys:
-* fault.http.&lt;downstream-cluster&gt;.abort.abort_percent
-* fault.http.&lt;downstream-cluster&gt;.abort.http_status
-* fault.http.&lt;downstream-cluster&gt;.delay.fixed_delay_percent
-* fault.http.&lt;downstream-cluster&gt;.delay.fixed_duration_ms
-Downstream cluster name is taken from
+runtime keys:</p>
+<ul class="simple">
+<li>fault.http.&lt;downstream-cluster&gt;.abort.abort_percent</li>
+<li>fault.http.&lt;downstream-cluster&gt;.abort.http_status</li>
+<li>fault.http.&lt;downstream-cluster&gt;.delay.fixed_delay_percent</li>
+<li>fault.http.&lt;downstream-cluster&gt;.delay.fixed_duration_ms</li>
+</ul>
+<p>Downstream cluster name is taken from
 <a class="reference internal" href="../http_conn_man/headers.html#config-http-conn-man-headers-downstream-service-cluster"><span class="std std-ref">the HTTP x-envoy-downstream-service-cluster</span></a>
 header. If the following settings are not found in the runtime it defaults to the global runtime settings
 which defaults to the config settings.</p>
@@ -417,7 +419,7 @@ prefix</span></a> comes from the owning HTTP connection manager.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.4.0-7384a3',
+            VERSION:'1.4.0-19cf8a',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
