@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gRPC-Web filter &mdash; envoy 1.4.0-e2de6a documentation</title>
+  <title>gRPC-JSON transcoder filter &mdash; envoy 1.4.0-e2de6a documentation</title>
   
 
   
@@ -39,8 +39,8 @@
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="envoy 1.4.0-e2de6a documentation" href="../../index.html"/>
         <link rel="up" title="HTTP filters" href="http_filters.html"/>
-        <link rel="next" title="Health check" href="health_check_filter.html"/>
-        <link rel="prev" title="gRPC-JSON transcoder filter" href="grpc_json_transcoder_filter.html"/> 
+        <link rel="next" title="gRPC-Web filter" href="grpc_web_filter.html"/>
+        <link rel="prev" title="gRPC HTTP/1.1 bridge" href="grpc_http1_bridge_filter.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -107,8 +107,11 @@
 <li class="toctree-l3"><a class="reference internal" href="fault_filter.html">Fault Injection</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dynamodb_filter.html">DynamoDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="grpc_http1_bridge_filter.html">gRPC HTTP/1.1 bridge</a></li>
-<li class="toctree-l3"><a class="reference internal" href="grpc_json_transcoder_filter.html">gRPC-JSON transcoder filter</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">gRPC-Web filter</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">gRPC-JSON transcoder filter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#configure-grpc-json-transcoder">Configure gRPC-JSON transcoder</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="grpc_web_filter.html">gRPC-Web filter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="health_check_filter.html">Health check</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ip_tagging_filter.html">Ip tagging filter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rate_limit_filter.html">Rate limit</a></li>
@@ -169,13 +172,13 @@
         
           <li><a href="http_filters.html">HTTP filters</a> &raquo;</li>
         
-      <li>gRPC-Web filter</li>
+      <li>gRPC-JSON transcoder filter</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/configuration/http_filters/grpc_web_filter.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/configuration/http_filters/grpc_json_transcoder_filter.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -188,17 +191,51 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="grpc-web-filter">
-<span id="config-http-filters-grpc-web"></span><h1>gRPC-Web filter<a class="headerlink" href="#grpc-web-filter" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="grpc-json-transcoder-filter">
+<span id="config-http-filters-grpc-json-transcoder"></span><h1>gRPC-JSON transcoder filter<a class="headerlink" href="#grpc-json-transcoder-filter" title="Permalink to this headline">¶</a></h1>
 <p>gRPC <a class="reference internal" href="../../intro/arch_overview/grpc.html#arch-overview-grpc"><span class="std std-ref">architecture overview</span></a>.</p>
-<p>This is a filter which enables the bridging of a gRPC-Web client to a compliant gRPC server by
-following <a class="reference external" href="https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md">https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md</a>.</p>
+<p>This is a filter which allows a RESTful JSON API client to send requests to Envoy over HTTP
+and get proxied to a gRPC service. The HTTP mapping for the gRPC service has to be defined by
+<a class="reference external" href="https://cloud.google.com/service-management/reference/rpc/google.api#http">custom options</a>.</p>
+<div class="section" id="configure-grpc-json-transcoder">
+<h2>Configure gRPC-JSON transcoder<a class="headerlink" href="#configure-grpc-json-transcoder" title="Permalink to this headline">¶</a></h2>
+<p>The filter config for the filter requires the descriptor file as well as a list of the gRPC
+services to be transcoded.</p>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;both&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;grpc_web&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;config&quot;</span><span class="p">:</span> <span class="p">{}</span>
+  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;grpc_json_transcoder&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;config&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;proto_descriptors&quot;</span><span class="p">:</span> <span class="s2">&quot;proto.pb&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;services&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;grpc.service.Service&quot;</span><span class="p">]</span>
+  <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
+</div>
+<dl class="docutils">
+<dt>proto_descriptors</dt>
+<dd><p class="first"><em>(required, string)</em> Supplies the binary protobuf descriptor set for the gRPC services.
+The descriptor set has to include all of the types that are used in the services. Make sure
+to use the <code class="docutils literal"><span class="pre">--include_import</span></code> option for <code class="docutils literal"><span class="pre">protoc</span></code>.</p>
+<p>To generate a protobuf descriptor set for the gRPC service, you&#8217;ll also need to clone the
+googleapis repository from Github before running protoc, as you&#8217;ll need annotations.proto
+in your include path.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>git clone https://github.com/googleapis/googleapis
+<span class="nv">GOOGLEAPIS_DIR</span><span class="o">=</span>&lt;your-local-googleapis-folder&gt;
+</pre></div>
+</div>
+<p>Then run protoc to generate the descriptor set from bookstore.proto:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>protoc -I<span class="k">$(</span>GOOGLEAPIS_DIR<span class="k">)</span> -I. --include_imports --include_source_info <span class="se">\</span>
+  --descriptor_set_out<span class="o">=</span>proto.pb test/proto/bookstore.proto
+</pre></div>
+</div>
+<p class="last">If you have more than one proto source files, you can pass all of them in one command.</p>
+</dd>
+<dt>services</dt>
+<dd><em>(required, array)</em> A list of strings that supplies the service names that the
+transcoder will translate. If the service name doesn&#8217;t exist in <code class="docutils literal"><span class="pre">proto_descriptors</span></code>, Envoy
+will fail at startup. The <code class="docutils literal"><span class="pre">proto_descriptors</span></code> may contain more services than the service names
+specified here, but they won&#8217;t be translated.</dd>
+</dl>
 </div>
 </div>
 
@@ -212,10 +249,10 @@ following <a class="reference external" href="https://github.com/grpc/grpc/blob/
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="health_check_filter.html" class="btn btn-neutral float-right" title="Health check" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="grpc_web_filter.html" class="btn btn-neutral float-right" title="gRPC-Web filter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="grpc_json_transcoder_filter.html" class="btn btn-neutral" title="gRPC-JSON transcoder filter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="grpc_http1_bridge_filter.html" class="btn btn-neutral" title="gRPC HTTP/1.1 bridge" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
