@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Route configuration &mdash; envoy 1.4.0-e954b2 documentation</title>
+  <title>Route configuration &mdash; envoy 1.4.0-357771 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.4.0-e954b2 documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.4.0-357771 documentation" href="../../../index.html"/>
         <link rel="up" title="HTTP connection manager" href="../http_conn_man.html"/>
         <link rel="next" title="Virtual host" href="vhost.html"/>
         <link rel="prev" title="HTTP connection manager" href="../http_conn_man.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.4.0-e954b2
+                1.4.0-357771
               </div>
             
           
@@ -201,6 +201,7 @@
 <li>HTTP <a class="reference internal" href="../../http_filters/router_filter.html#config-http-filters-router"><span class="std std-ref">router filter</span></a>.</li>
 </ul>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;validate_clusters&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;virtual_hosts&quot;</span><span class="p">:</span> <span class="p">[],</span>
   <span class="nt">&quot;internal_only_headers&quot;</span><span class="p">:</span> <span class="p">[],</span>
   <span class="nt">&quot;response_headers_to_add&quot;</span><span class="p">:</span> <span class="p">[],</span>
@@ -210,6 +211,16 @@
 </pre></div>
 </div>
 <dl class="docutils">
+<dt>validate_clusters</dt>
+<dd><em>(optional, boolean)</em> An optional boolean that specifies whether the clusters that the route
+table refers to will be validated by the cluster manager. If set to true and a route refers to
+a non-existent cluster, the route table will not load. If set to false and a route refers to a
+non-existent cluster, the route table will load and the router filter will return a 404 if the
+route is selected at runtime. This setting defaults to true if the route table is statically
+defined via the <a class="reference internal" href="../http_conn_man.html#config-http-conn-man-route-config"><span class="std std-ref">route_config</span></a> option. This setting
+default to false if the route table is loaded dynamically via the <a class="reference internal" href="../http_conn_man.html#config-http-conn-man-rds-option"><span class="std std-ref">rds</span></a> option. Users may which to override the default behavior in
+certain cases (for example when using <a class="reference internal" href="../../cluster_manager/cds.html#config-cluster-manager-cds"><span class="std std-ref">cds</span></a> with a static
+route table).</dd>
 <dt><a class="reference internal" href="vhost.html#config-http-conn-man-route-table-vhost"><span class="std std-ref">virtual_hosts</span></a></dt>
 <dd><em>(required, array)</em> An array of virtual hosts that make up the route table.</dd>
 <dt>internal_only_headers</dt>
@@ -301,7 +312,7 @@ request forwarded by the HTTP connection manager. Headers are specified in the f
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.4.0-e954b2',
+            VERSION:'1.4.0-357771',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
