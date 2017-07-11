@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Route discovery service &mdash; envoy 1.4.0-128200 documentation</title>
+  <title>Listener discovery service &mdash; envoy 1.4.0-128200 documentation</title>
   
 
   
@@ -38,8 +38,8 @@
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="envoy 1.4.0-128200 documentation" href="../../index.html"/>
-        <link rel="up" title="HTTP connection manager" href="http_conn_man.html"/>
-        <link rel="next" title="HTTP filters" href="../http_filters/http_filters.html"/>
+        <link rel="up" title="Listeners" href="listeners.html"/>
+        <link rel="next" title="Network filters" href="../network_filters/network_filters.html"/>
         <link rel="prev" title="Runtime" href="runtime.html"/> 
 
   
@@ -99,23 +99,20 @@
 <li class="toctree-l1"><a class="reference internal" href="../../install/install.html">Building and installation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../configuration.html">Configuration reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../overview/overview.html">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../listeners/listeners.html">Listeners</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../network_filters/network_filters.html">Network filters</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="http_conn_man.html">HTTP connection manager</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="route_config/route_config.html">Route configuration</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="listeners.html">Listeners</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="filters.html">Filters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="access_log.html">Access logging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tracing.html">Tracing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="headers.html">HTTP header manipulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ssl.html">TLS context</a></li>
 <li class="toctree-l3"><a class="reference internal" href="stats.html">Statistics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="runtime.html">Runtime</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Route discovery service</a><ul>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Listener discovery service</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#rest-api">REST API</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#statistics">Statistics</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../network_filters/network_filters.html">Network filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../http_conn_man/http_conn_man.html">HTTP connection manager</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../http_filters/http_filters.html">HTTP filters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cluster_manager/cluster_manager.html">Cluster manager</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tools/router_check.html">Route table check tool</a></li>
@@ -169,15 +166,15 @@
         
           <li><a href="../configuration.html">Configuration reference</a> &raquo;</li>
         
-          <li><a href="http_conn_man.html">HTTP connection manager</a> &raquo;</li>
+          <li><a href="listeners.html">Listeners</a> &raquo;</li>
         
-      <li>Route discovery service</li>
+      <li>Listener discovery service</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/configuration/http_conn_man/rds.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/configuration/listeners/lds.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -190,69 +187,74 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="route-discovery-service">
-<span id="config-http-conn-man-rds"></span><h1>Route discovery service<a class="headerlink" href="#route-discovery-service" title="Permalink to this headline">¶</a></h1>
-<p>The route discovery service (RDS) API is an optional API that Envoy will call to dynamically fetch
-<a class="reference internal" href="route_config/route_config.html#config-http-conn-man-route-table"><span class="std std-ref">route configurations</span></a>. A route configuration includes both
-HTTP header modifications, virtual hosts, and the individual route entries contained within each
-virtual host. Each <a class="reference internal" href="http_conn_man.html#config-http-conn-man"><span class="std std-ref">HTTP connection manager filter</span></a> can independently
-fetch its own route configuration via the API.</p>
+  <div class="section" id="listener-discovery-service">
+<span id="config-listeners-lds"></span><h1>Listener discovery service<a class="headerlink" href="#listener-discovery-service" title="Permalink to this headline">¶</a></h1>
+<p>The listener discovery service (LDS) is an optional API that Envoy will call to dynamically fetch
+listeners. Envoy will reconcile the API response and add, modify, or remove known listeners
+depending on what is required.</p>
+<p>The semantics of listener updates are as follows:</p>
+<ul class="simple">
+<li>Every listener must have a unique <a class="reference internal" href="listeners.html#config-listeners-name"><span class="std std-ref">name</span></a>. If a name is not
+provided, Envoy will create a UUID. Listeners that are to be dynamically updated should have a
+unique name supplied by the management server.</li>
+<li>When a listener is added, it will be &#8220;warmed&#8221; before taking traffic. For example, if the listener
+references an <a class="reference internal" href="../http_conn_man/rds.html#config-http-conn-man-rds"><span class="std std-ref">RDS</span></a> configuration, that configuration will be
+resolved and fetched before the listener is moved to &#8220;active.&#8221;</li>
+<li>Listeners are effectively constant once created. Thus, when a listener is updated, an entirely
+new listener is created (with the same listen socket). This listener goes through the same
+warming process described above for a newly added listener.</li>
+<li>When a listener is updated or removed, the old listener will be placed into a &#8220;draining&#8221; state
+much like when the entire server is drained for restart. Connections owned by the listener will
+be gracefully closed (if possible) for some period of time before the listener is removed and any
+remaining connections are closed. The drain time is set via the <a class="reference internal" href="../../operations/cli.html#cmdoption-drain-time-s"><code class="xref std std-option docutils literal"><span class="pre">--drain-time-s</span></code></a> option.</li>
+</ul>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;cluster&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;route_config_name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;cluster&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
   <span class="nt">&quot;refresh_delay_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <dl class="docutils">
 <dt>cluster</dt>
-<dd><em>(required, string)</em> The name of an upstream <a class="reference internal" href="../cluster_manager/cluster.html#config-cluster-manager-cluster"><span class="std std-ref">cluster</span></a> that
-hosts the route discovery service. The cluster must run a REST service that implements the
-<a class="reference internal" href="#config-http-conn-man-rds-api"><span class="std std-ref">RDS HTTP API</span></a>. NOTE: This is the <em>name</em> of a cluster defined
+<dd><em>(required, object)</em> The name of an upstream <a class="reference internal" href="../cluster_manager/cluster.html#config-cluster-manager-cluster"><span class="std std-ref">cluster</span></a> that
+hosts the listener discovery service. The cluster must run a REST service that implements the
+<a class="reference internal" href="#config-listeners-lds-api"><span class="std std-ref">LDS HTTP API</span></a>. NOTE: This is the <em>name</em> of a cluster defined
 in the <a class="reference internal" href="../cluster_manager/cluster_manager.html#config-cluster-manager"><span class="std std-ref">cluster manager</span></a> configuration, not the full definition of
 a cluster as in the case of SDS and CDS.</dd>
-<dt>route_config_name</dt>
-<dd><em>(required, string)</em> The name of the route configuration. This name will be passed to the
-<a class="reference internal" href="#config-http-conn-man-rds-api"><span class="std std-ref">RDS HTTP API</span></a>. This allows an Envoy configuration with
-multiple HTTP listeners (and associated HTTP connection manager filters) to use different route
-configurations.</dd>
 <dt>refresh_delay_ms</dt>
-<dd><em>(optional, integer)</em> The delay, in milliseconds, between fetches to the RDS API. Envoy will add
+<dd><em>(optional, integer)</em> The delay, in milliseconds, between fetches to the LDS API. Envoy will add
 an additional random jitter to the delay that is between zero and <em>refresh_delay_ms</em>
-milliseconds. Thus the longest possible refresh delay is 2 * <em>refresh_delay_ms</em>. Default
-value is 30000ms (30 seconds).</dd>
+milliseconds. Thus the longest possible refresh delay is 2 * <em>refresh_delay_ms</em>. Default value
+is 30000ms (30 seconds).</dd>
 </dl>
 <div class="section" id="rest-api">
-<span id="config-http-conn-man-rds-api"></span><h2>REST API<a class="headerlink" href="#rest-api" title="Permalink to this headline">¶</a></h2>
+<span id="config-listeners-lds-api"></span><h2>REST API<a class="headerlink" href="#rest-api" title="Permalink to this headline">¶</a></h2>
 <dl class="get">
-<dt id="get--v1-routes-(string- route_config_name)-(string- service_cluster)-(string- service_node)">
-<code class="descname">GET </code><code class="descname">/v1/routes/(string: route_config_name)/(string: service_cluster)/(string: service_node)</code><a class="headerlink" href="#get--v1-routes-(string- route_config_name)-(string- service_cluster)-(string- service_node)" title="Permalink to this definition">¶</a></dt>
+<dt id="get--v1-listeners-(string- service_cluster)-(string- service_node)">
+<code class="descname">GET </code><code class="descname">/v1/listeners/(string: service_cluster)/(string: service_node)</code><a class="headerlink" href="#get--v1-listeners-(string- service_cluster)-(string- service_node)" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<p>Asks the route discovery service to return the route configuration for a particular
-<cite>route_config_name</cite>, <cite>service_cluster</cite>, and <cite>service_node</cite>. <cite>route_config_name</cite> corresponds to the
-RDS configuration parameter above. <cite>service_cluster</cite> corresponds to the <a class="reference internal" href="../../operations/cli.html#cmdoption-service-cluster"><code class="xref std std-option docutils literal"><span class="pre">--service-cluster</span></code></a>
-CLI option. <cite>service_node</cite> corresponds to the <a class="reference internal" href="../../operations/cli.html#cmdoption-service-node"><code class="xref std std-option docutils literal"><span class="pre">--service-node</span></code></a> CLI option. Responses are a
-single JSON object that contains a route configuration as defined in the <a class="reference internal" href="route_config/route_config.html#config-http-conn-man-route-table"><span class="std std-ref">route configuration
-documentation</span></a>.</p>
-<p>A new route configuration will be gracefully swapped in such that existing requests are not
-affected. This means that when a request starts, it sees a consistent snapshot of the route
-configuration that does not change for the duration of the request. Thus, if an update changes a
-timeout for example, only new requests will use the updated timeout value.</p>
-<p>As a performance optimization, Envoy hashes the route configuration it receives from the RDS API and
-will only perform a full reload if the hash value changes.</p>
-<div class="admonition attention">
-<p class="first admonition-title">Attention</p>
-<p class="last">Route configurations that are loaded via RDS are <em>not</em> checked to see if referenced clusters are
-known to the <a class="reference internal" href="../cluster_manager/cluster_manager.html#config-cluster-manager"><span class="std std-ref">cluster manager</span></a>. The RDS API has been designed to
-work alongside the <a class="reference internal" href="../cluster_manager/cds.html#config-cluster-manager-cds"><span class="std std-ref">CDS API</span></a> such that Envoy assumes eventually
-consistent updates. If a route references an unknown cluster a 404 response will be returned by
-the router filter.</p>
+<p>Asks the discovery service to return all listeners for a particular <cite>service_cluster</cite> and
+<cite>service_node</cite>. <cite>service_cluster</cite> corresponds to the <a class="reference internal" href="../../operations/cli.html#cmdoption-service-cluster"><code class="xref std std-option docutils literal"><span class="pre">--service-cluster</span></code></a> CLI option.
+<cite>service_node</cite> corresponds to the <a class="reference internal" href="../../operations/cli.html#cmdoption-service-node"><code class="xref std std-option docutils literal"><span class="pre">--service-node</span></code></a> CLI option. Responses use the following
+JSON schema:</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;listeners&quot;</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</pre></div>
 </div>
+<dl class="docutils">
+<dt>listeners</dt>
+<dd><em>(Required, array)</em> A list of <a class="reference internal" href="listeners.html#config-listeners"><span class="std std-ref">listeners</span></a> that will be
+dynamically added/modified within the listener manager. The management server is expected to
+respond with the complete set of listeners that Envoy should configure during each polling cycle.
+Envoy will reconcile this list with the listeners that are currently loaded and either
+add/modify/remove listeners as necessary.</dd>
+</dl>
 </div>
 <div class="section" id="statistics">
 <h2>Statistics<a class="headerlink" href="#statistics" title="Permalink to this headline">¶</a></h2>
-<p>RDS has a statistics tree rooted at <em>http.&lt;stat_prefix&gt;.rds.</em> with the following statistics:</p>
+<p>LDS has a statistics tree rooted at <em>listener_manager.lds.</em> with the following statistics:</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="25%" />
@@ -266,19 +268,15 @@ the router filter.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>config_reload</td>
-<td>Counter</td>
-<td>Total API fetches that resulted in a config reload due to a different config</td>
-</tr>
-<tr class="row-odd"><td>update_attempt</td>
+<tr class="row-even"><td>update_attempt</td>
 <td>Counter</td>
 <td>Total API fetches attempted</td>
 </tr>
-<tr class="row-even"><td>update_success</td>
+<tr class="row-odd"><td>update_success</td>
 <td>Counter</td>
 <td>Total API fetches completed successfully</td>
 </tr>
-<tr class="row-odd"><td>update_failure</td>
+<tr class="row-even"><td>update_failure</td>
 <td>Counter</td>
 <td>Total API fetches that failed (either network or schema errors)</td>
 </tr>
@@ -297,7 +295,7 @@ the router filter.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../http_filters/http_filters.html" class="btn btn-neutral float-right" title="HTTP filters" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../network_filters/network_filters.html" class="btn btn-neutral float-right" title="Network filters" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="runtime.html" class="btn btn-neutral" title="Runtime" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

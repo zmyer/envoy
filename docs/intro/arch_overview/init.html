@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Threading model &mdash; envoy 1.4.0-128200 documentation</title>
+  <title>Initialization &mdash; envoy 1.4.0-128200 documentation</title>
   
 
   
@@ -39,8 +39,8 @@
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="envoy 1.4.0-128200 documentation" href="../../index.html"/>
         <link rel="up" title="Architecture overview" href="arch_overview.html"/>
-        <link rel="next" title="Listeners" href="listeners.html"/>
-        <link rel="prev" title="Terminology" href="terminology.html"/> 
+        <link rel="next" title="Deployment types" href="../deployment_types/deployment_types.html"/>
+        <link rel="prev" title="Dynamic configuration" href="dynamic_configuration.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -99,7 +99,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../what_is_envoy.html">What is Envoy</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="arch_overview.html">Architecture overview</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="terminology.html">Terminology</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Threading model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="threading_model.html">Threading model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="listeners.html">Listeners</a></li>
 <li class="toctree-l3"><a class="reference internal" href="network_filters.html">Network (L3/L4) filters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="http_connection_management.html">HTTP connection management</a></li>
@@ -123,7 +123,7 @@
 <li class="toctree-l3"><a class="reference internal" href="dynamo.html">DynamoDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="hot_restart.html">Hot restart</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dynamic_configuration.html">Dynamic configuration</a></li>
-<li class="toctree-l3"><a class="reference internal" href="init.html">Initialization</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Initialization</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../deployment_types/deployment_types.html">Deployment types</a></li>
@@ -185,13 +185,13 @@
         
           <li><a href="arch_overview.html">Architecture overview</a> &raquo;</li>
         
-      <li>Threading model</li>
+      <li>Initialization</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/intro/arch_overview/threading_model.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/intro/arch_overview/init.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -204,16 +204,30 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="threading-model">
-<span id="arch-overview-threading"></span><h1>Threading model<a class="headerlink" href="#threading-model" title="Permalink to this headline">¶</a></h1>
-<p>Envoy uses a single process with multiple threads architecture. A single <em>master</em> thread controls
-various sporadic coordination tasks while some number of <em>worker</em> threads perform listening,
-filtering, and forwarding. Once a connection is accepted by a listener, the connection spends the
-rest of its lifetime bound to a single worker thread. This allows the majority of Envoy to be
-largely single threaded (embarrassingly parallel) with a small amount of more complex code handling
-coordination between the worker threads. Generally Envoy is written to be 100% non-blocking and for
-most workloads we recommend configuring the number of worker threads to be equal to the number of
-hardware threads on the machine.</p>
+  <div class="section" id="initialization">
+<h1>Initialization<a class="headerlink" href="#initialization" title="Permalink to this headline">¶</a></h1>
+<p>How Envoy initializes itself when it starts up is complex. This section explains at a high level
+how the process works. All of the following happens before any listeners start listening and
+accepting new connections.</p>
+<ul class="simple">
+<li>During startup, the <a class="reference internal" href="cluster_manager.html#arch-overview-cluster-manager"><span class="std std-ref">cluster manager</span></a> goes through a
+multi-phase initialization where it first initializes static/DNS clusters, then predefined
+<a class="reference internal" href="dynamic_configuration.html#arch-overview-dynamic-config-sds"><span class="std std-ref">SDS</span></a> clusters. Then it initializes
+<a class="reference internal" href="dynamic_configuration.html#arch-overview-dynamic-config-cds"><span class="std std-ref">CDS</span></a> if applicable, waits for one response (or failure),
+and does the same primary/secondary initialization of CDS provided clusters.</li>
+<li>If clusters use <a class="reference internal" href="health_checking.html#arch-overview-health-checking"><span class="std std-ref">active health checking</span></a>, Envoy also does a
+single active HC round.</li>
+<li>Once cluster manager initialization is done, <a class="reference internal" href="dynamic_configuration.html#arch-overview-dynamic-config-rds"><span class="std std-ref">RDS</span></a> and
+<a class="reference internal" href="dynamic_configuration.html#arch-overview-dynamic-config-lds"><span class="std std-ref">LDS</span></a> initialize (if applicable). The server
+doesn&#8217;t start accepting connections until there has been at least one response (or failure) for
+LDS/RDS requests.</li>
+<li>If LDS itself returns a listener that needs an RDS response, Envoy further waits until an RDS
+response (or failure) is received. Note that this process takes place on every future listener
+addition via LDS and is known as <a class="reference internal" href="../../configuration/listeners/lds.html#config-listeners-lds"><span class="std std-ref">listener warming</span></a>.</li>
+<li>After all of the previous steps have taken place, the listeners start accepting new connections.
+This flow ensures that during hot restart the new process is fully capable of accepting and
+processing new connections before the draining of the old process begins.</li>
+</ul>
 </div>
 
 
@@ -226,10 +240,10 @@ hardware threads on the machine.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="listeners.html" class="btn btn-neutral float-right" title="Listeners" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../deployment_types/deployment_types.html" class="btn btn-neutral float-right" title="Deployment types" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="terminology.html" class="btn btn-neutral" title="Terminology" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dynamic_configuration.html" class="btn btn-neutral" title="Dynamic configuration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
