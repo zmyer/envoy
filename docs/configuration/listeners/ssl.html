@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>TLS context &mdash; envoy 1.4.0-4609d9 documentation</title>
+  <title>TLS context &mdash; envoy 1.4.0-c7edb3 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.4.0-4609d9 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.4.0-c7edb3 documentation" href="../../index.html"/>
         <link rel="up" title="Listeners" href="listeners.html"/>
         <link rel="next" title="Statistics" href="stats.html"/>
         <link rel="prev" title="Filters" href="filters.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.4.0-4609d9
+                1.4.0-c7edb3
               </div>
             
           
@@ -223,10 +223,23 @@ is useful for example to disable HTTP/2 without having to deploy a new configura
 <dt>ca_cert_file</dt>
 <dd><em>(optional, string)</em> A file containing certificate authority certificates to use in verifying
 a presented client side certificate. If not specified and a client certificate is presented it
-will not be verified.</dd>
+will not be verified. By default, a client certificate is optional, unless one of the additional
+options (
+<a class="reference internal" href="#config-listener-ssl-context-require-client-certificate"><span class="std std-ref">require_client_certificate</span></a>,
+<a class="reference internal" href="#config-listener-ssl-context-verify-certificate-hash"><span class="std std-ref">verify_certificate_hash</span></a> or
+<a class="reference internal" href="#config-listener-ssl-context-verify-subject-alt-name"><span class="std std-ref">verify_subject_alt_name</span></a>) is also
+specified.</dd>
+</dl>
+<dl class="docutils" id="config-listener-ssl-context-require-client-certificate">
+<dt>require_client_certificate</dt>
+<dd><em>(optional, boolean)</em> If specified, Envoy will reject connections without a valid client certificate.</dd>
+</dl>
+<dl class="docutils" id="config-listener-ssl-context-verify-certificate-hash">
 <dt>verify_certificate_hash</dt>
 <dd><em>(optional, string)</em> If specified, Envoy will verify (pin) the hash of the presented client
 side certificate.</dd>
+</dl>
+<dl class="docutils" id="config-listener-ssl-context-verify-subject-alt-name">
 <dt>verify_subject_alt_name</dt>
 <dd><em>(optional, array)</em> An optional list of subject alt names. If specified, Envoy will verify
 that the client certificate&#8217;s subject alt name matches one of the specified values.</dd>
@@ -306,7 +319,7 @@ If not specified, the default curves (X25519, P-256) will be used.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.4.0-4609d9',
+            VERSION:'1.4.0-c7edb3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
