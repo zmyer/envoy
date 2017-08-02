@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>HTTP routing &mdash; envoy 1.4.0-91a181 documentation</title>
+  <title>HTTP routing &mdash; envoy 1.4.0-250ea9 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.4.0-91a181 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.4.0-250ea9 documentation" href="../../index.html"/>
         <link rel="up" title="Architecture overview" href="arch_overview.html"/>
         <link rel="next" title="gRPC" href="grpc.html"/>
         <link rel="prev" title="HTTP filters" href="http_filters.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.4.0-91a181
+                1.4.0-250ea9
               </div>
             
           
@@ -214,7 +214,9 @@
 <p>Envoy includes an HTTP <a class="reference internal" href="../../configuration/http_filters/router_filter.html#config-http-filters-router"><span class="std std-ref">router filter</span></a> which can be installed to
 perform advanced routing tasks. This is useful both for handling edge traffic (traditional reverse
 proxy request handling) as well as for building a service to service Envoy mesh (typically via
-routing on the host/authority HTTP header to reach a particular upstream service cluster). At a high
+routing on the host/authority HTTP header to reach a particular upstream service cluster). Envoy
+also has the ability to be configured as forward proxy. In the forward proxy configuration, mesh
+clients can participate by appropriately configuring their http proxy to be an Envoy. At a high
 level the router takes an incoming HTTP request, matches it to an upstream cluster, acquires a
 <a class="reference internal" href="connection_pooling.html#arch-overview-conn-pool"><span class="std std-ref">connection pool</span></a> to a host in the upstream cluster, and forwards the
 request. The router filter supports the following features:</p>
@@ -244,6 +246,7 @@ used by Envoy to generate additional statistics on top of the standard cluster l
 clusters can use regex matching.</li>
 <li><a class="reference internal" href="#arch-overview-http-routing-priority"><span class="std std-ref">Priority</span></a> based routing.</li>
 <li><a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-hash-policy"><span class="std std-ref">Hash policy</span></a> based routing.</li>
+<li><a class="reference internal" href="../../configuration/http_conn_man/http_conn_man.html#config-http-conn-man-http1-settings"><span class="std std-ref">Absolute urls</span></a> are supported for non-tls forward proxies.</li>
 </ul>
 <div class="section" id="route-table">
 <h2>Route table<a class="headerlink" href="#route-table" title="Permalink to this headline">¶</a></h2>
@@ -329,7 +332,7 @@ priority traffic does not starve higher priority traffic.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.4.0-91a181',
+            VERSION:'1.4.0-250ea9',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
