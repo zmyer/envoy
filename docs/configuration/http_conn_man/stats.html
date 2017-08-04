@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Statistics &mdash; envoy 1.4.0-5f46fd documentation</title>
+  <title>Statistics &mdash; envoy 1.4.0-4837f3 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.4.0-5f46fd documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.4.0-4837f3 documentation" href="../../index.html"/>
         <link rel="up" title="HTTP connection manager" href="http_conn_man.html"/>
         <link rel="next" title="Runtime" href="runtime.html"/>
         <link rel="prev" title="HTTP header manipulation" href="headers.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.4.0-5f46fd
+                1.4.0-4837f3
               </div>
             
           
@@ -294,6 +294,14 @@ statistics:</p>
 <td>Counter</td>
 <td>Total connections closed due to idle timeout</td>
 </tr>
+<tr class="row-even"><td>downstream_flow_control_paused_reading_total</td>
+<td>Counter</td>
+<td>Total number of times reads were disabled due to flow control</td>
+</tr>
+<tr class="row-odd"><td>downstream_flow_control_resumed_reading_total</td>
+<td>Counter</td>
+<td>Total number of times reads were enabled on the connection due to flow control</td>
+</tr>
 <tr class="row-even"><td>downstream_rq_total</td>
 <td>Counter</td>
 <td>Total requests</td>
@@ -431,7 +439,7 @@ the following statistics:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.4.0-5f46fd',
+            VERSION:'1.4.0-4837f3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
