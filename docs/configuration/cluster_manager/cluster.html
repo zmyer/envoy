@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Cluster &mdash; envoy 1.4.0-f73682 documentation</title>
+  <title>Cluster &mdash; envoy 1.4.0-d765a8 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.4.0-f73682 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.4.0-d765a8 documentation" href="../../index.html"/>
         <link rel="up" title="Cluster manager" href="cluster_manager.html"/>
         <link rel="next" title="Health checking" href="cluster_hc.html"/>
         <link rel="prev" title="Cluster manager" href="cluster_manager.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.4.0-f73682
+                1.4.0-d765a8
               </div>
             
           
@@ -209,6 +209,7 @@
   <span class="nt">&quot;features&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;http_codec_options&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;http2_settings&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;cleanup_interval_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;dns_refresh_rate_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;dns_lookup_family&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;dns_resolvers&quot;</span><span class="p">:</span> <span class="p">[],</span>
@@ -225,8 +226,8 @@ The cluster name can be at most 60 characters long, and must <strong>not</strong
 <dl class="docutils" id="config-cluster-manager-type">
 <dt>type</dt>
 <dd><em>(required, string)</em> The <a class="reference internal" href="../../intro/arch_overview/service_discovery.html#arch-overview-service-discovery-types"><span class="std std-ref">service discovery type</span></a> to
-use for resolving the cluster. Possible options are <em>static</em>, <em>strict_dns</em>, <em>logical_dns</em>, and
-<em>sds</em>.</dd>
+use for resolving the cluster. Possible options are <em>static</em>, <em>strict_dns</em>, <em>logical_dns</em>,
+<a class="reference internal" href="../../intro/arch_overview/service_discovery.html#arch-overview-service-discovery-types-original-destination"><span class="std std-ref">*original_dst*</span></a>, and <em>sds</em>.</dd>
 <dt>connect_timeout_ms</dt>
 <dd><em>(required, integer)</em> The timeout for new network connections to hosts in the cluster specified
 in milliseconds.</dd>
@@ -235,14 +236,18 @@ in milliseconds.</dd>
 <dt>per_connection_buffer_limit_bytes</dt>
 <dd><em>(optional, integer)</em> Soft limit on size of the cluster&#8217;s connections read and write buffers.
 If unspecified, an implementation defined default is applied (1MiB).</dd>
+</dl>
+<dl class="docutils" id="config-cluster-manager-cluster-lb-type">
 <dt>lb_type</dt>
 <dd><em>(required, string)</em> The <a class="reference internal" href="../../intro/arch_overview/load_balancing.html#arch-overview-load-balancing-types"><span class="std std-ref">load balancer type</span></a> to use
 when picking a host in the cluster. Possible options are <em>round_robin</em>, <em>least_request</em>,
-<em>ring_hash</em>, and <em>random</em>.</dd>
+<em>ring_hash</em>, <em>random</em>, and <em>original_dst_lb</em>.  Note that <a class="reference internal" href="../../intro/arch_overview/load_balancing.html#arch-overview-load-balancing-types-original-destination"><span class="std std-ref">*original_dst_lb*</span></a> must be used with clusters of type
+<a class="reference internal" href="../../intro/arch_overview/service_discovery.html#arch-overview-service-discovery-types-original-destination"><span class="std std-ref">*original_dst*</span></a>, and may not be
+used with any other cluster type.</dd>
 <dt>hosts</dt>
 <dd><p class="first"><em>(sometimes required, array)</em> If the service discovery type is <em>static</em>, <em>strict_dns</em>, or
-<em>logical_dns</em> the hosts array is required. How it is specified depends on the type of service
-discovery:</p>
+<em>logical_dns</em> the hosts array is required. Hosts array is not allowed with cluster type
+<em>original_dst</em>. How it is specified depends on the type of service discovery:</p>
 <dl class="last docutils">
 <dt>static</dt>
 <dd><p class="first">Static clusters must use fully resolved hosts that require no DNS lookups. Both TCP and unix
@@ -319,6 +324,17 @@ option should be specified both here as well as in the HTTP connection manager.<
 <dd><em>(optional, object)</em> Additional HTTP/2 settings that are passed directly to the HTTP/2 codec when
 initiating HTTP connection pool connections. These are the same options supported in the HTTP connection
 manager <a class="reference internal" href="../http_conn_man/http_conn_man.html#config-http-conn-man-http2-settings"><span class="std std-ref">http2_settings</span></a> option.</dd>
+</dl>
+<dl class="docutils" id="config-cluster-manager-cluster-cleanup-interval-ms">
+<dt>cleanup_interval_ms</dt>
+<dd><em>(optional, integer)</em> The interval for removing stale hosts from an <em>original_dst</em> cluster. Hosts
+are considered stale if they have not been used as upstream destinations during this interval.
+New hosts are added to original destination clusters on demand as new connections are redirected
+to Envoy, causing the number of hosts in the cluster to grow over time. Hosts that are not stale
+(they are actively used as destinations) are kept in the cluster, which allows connections to
+them remain open, saving the latency that would otherwise be spent on opening new connections.
+If this setting is not specified, the value defaults to 5000. For cluster types other than
+<em>original_dst</em> this setting is ignored.</dd>
 </dl>
 <dl class="docutils" id="config-cluster-manager-cluster-dns-refresh-rate-ms">
 <dt>dns_refresh_rate_ms</dt>
@@ -397,7 +413,7 @@ detection.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.4.0-f73682',
+            VERSION:'1.4.0-d765a8',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
