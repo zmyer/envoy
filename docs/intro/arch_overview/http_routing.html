@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>HTTP routing &mdash; envoy 1.4.0-29361d documentation</title>
+  <title>HTTP routing &mdash; envoy 1.4.0-8c42f1 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.4.0-29361d documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.4.0-8c42f1 documentation" href="../../index.html"/>
         <link rel="up" title="Architecture overview" href="arch_overview.html"/>
         <link rel="next" title="gRPC" href="grpc.html"/>
         <link rel="prev" title="HTTP filters" href="http_filters.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.4.0-29361d
+                1.4.0-8c42f1
               </div>
             
           
@@ -111,6 +111,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="grpc.html">gRPC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="websocket.html">WebSocket support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cluster_manager.html">Cluster manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="service_discovery.html">Service discovery</a></li>
 <li class="toctree-l3"><a class="reference internal" href="health_checking.html">Health checking</a></li>
@@ -234,6 +235,7 @@ level.</li>
 <li><a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-auto-host-rewrite"><span class="std std-ref">Automatic host rewriting</span></a> based on
 the DNS name of the selected upstream host.</li>
 <li><a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-prefix-rewrite"><span class="std std-ref">Prefix rewriting</span></a>.</li>
+<li><a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-use-websocket"><span class="std std-ref">Websocket upgrades</span></a> at route level.</li>
 <li><a class="reference internal" href="#arch-overview-http-routing-retry"><span class="std std-ref">Request retries</span></a> specified either via HTTP header or via
 route configuration.</li>
 <li>Request timeout specified either via <a class="reference internal" href="../../configuration/http_filters/router_filter.html#config-http-filters-router-headers"><span class="std std-ref">HTTP
@@ -332,7 +334,7 @@ priority traffic does not starve higher priority traffic.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.4.0-29361d',
+            VERSION:'1.4.0-8c42f1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
