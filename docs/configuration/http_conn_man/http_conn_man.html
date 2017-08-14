@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>HTTP connection manager &mdash; envoy 1.4.0-e7515b documentation</title>
+  <title>HTTP connection manager &mdash; envoy 1.4.0-df90e9 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.4.0-e7515b documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.4.0-df90e9 documentation" href="../../index.html"/>
         <link rel="up" title="Configuration reference" href="../configuration.html"/>
         <link rel="next" title="Route configuration" href="route_config/route_config.html"/>
         <link rel="prev" title="TCP proxy" href="../network_filters/tcp_proxy_filter.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.4.0-e7515b
+                1.4.0-df90e9
               </div>
             
           
@@ -335,7 +335,7 @@ window. Currently , this has the same minimum/maximum/default as <a class="refer
 manager. The idle timeout is defined as the period in which there are no active requests. If not
 set, there is no idle timeout. When the idle timeout is reached the connection will be closed. If
 the connection is an HTTP/2 connection a drain sequence will occur prior to closing the
-connection. See <a class="reference internal" href="#config-http-conn-man-drain-timeout-ms"><span class="std std-ref">drain_timeout_s</span></a>.</dd>
+connection. See <a class="reference internal" href="#config-http-conn-man-drain-timeout-ms"><span class="std std-ref">drain_timeout_ms</span></a>.</dd>
 </dl>
 <dl class="docutils" id="config-http-conn-man-drain-timeout-ms">
 <dt>drain_timeout_ms</dt>
@@ -437,7 +437,7 @@ feature is not desired it can be disabled.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.4.0-e7515b',
+            VERSION:'1.4.0-df90e9',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
