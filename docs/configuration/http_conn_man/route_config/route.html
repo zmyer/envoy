@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Route &mdash; envoy 1.4.0-4ef2a3 documentation</title>
+  <title>Route &mdash; envoy 1.4.0-e7515b documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.4.0-4ef2a3 documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.4.0-e7515b documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Virtual cluster" href="vcluster.html"/>
         <link rel="prev" title="Virtual host" href="vhost.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.4.0-4ef2a3
+                1.4.0-e7515b
               </div>
             
           
@@ -277,7 +277,8 @@ a 301 redirect response will be sent which swaps the host portion of the URL wit
 <dt>path_redirect</dt>
 <dd><em>(sometimes required, string)</em> Indicates that the route is a redirect rule. If there is a match,
 a 301 redirect response will be sent which swaps the path portion of the URL with this value.
-<em>host_redirect</em>  can also be specified along with this option.</dd>
+<em>host_redirect</em>  can also be specified along with this option. The router filter will place
+the original path before rewrite into the <a class="reference internal" href="../../http_filters/router_filter.html#config-http-filters-router-x-envoy-original-path"><span class="std std-ref">x-envoy-original-path</span></a> header.</dd>
 </dl>
 <dl class="docutils" id="config-http-conn-man-route-table-route-prefix-rewrite">
 <dt>prefix_rewrite</dt>
@@ -602,7 +603,7 @@ string map.  Nested objects are not supported.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.4.0-4ef2a3',
+            VERSION:'1.4.0-e7515b',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
