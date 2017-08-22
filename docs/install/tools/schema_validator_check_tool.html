@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Route table check tool &mdash; envoy 1.4.0-a901eb documentation</title>
+  <title>Schema Validator check tool &mdash; envoy 1.4.0-a901eb documentation</title>
   
 
   
@@ -39,8 +39,8 @@
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="envoy 1.4.0-a901eb documentation" href="../../index.html"/>
         <link rel="up" title="Tools" href="tools.html"/>
-        <link rel="next" title="Schema Validator check tool" href="schema_validator_check_tool.html"/>
-        <link rel="prev" title="Config load check tool" href="config_load_check_tool.html"/> 
+        <link rel="next" title="Configuration reference" href="../../configuration/configuration.html"/>
+        <link rel="prev" title="Route table check tool" href="route_table_check_tool.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -104,8 +104,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../sandboxes/sandboxes.html">Sandboxes</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="tools.html">Tools</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="config_load_check_tool.html">Config load check tool</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Route table check tool</a></li>
-<li class="toctree-l3"><a class="reference internal" href="schema_validator_check_tool.html">Schema Validator check tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="route_table_check_tool.html">Route table check tool</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Schema Validator check tool</a></li>
 </ul>
 </li>
 </ul>
@@ -161,13 +161,13 @@
         
           <li><a href="tools.html">Tools</a> &raquo;</li>
         
-      <li>Route table check tool</li>
+      <li>Schema Validator check tool</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/install/tools/route_table_check_tool.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/install/tools/schema_validator_check_tool.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -180,67 +180,40 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="route-table-check-tool">
-<span id="install-tools-route-table-check-tool"></span><h1>Route table check tool<a class="headerlink" href="#route-table-check-tool" title="Permalink to this headline">¶</a></h1>
-<p>The route table check tool checks whether the route parameters returned by a router match what is expected.
-The tool can also be used to check whether a path redirect, path rewrite, or host rewrite
-match what is expected.</p>
+  <div class="section" id="schema-validator-check-tool">
+<span id="install-tools-schema-validator-check-tool"></span><h1>Schema Validator check tool<a class="headerlink" href="#schema-validator-check-tool" title="Permalink to this headline">¶</a></h1>
+<p>The schema validator tool validates that the passed in JSON conforms to a schema in
+the configuration. To validate the entire config, please refer to the
+<a class="reference internal" href="config_load_check_tool.html#install-tools-config-load-check-tool"><span class="std std-ref">config load check tool</span></a>. Currently, only
+<a class="reference internal" href="../../configuration/http_conn_man/route_config/route_config.html#config-http-conn-man-route-table"><span class="std std-ref">route config</span></a> schema validation is supported.</p>
 <dl class="docutils">
 <dt>Input</dt>
-<dd><p class="first">The tool expects two input JSON files:</p>
-<ol class="last arabic simple">
-<li>A router config JSON file. The router config JSON file schema is found in
-<a class="reference internal" href="../../configuration/http_conn_man/route_config/route_config.html#config-http-conn-man-route-table"><span class="std std-ref">config</span></a>.</li>
-<li>A tool config JSON file. The tool config JSON file schema is found in
-<a class="reference internal" href="../../configuration/tools/router_check.html#config-tools-router-check-tool"><span class="std std-ref">config</span></a>.
-The tool config input file specifies urls (composed of authorities and paths)
-and expected route parameter values. Additonal parameters such as additonal headers are optional.</li>
+<dd><p class="first">The tool expects two inputs:</p>
+<ol class="arabic simple">
+<li>The schema type to check the passed in JSON against. The supported type is:</li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><cite>route</cite> - for <a class="reference internal" href="../../configuration/http_conn_man/route_config/route_config.html#config-http-conn-man-route-table"><span class="std std-ref">route configuration</span></a> validation.</li>
+</ul>
+</div></blockquote>
+<ol class="last arabic simple" start="2">
+<li>The path to the JSON.</li>
 </ol>
 </dd>
 <dt>Output</dt>
-<dd><p class="first">The program exits with status EXIT_FAILURE if any test case does not match the expected route parameter
-value.</p>
-<p>The <code class="docutils literal"><span class="pre">--details</span></code> option prints out details for each test. The first line indicates the test name.</p>
-<p>If a test fails, details of the failed test cases are printed. The first field is the expected
-route parameter value. The second field is the actual route parameter value. The third field indicates
-the parameter that is compared. In the following example, Test_2 and Test_5 failed while the other tests
-passed. In the failed test cases, conflict details are printed.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Test_1</span>
-<span class="n">Test_2</span>
-<span class="n">default</span> <span class="n">other</span> <span class="n">virtual_host_name</span>
-<span class="n">Test_3</span>
-<span class="n">Test_4</span>
-<span class="n">Test_5</span>
-<span class="n">locations</span> <span class="n">ats</span> <span class="n">cluster_name</span>
-<span class="n">Test_6</span>
-</pre></div>
-</div>
-<p class="last">Testing with valid <a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route"><span class="std std-ref">runtime values</span></a> is not currently supported,
-this may be added in future work.</p>
-</dd>
+<dd>If the JSON conforms to the schema, the tool will exit with status EXIT_SUCCESS. If the JSON does
+not conform to the schema, an error message is outputted detailing what doesn&#8217;t conform to the
+schema. The tool will exit with status EXIT_FAILURE.</dd>
 <dt>Building</dt>
 <dd><p class="first">The tool can be built locally using Bazel.</p>
-<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="n">bazel</span> <span class="n">build</span> <span class="o">//</span><span class="n">test</span><span class="o">/</span><span class="n">tools</span><span class="o">/</span><span class="n">router_check</span><span class="p">:</span><span class="n">router_check_tool</span>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="n">bazel</span> <span class="n">build</span> <span class="o">//</span><span class="n">test</span><span class="o">/</span><span class="n">tools</span><span class="o">/</span><span class="n">schema_validator</span><span class="p">:</span><span class="n">schema_validator_tool</span>
 </pre></div>
 </div>
 </dd>
 <dt>Running</dt>
-<dd><p class="first">The tool takes two input json files and an optional command line parameter <code class="docutils literal"><span class="pre">--details</span></code>. The
-expected order of command line arguements is:
-1. The router configuration json file.
-2. The tool configuration json file.
-3. The optional details flag.</p>
-<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="n">bazel</span><span class="o">-</span><span class="nb">bin</span><span class="o">/</span><span class="n">test</span><span class="o">/</span><span class="n">tools</span><span class="o">/</span><span class="n">router_check</span><span class="o">/</span><span class="n">router_check_tool</span> <span class="n">router_config</span><span class="o">.</span><span class="n">json</span> <span class="n">tool_config</span><span class="o">.</span><span class="n">json</span>
-
-<span class="n">bazel</span><span class="o">-</span><span class="nb">bin</span><span class="o">/</span><span class="n">test</span><span class="o">/</span><span class="n">tools</span><span class="o">/</span><span class="n">router_check</span><span class="o">/</span><span class="n">router_check_tool</span> <span class="n">router_config</span><span class="o">.</span><span class="n">json</span> <span class="n">tool_config</span><span class="o">.</span><span class="n">json</span> <span class="o">--</span><span class="n">details</span>
-</pre></div>
-</div>
-</dd>
-<dt>Testing</dt>
-<dd><p class="first">A bash shell script test can be run with bazel. The test compares routes using different router and
-tool configuration json files. The configuration json files can be found in
-test/tools/router_check/test/config/... .</p>
-<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="n">bazel</span> <span class="n">test</span> <span class="o">//</span><span class="n">test</span><span class="o">/</span><span class="n">tools</span><span class="o">/</span><span class="n">router_check</span><span class="o">/...</span>
+<dd><p class="first">The tool takes a path as described above.</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="n">bazel</span><span class="o">-</span><span class="nb">bin</span><span class="o">/</span><span class="n">test</span><span class="o">/</span><span class="n">tools</span><span class="o">/</span><span class="n">schema_validator</span><span class="o">/</span><span class="n">schema_validator_tool</span>  <span class="o">--</span><span class="n">schema</span><span class="o">-</span><span class="nb">type</span> <span class="n">SCHEMA_TYPE</span>  <span class="o">--</span><span class="n">json</span><span class="o">-</span><span class="n">path</span> <span class="n">PATH</span>
 </pre></div>
 </div>
 </dd>
@@ -257,10 +230,10 @@ test/tools/router_check/test/config/... .</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="schema_validator_check_tool.html" class="btn btn-neutral float-right" title="Schema Validator check tool" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../../configuration/configuration.html" class="btn btn-neutral float-right" title="Configuration reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="config_load_check_tool.html" class="btn btn-neutral" title="Config load check tool" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="route_table_check_tool.html" class="btn btn-neutral" title="Route table check tool" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
