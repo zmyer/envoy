@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gRPC Bridge &mdash; envoy 1.4.0-6b7d08 documentation</title>
+  <title>Jaeger Tracing &mdash; envoy 1.4.0-6b7d08 documentation</title>
   
 
   
@@ -39,8 +39,8 @@
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="envoy 1.4.0-6b7d08 documentation" href="../../index.html"/>
         <link rel="up" title="Sandboxes" href="sandboxes.html"/>
-        <link rel="next" title="Building an Envoy Docker image" href="local_docker_build.html"/>
-        <link rel="prev" title="Jaeger Tracing" href="jaeger_tracing.html"/> 
+        <link rel="next" title="gRPC Bridge" href="grpc_bridge.html"/>
+        <link rel="prev" title="Zipkin Tracing" href="zipkin_tracing.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -104,14 +104,11 @@
 <li class="toctree-l2 current"><a class="reference internal" href="sandboxes.html">Sandboxes</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="front_proxy.html">Front Proxy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="zipkin_tracing.html">Zipkin Tracing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="jaeger_tracing.html">Jaeger Tracing</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">gRPC Bridge</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#envoy-grpc">Envoy gRPC</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#building-the-go-service">Building the Go service</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#docker-compose">Docker compose</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#sending-requests-to-the-key-value-store">Sending requests to the Key/Value store</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Jaeger Tracing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#running-the-sandbox">Running the Sandbox</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="grpc_bridge.html">gRPC Bridge</a></li>
 <li class="toctree-l3"><a class="reference internal" href="local_docker_build.html">Building an Envoy Docker image</a></li>
 </ul>
 </li>
@@ -169,13 +166,13 @@
         
           <li><a href="sandboxes.html">Sandboxes</a> &raquo;</li>
         
-      <li>gRPC Bridge</li>
+      <li>Jaeger Tracing</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/install/sandboxes/grpc_bridge.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/install/sandboxes/jaeger_tracing.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -188,68 +185,74 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="grpc-bridge">
-<span id="install-sandboxes-grpc-bridge"></span><h1>gRPC Bridge<a class="headerlink" href="#grpc-bridge" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="envoy-grpc">
-<h2>Envoy gRPC<a class="headerlink" href="#envoy-grpc" title="Permalink to this headline">¶</a></h2>
-<p>The gRPC bridge sandbox is an example usage of Envoy&#8217;s
-<a class="reference internal" href="../../configuration/http_filters/grpc_http1_bridge_filter.html#config-http-filters-grpc-bridge"><span class="std std-ref">gRPC bridge filter</span></a>.
-Included in the sandbox is a gRPC in-memory Key/Value store with a Python HTTP
-client. The Python client makes HTTP/1 requests through the Envoy sidecar
-process which are upgraded into HTTP/2 gRPC requests. Response trailers are then
-buffered and sent back to the client as a HTTP/1 header payload.</p>
-<p>Another Envoy feature demonstrated in this example is Envoy&#8217;s ability to do authority
-base routing via its route configuration.</p>
-</div>
-<div class="section" id="building-the-go-service">
-<h2>Building the Go service<a class="headerlink" href="#building-the-go-service" title="Permalink to this headline">¶</a></h2>
-<p>To build the Go gRPC service run:</p>
+  <div class="section" id="jaeger-tracing">
+<span id="install-sandboxes-jaeger-tracing"></span><h1>Jaeger Tracing<a class="headerlink" href="#jaeger-tracing" title="Permalink to this headline">¶</a></h1>
+<p>The Jaeger tracing sandbox demonstrates Envoy&#8217;s <a class="reference internal" href="../../intro/arch_overview/tracing.html#arch-overview-tracing"><span class="std std-ref">request tracing</span></a>
+capabilities using <a class="reference external" href="https://uber.github.io/jaeger/">Jaeger</a> as the tracing provider. This sandbox
+is very similar to the front proxy architecture described above, with one difference:
+service1 makes an API call to service2 before returning a response.
+The three containers will be deployed inside a virtual network called <code class="docutils literal"><span class="pre">envoymesh</span></code>.</p>
+<p>All incoming requests are routed via the front envoy, which is acting as a reverse proxy
+sitting on the edge of the <code class="docutils literal"><span class="pre">envoymesh</span></code> network. Port <code class="docutils literal"><span class="pre">80</span></code> is mapped to  port <code class="docutils literal"><span class="pre">8000</span></code>
+by docker compose (see <a class="reference external" href="https://github.com/lyft/envoy/blob/master//examples/jaeger-tracing/docker-compose.yml">/examples/jaeger-tracing/docker-compose.yml</a>). Notice that
+all envoys are configured to collect request traces (e.g., http_connection_manager/config/tracing setup in
+<a class="reference external" href="https://github.com/lyft/envoy/blob/master//examples/jaeger-tracing/front-envoy-jaeger.json">/examples/jaeger-tracing/front-envoy-jaeger.json</a>) and setup to propagate the spans generated
+by the Jaeger tracer to a Jaeger cluster (trace driver setup
+in <a class="reference external" href="https://github.com/lyft/envoy/blob/master//examples/jaeger-tracing/front-envoy-jaeger.json">/examples/jaeger-tracing/front-envoy-jaeger.json</a>).</p>
+<p>Before routing a request to the appropriate service envoy or the application, Envoy will take
+care of generating the appropriate spans for tracing (parent/child context spans).
+At a high-level, each span records the latency of upstream API calls as well as information
+needed to correlate the span with other related spans (e.g., the trace ID).</p>
+<p>One of the most important benefits of tracing from Envoy is that it will take care of
+propagating the traces to the Jaeger service cluster. However, in order to fully take advantage
+of tracing, the application has to propagate trace headers that Envoy generates, while making
+calls to other services. In the sandbox we have provided, the simple flask app
+(see trace function in <a class="reference external" href="https://github.com/lyft/envoy/blob/master//examples/front-proxy/service.py">/examples/front-proxy/service.py</a>) acting as service1 propagates
+the trace headers while making an outbound call to service2.</p>
+<div class="section" id="running-the-sandbox">
+<h2>Running the Sandbox<a class="headerlink" href="#running-the-sandbox" title="Permalink to this headline">¶</a></h2>
+<p>The following documentation runs through the setup of an envoy cluster organized
+as is described in the image above.</p>
+<p><strong>Step 1: Build the sandbox</strong></p>
+<p>To build this sandbox example, and start the example apps run the following commands:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>$ pwd
-envoy/examples/grpc-bridge
-$ script/bootstrap
-$ script/build
+envoy/examples/jaeger-tracing
+$ docker-compose up --build -d
+$ docker-compose ps
+        Name                       Command               State      Ports
+-------------------------------------------------------------------------------------------------------------
+jaegertracing_service1_1      /bin/sh -c /usr/local/bin/ ...    Up       80/tcp
+jaegertracing_service2_1      /bin/sh -c /usr/local/bin/ ...    Up       80/tcp
+jaegertracing_front-envoy_1   /bin/sh -c /usr/local/bin/ ...    Up       0.0.0.0:8000-&gt;80/tcp, 0.0.0.0:8001-&gt;8001/tcp
 </pre></div>
 </div>
-<p>Note: <code class="docutils literal"><span class="pre">build</span></code> requires that your Envoy codebase (or a working copy thereof) is in <code class="docutils literal"><span class="pre">$GOPATH/src/github.com/lyft/envoy</span></code>.</p>
-</div>
-<div class="section" id="docker-compose">
-<h2>Docker compose<a class="headerlink" href="#docker-compose" title="Permalink to this headline">¶</a></h2>
-<p>To run the docker compose file, and set up both the Python and the gRPC containers
-run:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ pwd
-envoy/examples/grpc-bridge
-$ docker-compose up --build
+<p><strong>Step 2: Generate some load</strong></p>
+<p>You can now send a request to service1 via the front-envoy as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ curl -v $(docker-machine ip default):8000/trace/1
+*   Trying 192.168.99.100...
+* Connected to 192.168.99.100 (192.168.99.100) port 8000 (#0)
+&gt; GET /trace/1 HTTP/1.1
+&gt; Host: 192.168.99.100:8000
+&gt; User-Agent: curl/7.43.0
+&gt; Accept: */*
+&gt;
+&lt; HTTP/1.1 200 OK
+&lt; content-type: text/html; charset=utf-8
+&lt; content-length: 89
+&lt; x-envoy-upstream-service-time: 1
+&lt; server: envoy
+&lt; date: Fri, 26 Aug 2016 19:39:19 GMT
+&lt; x-envoy-protocol-version: HTTP/1.1
+&lt;
+Hello from behind Envoy (service 1)! hostname: f26027f1ce28 resolvedhostname: 172.19.0.6
+* Connection #0 to host 192.168.99.100 left intact
 </pre></div>
 </div>
-</div>
-<div class="section" id="sending-requests-to-the-key-value-store">
-<h2>Sending requests to the Key/Value store<a class="headerlink" href="#sending-requests-to-the-key-value-store" title="Permalink to this headline">¶</a></h2>
-<p>To use the Python service and send gRPC requests:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ pwd
-envoy/examples/grpc-bridge
-# set a key
-$ docker-compose exec python /client/client.py set foo bar
-setf foo to bar
-
-# get a key
-$ docker-compose exec python /client/client.py get foo
-bar
-
-# modify an existing key
-$ docker-compose exec python /client/client.py set foo baz
-setf foo to baz
-
-# get the modified key
-$ docker-compose exec python /client/client.py get foo
-baz
-</pre></div>
-</div>
-<p>In the running docker-compose container, you should see the gRPC service printing a record of its activity:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">grpc_1</span>    <span class="o">|</span> <span class="mi">2017</span><span class="o">/</span><span class="mi">05</span><span class="o">/</span><span class="mi">30</span> <span class="mi">12</span><span class="p">:</span><span class="mi">05</span><span class="p">:</span><span class="mi">09</span> <span class="nb">set</span><span class="p">:</span> <span class="n">foo</span> <span class="o">=</span> <span class="n">bar</span>
-<span class="n">grpc_1</span>    <span class="o">|</span> <span class="mi">2017</span><span class="o">/</span><span class="mi">05</span><span class="o">/</span><span class="mi">30</span> <span class="mi">12</span><span class="p">:</span><span class="mi">05</span><span class="p">:</span><span class="mi">12</span> <span class="n">get</span><span class="p">:</span> <span class="n">foo</span>
-<span class="n">grpc_1</span>    <span class="o">|</span> <span class="mi">2017</span><span class="o">/</span><span class="mi">05</span><span class="o">/</span><span class="mi">30</span> <span class="mi">12</span><span class="p">:</span><span class="mi">05</span><span class="p">:</span><span class="mi">18</span> <span class="nb">set</span><span class="p">:</span> <span class="n">foo</span> <span class="o">=</span> <span class="n">baz</span>
-</pre></div>
-</div>
+<p><strong>Step 3: View the traces in Jaeger UI</strong></p>
+<p>Point your browser to <a class="reference external" href="http://localhost:16686">http://localhost:16686</a> . You should see the Jaeger dashboard.
+Set the service to &#8220;front-proxy&#8221; and hit &#8216;Find Traces&#8217;. You should see traces from the front-proxy.
+Click on a trace to explore the path taken by the request from front-proxy to service1
+to service2, as well as the latency incurred at each hop.</p>
 </div>
 </div>
 
@@ -263,10 +266,10 @@ baz
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="local_docker_build.html" class="btn btn-neutral float-right" title="Building an Envoy Docker image" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="grpc_bridge.html" class="btn btn-neutral float-right" title="gRPC Bridge" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="jaeger_tracing.html" class="btn btn-neutral" title="Jaeger Tracing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="zipkin_tracing.html" class="btn btn-neutral" title="Zipkin Tracing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
