@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Version history &mdash; envoy 1.4.0-7302b1 documentation</title>
+  <title>Version history &mdash; envoy 1.4.0-8f1cc1 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="envoy 1.4.0-7302b1 documentation" href="../index.html"/>
+    <link rel="top" title="envoy 1.4.0-8f1cc1 documentation" href="../index.html"/>
         <link rel="up" title="Introduction" href="intro.html"/>
         <link rel="next" title="Building and installation" href="../install/install.html"/>
         <link rel="prev" title="Getting help" href="getting_help.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.4.0-7302b1
+                1.4.0-8f1cc1
               </div>
             
           
@@ -103,10 +103,11 @@
 <li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison to similar systems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getting_help.html">Getting help</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Version history</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id1">1.3.0</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id2">1.2.0</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id3">1.1.0</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id4">1.0.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">1.4.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">1.3.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">1.2.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">1.1.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">1.0.0</a></li>
 </ul>
 </li>
 </ul>
@@ -183,7 +184,53 @@
   <div class="section" id="version-history">
 <h1>Version history<a class="headerlink" href="#version-history" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id1">
-<h2>1.3.0<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>1.4.0<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>macOS is <a class="reference external" href="https://github.com/lyft/envoy/blob/master//bazel#quick-start-bazel-build-for-developers">now supported</a>. (A few features
+are missing such as hot restart and original destination routing).</li>
+<li>YAML is now directly supported for <a class="reference internal" href="../configuration/overview/overview.html#config-overview"><span class="std std-ref">config files</span></a>.</li>
+<li>Added <a class="reference internal" href="../operations/admin.html#operations-admin-interface-routes"><span class="std std-ref">/routes</span></a> admin endpoint.</li>
+<li>End-to-end flow control is now supported for TCP proxy, HTTP/1, and HTTP/2. HTTP flow control
+that includes filter buffering is incomplete and will be implemented in 1.5.0.</li>
+<li>Log verbosity <a class="reference external" href="https://github.com/lyft/envoy/blob/master//bazel#log-verbosity">compile time flag</a> added.</li>
+<li>Hot restart <a class="reference external" href="https://github.com/lyft/envoy/blob/master//bazel#hot-restart">compile time flag</a> added.</li>
+<li>Original destination <a class="reference internal" href="arch_overview/service_discovery.html#arch-overview-service-discovery-types-original-destination"><span class="std std-ref">cluster</span></a>
+and <a class="reference internal" href="arch_overview/load_balancing.html#arch-overview-load-balancing-types-original-destination"><span class="std std-ref">load balancer</span></a> added.</li>
+<li><a class="reference internal" href="arch_overview/websocket.html#arch-overview-websocket"><span class="std std-ref">WebSocket</span></a> is now supported.</li>
+<li>Virtual cluster priorities have been hard removed without deprecation as we are reasonably sure
+no one is using this feature.</li>
+<li>Route <a class="reference internal" href="../configuration/http_conn_man/route_config/route_config.html#config-http-conn-man-route-table-validate-clusters"><span class="std std-ref">validate_clusters</span></a> option added.</li>
+<li><a class="reference internal" href="../configuration/http_conn_man/headers.html#config-http-conn-man-headers-downstream-service-node"><span class="std std-ref">x-envoy-downstream-service-node</span></a>
+header added.</li>
+<li><a class="reference internal" href="../configuration/http_conn_man/headers.html#config-http-conn-man-headers-x-forwarded-client-cert"><span class="std std-ref">x-forwarded-client-cert</span></a> header
+added.</li>
+<li>Initial HTTP/1 forward proxy support for <a class="reference internal" href="../configuration/http_conn_man/http_conn_man.html#config-http-conn-man-http1-settings"><span class="std std-ref">absolute URLs</span></a> has been added.</li>
+<li>HTTP/2 codec settings are now <a class="reference internal" href="../configuration/http_conn_man/http_conn_man.html#config-http-conn-man-http2-settings"><span class="std std-ref">configurable</span></a>.</li>
+<li>gRPC/JSON transcoder <a class="reference internal" href="../configuration/http_filters/grpc_json_transcoder_filter.html#config-http-filters-grpc-json-transcoder"><span class="std std-ref">filter</span></a> added.</li>
+<li>gRPC web <a class="reference internal" href="../configuration/http_filters/grpc_web_filter.html#config-http-filters-grpc-web"><span class="std std-ref">filter</span></a> added.</li>
+<li>Configurable timeout for the rate limit service call in the <a class="reference internal" href="../configuration/network_filters/rate_limit_filter.html#config-network-filters-rate-limit"><span class="std std-ref">network</span></a> and <a class="reference internal" href="../configuration/http_filters/rate_limit_filter.html#config-http-filters-rate-limit"><span class="std std-ref">HTTP</span></a> rate limit
+filters.</li>
+<li><a class="reference internal" href="../configuration/http_filters/router_filter.html#config-http-filters-router-x-envoy-grpc-retry-on"><span class="std std-ref">x-envoy-grpc-retry-on</span></a> header added.</li>
+<li><a class="reference internal" href="arch_overview/dynamic_configuration.html#arch-overview-dynamic-config-lds"><span class="std std-ref">LDS API</span></a> added.</li>
+<li>TLS <a class="reference internal" href="../configuration/listeners/ssl.html#config-listener-ssl-context-require-client-certificate"><span class="std std-ref">require_client_certificate</span></a>
+option added.</li>
+<li><a class="reference internal" href="../install/tools/config_load_check_tool.html#install-tools-config-load-check-tool"><span class="std std-ref">Configuration check tool</span></a> added.</li>
+<li><a class="reference internal" href="../install/tools/schema_validator_check_tool.html#install-tools-schema-validator-check-tool"><span class="std std-ref">JSON schema check tool</span></a> added.</li>
+<li>Config validation mode added via the <a class="reference internal" href="../operations/cli.html#cmdoption-mode"><code class="xref std std-option docutils literal"><span class="pre">--mode</span></code></a> option.</li>
+<li><a class="reference internal" href="../operations/cli.html#cmdoption-local-address-ip-version"><code class="xref std std-option docutils literal"><span class="pre">--local-address-ip-version</span></code></a> option added.</li>
+<li>IPv6 support is now complete.</li>
+<li>UDP <a class="reference internal" href="../configuration/overview/overview.html#config-overview-statsd-udp-ip-address"><span class="std std-ref">statsd_ip_address</span></a> option added.</li>
+<li>Per-cluster <a class="reference internal" href="../configuration/cluster_manager/cluster.html#config-cluster-manager-cluster-dns-resolvers"><span class="std std-ref">DNS resolvers</span></a> added.</li>
+<li><a class="reference internal" href="../configuration/http_filters/fault_filter.html#config-http-filters-fault-injection"><span class="std std-ref">Fault filter</span></a> enhancements and fixes.</li>
+<li>Several features are <a class="reference external" href="https://github.com/lyft/envoy/blob/master//DEPRECATED.md#version-140">deprecated as of the 1.4.0 release</a>. They
+will be removed at the beginning of the 1.5.0 release cycle. We explicitly call out that the
+<cite>HttpFilterConfigFactory</cite> filter API has been deprecated in favor of
+<cite>NamedHttpFilterConfigFactory</cite>.</li>
+<li>Many small bug fixes and performance improvements not listed.</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>1.3.0<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>As of this release, we now have an official <a class="reference external" href="https://github.com/lyft/envoy/blob/master//CONTRIBUTING.md#breaking-change-policy">breaking change policy</a>. Note that there are numerous breaking configuration
 changes in this release. They are not listed here. Future releases will adhere to the policy and
@@ -235,8 +282,8 @@ JSON.</li>
 <li>The CPU profiler output path is now <a class="reference internal" href="../configuration/overview/admin.html#config-admin"><span class="std std-ref">configurable</span></a>.</li>
 <li>A <a class="reference internal" href="../configuration/overview/overview.html#config-overview"><span class="std std-ref">watchdog system</span></a> has been added that can kill the server if a deadlock
 is detected.</li>
-<li>A <a class="reference internal" href="../install/tools/route_table_check_tool.html#install-tools-route-table-check-tool"><span class="std std-ref">route table checking tool</span></a> has been added that can be used to test route
-tables before use.</li>
+<li>A <a class="reference internal" href="../install/tools/route_table_check_tool.html#install-tools-route-table-check-tool"><span class="std std-ref">route table checking tool</span></a> has been added that can
+be used to test route tables before use.</li>
 <li>We have added an <a class="reference internal" href="../extending/extending.html#extending"><span class="std std-ref">example repo</span></a> that shows how to compile/link a custom filter.</li>
 <li>Added additional cluster wide information related to outlier detection to the <a class="reference internal" href="../operations/admin.html#operations-admin-interface"><span class="std std-ref">/clusters
 admin endpoint</span></a>.</li>
@@ -248,8 +295,8 @@ be disabled if desired via the <code class="docutils literal"><span class="pre">
 <li>Numerous small changes and fixes not listed here.</li>
 </ul>
 </div>
-<div class="section" id="id2">
-<h2>1.2.0<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id3">
+<h2>1.2.0<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><a class="reference internal" href="../configuration/cluster_manager/cds.html#config-cluster-manager-cds"><span class="std std-ref">Cluster discovery service (CDS) API</span></a>.</li>
 <li><a class="reference internal" href="arch_overview/outlier.html#arch-overview-outlier-detection"><span class="std std-ref">Outlier detection</span></a> (passive health checking).</li>
@@ -279,8 +326,8 @@ savings for large meshes.</li>
 <li>Numerous small changes and fixes not listed here.</li>
 </ul>
 </div>
-<div class="section" id="id3">
-<h2>1.1.0<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id4">
+<h2>1.1.0<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Switch from Jannson to RapidJSON for our JSON library (allowing for a configuration schema in
 1.2.0).</li>
@@ -310,8 +357,8 @@ few new configuration flags to allow disabling expensive features if they are no
 <li>Lots of other small fixes and enhancements not listed.</li>
 </ul>
 </div>
-<div class="section" id="id4">
-<h2>1.0.0<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h2>1.0.0<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <p>Initial open source release.</p>
 </div>
 </div>
@@ -360,7 +407,7 @@ few new configuration flags to allow disabling expensive features if they are no
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.4.0-7302b1',
+            VERSION:'1.4.0-8f1cc1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
