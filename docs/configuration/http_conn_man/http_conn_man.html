@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>HTTP connection manager &mdash; envoy 1.5.0-297c5f documentation</title>
+  <title>HTTP connection manager &mdash; envoy 1.5.0-a2c61b documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-297c5f documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-a2c61b documentation" href="../../index.html"/>
         <link rel="up" title="Configuration reference" href="../configuration.html"/>
         <link rel="next" title="Route configuration" href="route_config/route_config.html"/>
         <link rel="prev" title="TCP proxy" href="../network_filters/tcp_proxy_filter.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-297c5f
+                1.5.0-a2c61b
               </div>
             
           
@@ -201,7 +201,6 @@
     <span class="nt">&quot;filters&quot;</span><span class="p">:</span> <span class="p">[],</span>
     <span class="nt">&quot;add_user_agent&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
     <span class="nt">&quot;tracing&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;http_codec_options&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
     <span class="nt">&quot;http1_settings&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
     <span class="nt">&quot;http2_settings&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
     <span class="nt">&quot;server_name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
@@ -266,20 +265,6 @@ documentation for more information. Defaults to false.</dd>
 <dt><a class="reference internal" href="tracing.html#config-http-conn-man-tracing"><span class="std std-ref">tracing</span></a></dt>
 <dd><em>(optional, object)</em> Presence of the object defines whether the connection manager
 emits <a class="reference internal" href="../../intro/arch_overview/tracing.html#arch-overview-tracing"><span class="std std-ref">tracing</span></a> data to the <a class="reference internal" href="../overview/tracing.html#config-tracing"><span class="std std-ref">configured tracing provider</span></a>.</dd>
-</dl>
-<dl class="docutils" id="config-http-conn-man-http-codec-options">
-<dt>http_codec_options (Warning: DEPRECATED and will be removed in 1.4.0)</dt>
-<dd><p class="first"><strong>DEPRECATED</strong>, use <a class="reference internal" href="#config-http-conn-man-http2-settings"><span class="std std-ref">http2_settings</span></a> instead.</p>
-<p><em>(optional, string)</em> Additional options that are passed directly to the codec. Not all options
-are applicable to all codecs. Possible values are:</p>
-<dl class="docutils">
-<dt>no_compression</dt>
-<dd>The codec will not use compression. In practice this only applies to HTTP/2 which will disable
-header compression if set.</dd>
-</dl>
-<p class="last">These are the same options available in the upstream cluster <a class="reference internal" href="../cluster_manager/cluster.html#config-cluster-manager-cluster-http-codec-options"><span class="std std-ref">http_codec_options</span></a> option. See the comment there about
-disabling HTTP/2 header compression.</p>
-</dd>
 </dl>
 <dl class="docutils" id="config-http-conn-man-http1-settings">
 <dt>http1_settings</dt>
@@ -437,7 +422,7 @@ feature is not desired it can be disabled.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-297c5f',
+            VERSION:'1.5.0-a2c61b',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Overview &mdash; envoy 1.5.0-297c5f documentation</title>
+  <title>Overview &mdash; envoy 1.5.0-a2c61b documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-297c5f documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-a2c61b documentation" href="../../index.html"/>
         <link rel="up" title="Configuration reference" href="../configuration.html"/>
         <link rel="next" title="Administration interface" href="admin.html"/>
         <link rel="prev" title="Configuration reference" href="../configuration.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-297c5f
+                1.5.0-a2c61b
               </div>
             
           
@@ -197,7 +197,6 @@ name (which should be a string) is called <em>true</em>, it should be written in
   <span class="nt">&quot;admin&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
   <span class="nt">&quot;cluster_manager&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
   <span class="nt">&quot;flags_path&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;statsd_local_udp_port&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;statsd_udp_ip_address&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;statsd_tcp_cluster_name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;stats_flush_interval_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
@@ -229,9 +228,6 @@ which owns all upstream clusters within the server.</dd>
 <dl class="docutils" id="config-overview-flags-path">
 <dt>flags_path</dt>
 <dd><em>(optional, string)</em> The file system path to search for <a class="reference internal" href="../../operations/fs_flags.html#operations-file-system-flags"><span class="std std-ref">startup flag files</span></a>.</dd>
-<dt>statsd_local_udp_port (Warning: DEPRECATED and will be removed in 1.4.0)</dt>
-<dd><em>(optional, integer)</em> The UDP port of a locally running statsd compliant listener. If specified,
-<a class="reference internal" href="../../intro/arch_overview/statistics.html#arch-overview-statistics"><span class="std std-ref">statistics</span></a> will be flushed to this port.</dd>
 </dl>
 <dl class="docutils" id="config-overview-statsd-udp-ip-address">
 <dt>statsd_udp_ip_address</dt>
@@ -321,7 +317,7 @@ used.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-297c5f',
+            VERSION:'1.5.0-a2c61b',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
