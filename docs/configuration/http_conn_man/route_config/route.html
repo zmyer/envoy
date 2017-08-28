@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Route &mdash; envoy 1.5.0-9ed2f3 documentation</title>
+  <title>Route &mdash; envoy 1.5.0-be63aa documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-9ed2f3 documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-be63aa documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Virtual cluster" href="vcluster.html"/>
         <link rel="prev" title="Virtual host" href="vhost.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-9ed2f3
+                1.5.0-be63aa
               </div>
             
           
@@ -422,8 +422,8 @@ would have been exhausted.</p>
 <span id="config-http-conn-man-route-table-route-shadow"></span><h2>Shadow<a class="headerlink" href="#shadow" title="Permalink to this headline">¶</a></h2>
 <p>The router is capable of shadowing traffic from one cluster to another. The current implementation
 is &#8220;fire and forget,&#8221; meaning Envoy will not wait for the shadow cluster to respond before returning
-the response from the primary cluster. All normal statistics are collected however for the shadow
-cluster making thie feature useful for testing.</p>
+the response from the primary cluster. All normal statistics are collected for the shadow
+cluster making this feature useful for testing.</p>
 <p>During shadowing, the host/authority header is altered such that <em>-shadow</em> is appended. This is
 useful for logging. For example, <em>cluster1</em> becomes <em>cluster1-shadow</em>.</p>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -603,7 +603,7 @@ string map.  Nested objects are not supported.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.5.0-9ed2f3',
+            VERSION:'1.5.0-be63aa',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
