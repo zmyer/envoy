@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Statistics &mdash; envoy 1.5.0-8afff1 documentation</title>
+  <title>Statistics &mdash; envoy 1.5.0-669f23 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-8afff1 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-669f23 documentation" href="../../index.html"/>
         <link rel="up" title="Cluster" href="cluster.html"/>
         <link rel="next" title="Runtime" href="cluster_runtime.html"/>
         <link rel="prev" title="TLS context" href="cluster_ssl.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-8afff1
+                1.5.0-669f23
               </div>
             
           
@@ -451,15 +451,19 @@
 <td>Counter</td>
 <td>Number of immediately failed health checks (e.g. HTTP 503) as well as network failures</td>
 </tr>
-<tr class="row-odd"><td>network_failure</td>
+<tr class="row-odd"><td>passive_failure</td>
+<td>Counter</td>
+<td>Number of health check failures due to passive events (e.g. x-envoy-immediate-health-check-fail)</td>
+</tr>
+<tr class="row-even"><td>network_failure</td>
 <td>Counter</td>
 <td>Number of health check failures due to network error</td>
 </tr>
-<tr class="row-even"><td>verify_cluster</td>
+<tr class="row-odd"><td>verify_cluster</td>
 <td>Counter</td>
 <td>Number of health checks that attempted cluster name verification</td>
 </tr>
-<tr class="row-odd"><td>healthy</td>
+<tr class="row-even"><td>healthy</td>
 <td>Gauge</td>
 <td>Number of healthy members</td>
 </tr>
@@ -704,7 +708,7 @@ the following statistics:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-8afff1',
+            VERSION:'1.5.0-669f23',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

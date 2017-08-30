@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Administration interface &mdash; envoy 1.5.0-8afff1 documentation</title>
+  <title>Administration interface &mdash; envoy 1.5.0-669f23 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="envoy 1.5.0-8afff1 documentation" href="../index.html"/>
+    <link rel="top" title="envoy 1.5.0-669f23 documentation" href="../index.html"/>
         <link rel="up" title="Operations and administration" href="operations.html"/>
         <link rel="next" title="Statistics overview" href="stats_overview.html"/>
         <link rel="prev" title="Hot restart Python wrapper" href="hot_restarter.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-8afff1
+                1.5.0-669f23
               </div>
             
           
@@ -289,7 +289,7 @@ following strings:</p>
 <dd><p>Enable or disable the CPU profiler. Requires compiling with gperftools.</p>
 </dd></dl>
 
-<dl class="get">
+<span class="target" id="operations-admin-interface-healthcheck-fail"></span><dl class="get">
 <dt id="get--healthcheck-fail">
 <code class="descname">GET </code><code class="descname">/healthcheck/fail</code><a class="headerlink" href="#get--healthcheck-fail" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fail inbound health checks. This requires the use of the HTTP <a class="reference internal" href="../configuration/http_filters/health_check_filter.html#config-http-filters-health-check"><span class="std std-ref">health check filter</span></a>. This is useful for draining a server prior to shutting it
@@ -297,7 +297,7 @@ down or doing a full restart. Invoking this command will universally fail health
 regardless of how the filter is configured (pass through, etc.).</p>
 </dd></dl>
 
-<dl class="get">
+<span class="target" id="operations-admin-interface-healthcheck-ok"></span><dl class="get">
 <dt id="get--healthcheck-ok">
 <code class="descname">GET </code><code class="descname">/healthcheck/ok</code><a class="headerlink" href="#get--healthcheck-ok" title="Permalink to this definition">¶</a></dt>
 <dd><p>Negate the effect of <a class="reference internal" href="#get--healthcheck-fail" title="GET /healthcheck/fail"><code class="xref http http-get docutils literal"><span class="pre">GET</span> <span class="pre">/healthcheck/fail</span></code></a>. This requires the use of the HTTP
@@ -412,7 +412,7 @@ information.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.5.0-8afff1',
+            VERSION:'1.5.0-669f23',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
