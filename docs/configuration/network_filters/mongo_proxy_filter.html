@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Mongo proxy &mdash; envoy 1.5.0-419b26 documentation</title>
+  <title>Mongo proxy &mdash; envoy 1.5.0-1e58ed documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-419b26 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-1e58ed documentation" href="../../index.html"/>
         <link rel="up" title="Network filters" href="network_filters.html"/>
         <link rel="next" title="Rate limit" href="rate_limit_filter.html"/>
         <link rel="prev" title="Echo" href="echo_filter.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-419b26
+                1.5.0-1e58ed
               </div>
             
           
@@ -104,6 +104,7 @@
 <li class="toctree-l3"><a class="reference internal" href="client_ssl_auth_filter.html">Client TLS authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="echo_filter.html">Echo</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Mongo proxy</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#fault-configuration">Fault configuration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#statistics">Statistics</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#runtime">Runtime</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#access-log-format">Access log format</a></li>
@@ -196,7 +197,8 @@
   <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;mongo_proxy&quot;</span><span class="p">,</span>
   <span class="nt">&quot;config&quot;</span><span class="p">:</span> <span class="p">{</span>
     <span class="nt">&quot;stat_prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;access_log&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
+    <span class="nt">&quot;access_log&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;fault&quot;</span><span class="p">:</span> <span class="p">{}</span>
   <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -208,7 +210,30 @@
 <dd><em>(optional, string)</em> The optional path to use for writing Mongo access logs. If not access log
 path is specified no access logs will be written. Note that access log is also gated by
 <a class="reference internal" href="#config-network-filters-mongo-proxy-runtime"><span class="std std-ref">runtime</span></a>.</dd>
+<dt>fault</dt>
+<dd><em>(optional, object)</em> If specified, the filter will inject faults based on the values in the object.</dd>
 </dl>
+<div class="section" id="fault-configuration">
+<h2>Fault configuration<a class="headerlink" href="#fault-configuration" title="Permalink to this headline">¶</a></h2>
+<p>Configuration for MongoDB fixed duration delays. Delays are applied to the following MongoDB operations: Query, Insert,
+GetMore, and KillCursors. Once an active delay is in progress, all incoming data up until the timer event fires
+will be a part of the delay.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;fixed_delay&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;percent&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;duration_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>percent</dt>
+<dd><em>(required, integer)</em> Probability of an eligible MongoDB operation to be affected by the
+injected fault when there is no active fault. Valid values are integers in a range of [0, 100].</dd>
+<dt>duration_ms</dt>
+<dd><em>(required, integer)</em> Non-negative delay duration in milliseconds.</dd>
+</dl>
+</div>
 <div class="section" id="statistics">
 <span id="config-network-filters-mongo-proxy-stats"></span><h2>Statistics<a class="headerlink" href="#statistics" title="Permalink to this headline">¶</a></h2>
 <p>Every configured MongoDB proxy filter has statistics rooted at <em>mongo.&lt;stat_prefix&gt;.</em> with the
@@ -230,75 +255,79 @@ following statistics:</p>
 <td>Counter</td>
 <td>Number of MongoDB protocol decoding errors</td>
 </tr>
-<tr class="row-odd"><td>op_get_more</td>
+<tr class="row-odd"><td>delay_injected</td>
+<td>Counter</td>
+<td>Number of times the delay is injected</td>
+</tr>
+<tr class="row-even"><td>op_get_more</td>
 <td>Counter</td>
 <td>Number of OP_GET_MORE messages</td>
 </tr>
-<tr class="row-even"><td>op_insert</td>
+<tr class="row-odd"><td>op_insert</td>
 <td>Counter</td>
 <td>Number of OP_INSERT messages</td>
 </tr>
-<tr class="row-odd"><td>op_kill_cursors</td>
+<tr class="row-even"><td>op_kill_cursors</td>
 <td>Counter</td>
 <td>Number of OP_KILL_CURSORS messages</td>
 </tr>
-<tr class="row-even"><td>op_query</td>
+<tr class="row-odd"><td>op_query</td>
 <td>Counter</td>
 <td>Number of OP_QUERY messages</td>
 </tr>
-<tr class="row-odd"><td>op_query_tailable_cursor</td>
+<tr class="row-even"><td>op_query_tailable_cursor</td>
 <td>Counter</td>
 <td>Number of OP_QUERY with tailable cursor flag set</td>
 </tr>
-<tr class="row-even"><td>op_query_no_cursor_timeout</td>
+<tr class="row-odd"><td>op_query_no_cursor_timeout</td>
 <td>Counter</td>
 <td>Number of OP_QUERY with no cursor timeout flag set</td>
 </tr>
-<tr class="row-odd"><td>op_query_await_data</td>
+<tr class="row-even"><td>op_query_await_data</td>
 <td>Counter</td>
 <td>Number of OP_QUERY with await data flag set</td>
 </tr>
-<tr class="row-even"><td>op_query_exhaust</td>
+<tr class="row-odd"><td>op_query_exhaust</td>
 <td>Counter</td>
 <td>Number of OP_QUERY with exhaust flag set</td>
 </tr>
-<tr class="row-odd"><td>op_query_no_max_time</td>
+<tr class="row-even"><td>op_query_no_max_time</td>
 <td>Counter</td>
 <td>Number of queries without maxTimeMS set</td>
 </tr>
-<tr class="row-even"><td>op_query_scatter_get</td>
+<tr class="row-odd"><td>op_query_scatter_get</td>
 <td>Counter</td>
 <td>Number of scatter get queries</td>
 </tr>
-<tr class="row-odd"><td>op_query_multi_get</td>
+<tr class="row-even"><td>op_query_multi_get</td>
 <td>Counter</td>
 <td>Number of multi get queries</td>
 </tr>
-<tr class="row-even"><td>op_query_active</td>
+<tr class="row-odd"><td>op_query_active</td>
 <td>Gauge</td>
 <td>Number of active queries</td>
 </tr>
-<tr class="row-odd"><td>op_reply</td>
+<tr class="row-even"><td>op_reply</td>
 <td>Counter</td>
 <td>Number of OP_REPLY messages</td>
 </tr>
-<tr class="row-even"><td>op_reply_cursor_not_found</td>
+<tr class="row-odd"><td>op_reply_cursor_not_found</td>
 <td>Counter</td>
 <td>Number of OP_REPLY with cursor not found flag set</td>
 </tr>
-<tr class="row-odd"><td>op_reply_query_failure</td>
+<tr class="row-even"><td>op_reply_query_failure</td>
 <td>Counter</td>
 <td>Number of OP_REPLY with query failure flag set</td>
 </tr>
-<tr class="row-even"><td>op_reply_valid_cursor</td>
+<tr class="row-odd"><td>op_reply_valid_cursor</td>
 <td>Counter</td>
 <td>Number of OP_REPLY with a valid cursor</td>
 </tr>
-<tr class="row-odd"><td>cx_destroy_local_with_active_rq</td>
+<tr class="row-even"><td>cx_destroy_local_with_active_rq</td>
 <td>Counter</td>
 <td>Connections destroyed locally with an active query</td>
 </tr>
-<tr class="row-even"><td>cx_destroy_remote_with_active_rq</td>
+<tr class="row-odd"><td>cx_destroy_remote_with_active_rq</td>
 <td>Counter</td>
 <td>Connections destroyed remotely with an active query</td>
 </tr>
@@ -429,6 +458,12 @@ connections to have logging, but for all messages on those connections to be log
 <dt>mongo.logging_enabled</dt>
 <dd>% of messages that will be logged. Defaults to 100. If less than 100, queries may be logged
 without replies, etc.</dd>
+<dt>mongo.fault.fixed_delay.percent</dt>
+<dd>Probability of an eligible MongoDB operation to be affected by
+the injected fault when there is no active fault.
+Defaults to the <em>percent</em> specified in the config.</dd>
+<dt>mongo.fault.fixed_delay.duration_ms</dt>
+<dd>The delay duration in milliseconds. Defaults to the <em>duration_ms</em> specified in the config.</dd>
 </dl>
 </div>
 <div class="section" id="access-log-format">
@@ -494,7 +529,7 @@ filter is used along with the <a class="reference internal" href="tcp_proxy_filt
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-419b26',
+            VERSION:'1.5.0-1e58ed',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
