@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Buffer &mdash; envoy 1.5.0-0dadf6 documentation</title>
+  <title>Buffer &mdash; envoy 1.5.0-f0cadd documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-0dadf6 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-f0cadd documentation" href="../../index.html"/>
         <link rel="up" title="HTTP filters" href="http_filters.html"/>
         <link rel="next" title="Fault Injection" href="fault_filter.html"/>
         <link rel="prev" title="HTTP filters" href="http_filters.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-0dadf6
+                1.5.0-f0cadd
               </div>
             
           
@@ -208,8 +208,8 @@ with partial requests and high network latency.</p>
 </div>
 <dl class="docutils">
 <dt>max_request_bytes</dt>
-<dd><em>(required, integer)</em> The maximum request size that the filter will before before it stops
-buffering and returns a 413 response.</dd>
+<dd><em>(required, integer)</em> The maximum request size that the filter will before the connection manager
+will stop buffering and return a 413 response.</dd>
 <dt>max_request_time_s</dt>
 <dd><em>(required, integer)</em> The maximum amount of time that the filter will wait for a complete request
 before returning a 408 response.</dd>
@@ -234,10 +234,6 @@ prefix</span></a> comes from the owning HTTP connection manager.</p>
 <tr class="row-even"><td>rq_timeout</td>
 <td>Counter</td>
 <td>Total requests that timed out waiting for a full request</td>
-</tr>
-<tr class="row-odd"><td>rq_too_large</td>
-<td>Counter</td>
-<td>Total requests that failed due to being too large</td>
 </tr>
 </tbody>
 </table>
@@ -288,7 +284,7 @@ prefix</span></a> comes from the owning HTTP connection manager.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-0dadf6',
+            VERSION:'1.5.0-f0cadd',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

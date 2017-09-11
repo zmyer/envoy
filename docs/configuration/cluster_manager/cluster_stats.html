@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Statistics &mdash; envoy 1.5.0-0dadf6 documentation</title>
+  <title>Statistics &mdash; envoy 1.5.0-f0cadd documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-0dadf6 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-f0cadd documentation" href="../../index.html"/>
         <link rel="up" title="Cluster" href="cluster.html"/>
         <link rel="next" title="Runtime" href="cluster_runtime.html"/>
         <link rel="prev" title="TLS context" href="cluster_ssl.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-0dadf6
+                1.5.0-f0cadd
               </div>
             
           
@@ -403,23 +403,27 @@
 <td>Gauge</td>
 <td>Current cluster membership total</td>
 </tr>
-<tr class="row-odd"><td>update_attempt</td>
+<tr class="row-odd"><td>retry_or_shadow_abandoned</td>
+<td>Counter</td>
+<td>Total number of times shadowing or retry buffering was canceled due to buffer limits.</td>
+</tr>
+<tr class="row-even"><td>update_attempt</td>
 <td>Counter</td>
 <td>Total cluster membership update attempts</td>
 </tr>
-<tr class="row-even"><td>update_success</td>
+<tr class="row-odd"><td>update_success</td>
 <td>Counter</td>
 <td>Total cluster membership update successes</td>
 </tr>
-<tr class="row-odd"><td>update_failure</td>
+<tr class="row-even"><td>update_failure</td>
 <td>Counter</td>
 <td>Total cluster membership update failures</td>
 </tr>
-<tr class="row-even"><td>max_host_weight</td>
+<tr class="row-odd"><td>max_host_weight</td>
 <td>Gauge</td>
 <td>Maximum weight of any host in the cluster</td>
 </tr>
-<tr class="row-odd"><td>bind_errors</td>
+<tr class="row-even"><td>bind_errors</td>
 <td>Counter</td>
 <td>Total errors binding the socket to the configured source address.</td>
 </tr>
@@ -712,7 +716,7 @@ the following statistics:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-0dadf6',
+            VERSION:'1.5.0-f0cadd',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
