@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Filters &mdash; envoy 1.5.0-15e27a documentation</title>
+  <title>Filters &mdash; envoy 1.5.0-a6f3c5 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-15e27a documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-a6f3c5 documentation" href="../../index.html"/>
         <link rel="up" title="HTTP connection manager" href="http_conn_man.html"/>
         <link rel="next" title="Access logging" href="access_log.html"/>
         <link rel="prev" title="Traffic Shifting/Splitting" href="route_config/traffic_splitting.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-15e27a
+                1.5.0-a6f3c5
               </div>
             
           
@@ -190,17 +190,12 @@
 <span id="config-http-conn-man-filters"></span><h1>Filters<a class="headerlink" href="#filters" title="Permalink to this headline">¶</a></h1>
 <p>HTTP filter <a class="reference internal" href="../../intro/arch_overview/http_filters.html#arch-overview-http-filters"><span class="std std-ref">architecture overview</span></a>.</p>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;config&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <dl class="docutils">
-<dt>type</dt>
-<dd><em>(required, string)</em> The type of filter to instantiate. Most filters implement a specific type,
-though it is theoretically possible for a filter to be written such that it can operate in
-multiple modes. Supported types are <em>decoder</em>, <em>encoder</em>, and <em>both</em>.</dd>
 <dt>name</dt>
 <dd><em>(required, string)</em> The name of the filter to instantiate. The name must match a <a class="reference internal" href="../http_filters/http_filters.html#config-http-filters"><span class="std std-ref">supported
 filter</span></a>.</dd>
@@ -254,7 +249,7 @@ instantiated. See the <a class="reference internal" href="../http_filters/http_f
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-15e27a',
+            VERSION:'1.5.0-a6f3c5',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
