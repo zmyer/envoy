@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Router &mdash; envoy 1.5.0-6c91dd documentation</title>
+  <title>Router &mdash; envoy 1.5.0-8f3680 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-6c91dd documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-8f3680 documentation" href="../../index.html"/>
         <link rel="up" title="HTTP filters" href="http_filters.html"/>
         <link rel="next" title="Cluster manager" href="../cluster_manager/cluster_manager.html"/>
         <link rel="prev" title="Rate limit" href="rate_limit_filter.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                1.5.0-6c91dd
+                1.5.0-8f3680
               </div>
             
           
@@ -219,7 +219,7 @@ ingress/response path. They are documented in this section.</p>
 <li><a class="reference internal" href="#x-envoy-expected-rq-timeout-ms" id="id1">x-envoy-expected-rq-timeout-ms</a></li>
 <li><a class="reference internal" href="#x-envoy-max-retries" id="id2">x-envoy-max-retries</a></li>
 <li><a class="reference internal" href="#x-envoy-retry-on" id="id3">x-envoy-retry-on</a></li>
-<li><a class="reference internal" href="#x-envoy-grpc-retry-on" id="id4">x-envoy-grpc-retry-on</a></li>
+<li><a class="reference internal" href="#x-envoy-retry-grpc-on" id="id4">x-envoy-retry-grpc-on</a></li>
 <li><a class="reference internal" href="#x-envoy-upstream-alt-stat-name" id="id5">x-envoy-upstream-alt-stat-name</a></li>
 <li><a class="reference internal" href="#x-envoy-upstream-canary" id="id6">x-envoy-upstream-canary</a></li>
 <li><a class="reference internal" href="#x-envoy-upstream-rq-timeout-alt-response" id="id7">x-envoy-upstream-rq-timeout-alt-response</a></li>
@@ -231,7 +231,7 @@ ingress/response path. They are documented in this section.</p>
 </ul>
 </div>
 <div class="section" id="x-envoy-expected-rq-timeout-ms">
-<h3><a class="toc-backref" href="#id1">x-envoy-expected-rq-timeout-ms</a><a class="headerlink" href="#x-envoy-expected-rq-timeout-ms" title="Permalink to this headline">¶</a></h3>
+<span id="config-http-filters-router-x-envoy-expected-rq-timeout-ms"></span><h3><a class="toc-backref" href="#id1">x-envoy-expected-rq-timeout-ms</a><a class="headerlink" href="#x-envoy-expected-rq-timeout-ms" title="Permalink to this headline">¶</a></h3>
 <p>This is the time in milliseconds the router expects the request to be completed. Envoy sets this
 header so that the upstream host receiving the request can make decisions based on the request
 timeout, e.g., early exit. This is set on internal requests and is either taken from the
@@ -244,7 +244,7 @@ time unless explicitly specified. The number of retries can be explicitly set in
 <a class="reference internal" href="../http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-retry"><span class="std std-ref">route retry config</span></a>  or by using this header.
 If a <a class="reference internal" href="../http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-retry"><span class="std std-ref">retry policy</span></a> is not configured and
 <a class="reference internal" href="#config-http-filters-router-x-envoy-retry-on"><span class="std std-ref">x-envoy-retry-on</span></a> or
-<a class="reference internal" href="#config-http-filters-router-x-envoy-grpc-retry-on"><span class="std std-ref">x-envoy-grpc-retry-on</span></a> headers are not specified, Envoy will not retry a failed request.</p>
+<a class="reference internal" href="#config-http-filters-router-x-envoy-retry-grpc-on"><span class="std std-ref">x-envoy-retry-grpc-on</span></a> headers are not specified, Envoy will not retry a failed request.</p>
 <p>A few notes on how Envoy does retries:</p>
 <ul class="simple">
 <li>The route timeout (set via <a class="reference internal" href="#config-http-filters-router-x-envoy-upstream-rq-timeout-ms"><span class="std std-ref">x-envoy-upstream-rq-timeout-ms</span></a> or the
@@ -309,8 +309,8 @@ configuration</span></a>.</p>
 <p>Note that retry policies can also be applied at the <a class="reference internal" href="../http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-retry"><span class="std std-ref">route level</span></a>.</p>
 <p>By default, Envoy will <em>not</em> perform retries unless you&#8217;ve configured them per above.</p>
 </div>
-<div class="section" id="x-envoy-grpc-retry-on">
-<span id="config-http-filters-router-x-envoy-grpc-retry-on"></span><h3><a class="toc-backref" href="#id4">x-envoy-grpc-retry-on</a><a class="headerlink" href="#x-envoy-grpc-retry-on" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="x-envoy-retry-grpc-on">
+<span id="config-http-filters-router-x-envoy-retry-grpc-on"></span><h3><a class="toc-backref" href="#id4">x-envoy-retry-grpc-on</a><a class="headerlink" href="#x-envoy-retry-grpc-on" title="Permalink to this headline">¶</a></h3>
 <p>Setting this header on egress requests will cause Envoy to attempt to retry failed requests (number of
 retries defaults to 1, and can be controlled by
 <a class="reference internal" href="#config-http-filters-router-x-envoy-max-retries"><span class="std std-ref">x-envoy-max-retries</span></a>
@@ -326,13 +326,13 @@ list. The supported policies are:</p>
 <dt>resource-exhausted</dt>
 <dd>Envoy will attempt a retry if the gRPC status code in the response headers is &#8220;resource-exhausted&#8221; (8)</dd>
 </dl>
-<p>As with the x-envoy-grpc-retry-on header, the number of retries can be controlled via the
+<p>As with the x-envoy-retry-grpc-on header, the number of retries can be controlled via the
 <a class="reference internal" href="#config-http-filters-router-x-envoy-max-retries"><span class="std std-ref">x-envoy-max-retries</span></a> header</p>
 <p>Note that retry policies can also be applied at the <a class="reference internal" href="../http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-retry"><span class="std std-ref">route level</span></a>.</p>
 <p>By default, Envoy will <em>not</em> perform retries unless you&#8217;ve configured them per above.</p>
 </div>
 <div class="section" id="x-envoy-upstream-alt-stat-name">
-<h3><a class="toc-backref" href="#id5">x-envoy-upstream-alt-stat-name</a><a class="headerlink" href="#x-envoy-upstream-alt-stat-name" title="Permalink to this headline">¶</a></h3>
+<span id="config-http-filters-router-x-envoy-upstream-alt-stat-name"></span><h3><a class="toc-backref" href="#id5">x-envoy-upstream-alt-stat-name</a><a class="headerlink" href="#x-envoy-upstream-alt-stat-name" title="Permalink to this headline">¶</a></h3>
 <p>Setting this header on egress requests will cause Envoy to emit upstream response code/timing
 statistics to a dual stat tree. This can be useful for application level categories that Envoy
 doesn&#8217;t know about. The output tree is documented <a class="reference internal" href="../cluster_manager/cluster_stats.html#config-cluster-manager-cluster-stats-alt-tree"><span class="std std-ref">here</span></a>.</p>
@@ -516,7 +516,7 @@ configuration and can be used to fully disable retries across all Envoys if need
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-6c91dd',
+            VERSION:'1.5.0-8f3680',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

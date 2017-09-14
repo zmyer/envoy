@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>HTTP connection management &mdash; envoy 1.5.0-6c91dd documentation</title>
+  <title>HTTP connection management &mdash; envoy 1.5.0-8f3680 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-6c91dd documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-8f3680 documentation" href="../../index.html"/>
         <link rel="up" title="Architecture overview" href="arch_overview.html"/>
         <link rel="next" title="HTTP filters" href="http_filters.html"/>
         <link rel="prev" title="Network (L3/L4) filters" href="network_filters.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                1.5.0-6c91dd
+                1.5.0-8f3680
               </div>
             
           
@@ -102,6 +102,7 @@
 <li class="toctree-l3"><a class="reference internal" href="network_filters.html">Network (L3/L4) filters</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">HTTP connection management</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#http-protocols">HTTP protocols</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#http-header-sanitizing">HTTP header sanitizing</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#http-access-logging">HTTP access logging</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#route-table-configuration">Route table configuration</a></li>
 </ul>
@@ -227,6 +228,10 @@ HTTP/1.1, the codec translates the serial/pipelining capabilities of the protoco
 that looks like HTTP/2 to higher layers. This means that the majority of the code does not need to
 understand whether a stream originated on an HTTP/1.1 or HTTP/2 connection.</p>
 </div>
+<div class="section" id="http-header-sanitizing">
+<h2>HTTP header sanitizing<a class="headerlink" href="#http-header-sanitizing" title="Permalink to this headline">¶</a></h2>
+<p>The HTTP connection manager performs various <a class="reference internal" href="../../configuration/http_conn_man/header_sanitizing.html#config-http-conn-man-header-sanitizing"><span class="std std-ref">header sanitizing</span></a> actions for security reasons.</p>
+</div>
 <div class="section" id="http-access-logging">
 <span id="arch-overview-http-access-logs"></span><h2>HTTP access logging<a class="headerlink" href="#http-access-logging" title="Permalink to this headline">¶</a></h2>
 <p>The HTTP connection manager supports extensible access logging with the following features:</p>
@@ -296,7 +301,7 @@ table</span></a>. The route table can be specified in one of two ways:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-6c91dd',
+            VERSION:'1.5.0-8f3680',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
