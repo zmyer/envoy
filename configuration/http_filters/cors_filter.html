@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gRPC HTTP/1.1 bridge &mdash; envoy 1.5.0-179574 documentation</title>
+  <title>CORS filter &mdash; envoy 1.5.0-179574 documentation</title>
   
 
   
@@ -39,8 +39,8 @@
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="envoy 1.5.0-179574 documentation" href="../../index.html"/>
         <link rel="up" title="HTTP filters" href="http_filters.html"/>
-        <link rel="next" title="gRPC-JSON transcoder filter" href="grpc_json_transcoder_filter.html"/>
-        <link rel="prev" title="DynamoDB" href="dynamodb_filter.html"/> 
+        <link rel="next" title="Fault Injection" href="fault_filter.html"/>
+        <link rel="prev" title="Buffer" href="buffer_filter.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -104,13 +104,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../http_conn_man/http_conn_man.html">HTTP connection manager</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="http_filters.html">HTTP filters</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="buffer_filter.html">Buffer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cors_filter.html">CORS filter</a></li>
-<li class="toctree-l3"><a class="reference internal" href="fault_filter.html">Fault Injection</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dynamodb_filter.html">DynamoDB</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">gRPC HTTP/1.1 bridge</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#statistics">Statistics</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">CORS filter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#settings">Settings</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="fault_filter.html">Fault Injection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dynamodb_filter.html">DynamoDB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="grpc_http1_bridge_filter.html">gRPC HTTP/1.1 bridge</a></li>
 <li class="toctree-l3"><a class="reference internal" href="grpc_json_transcoder_filter.html">gRPC-JSON transcoder filter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="grpc_web_filter.html">gRPC-Web filter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="health_check_filter.html">Health check</a></li>
@@ -173,13 +173,13 @@
         
           <li><a href="http_filters.html">HTTP filters</a> &raquo;</li>
         
-      <li>gRPC HTTP/1.1 bridge</li>
+      <li>CORS filter</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/configuration/http_filters/grpc_http1_bridge_filter.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/configuration/http_filters/cors_filter.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -192,72 +192,59 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="grpc-http-1-1-bridge">
-<span id="config-http-filters-grpc-bridge"></span><h1>gRPC HTTP/1.1 bridge<a class="headerlink" href="#grpc-http-1-1-bridge" title="Permalink to this headline">¶</a></h1>
-<p>gRPC <a class="reference internal" href="../../intro/arch_overview/grpc.html#arch-overview-grpc"><span class="std std-ref">architecture overview</span></a>.</p>
-<p>This is a simple filter which enables the bridging of an HTTP/1.1 client which does not support
-response trailers to a compliant gRPC server. It works by doing the following:</p>
+  <div class="section" id="cors-filter">
+<span id="config-http-filters-cors"></span><h1>CORS filter<a class="headerlink" href="#cors-filter" title="Permalink to this headline">¶</a></h1>
+<p>This is a filter which handles Cross-Origin Resource Sharing requests based on route or virtual host settings.
+For the meaning of the headers please refer to the pages below.</p>
 <ul class="simple">
-<li>When a request is sent, the filter sees if the connection is HTTP/1.1 and the request content type
-is <em>application/grpc</em>.</li>
-<li>If so, when the response is received, the filter buffers it and waits for trailers and then checks the
-<em>grpc-status</em> code. If it is not zero, the filter switches the HTTP response code to 503. It also copies
-the <em>grpc-status</em> and <em>grpc-message</em> trailers into the response headers so that the client can look
-at them if it wishes.</li>
-<li>The client should send HTTP/1.1 requests that translate to the following psuedo headers:<ul>
-<li><em>:method</em>: POST</li>
-<li><em>:path</em>: &lt;gRPC-METHOD-NAME&gt;</li>
-<li><em>content-type</em>: application/grpc</li>
+<li><a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS">https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS</a></li>
+<li><a class="reference external" href="https://www.w3.org/TR/cors/">https://www.w3.org/TR/cors/</a></li>
 </ul>
-</li>
-<li>The body should be the serialized grpc body which is:<ul>
-<li>1 byte of zero (not compressed).</li>
-<li>network order 4 bytes of proto message length.</li>
-<li>serialized proto message.</li>
-</ul>
-</li>
-<li>Because this scheme must buffer the response to look for the <em>grpc-status</em> trailer it will only
-work with unary gRPC APIs.</li>
-</ul>
-<p>More info: <a class="reference external" href="http://www.grpc.io/docs/guides/wire.html">http://www.grpc.io/docs/guides/wire.html</a></p>
-<p>This filter also collects stats for all gRPC requests that transit, even if those requests are
-normal gRPC requests over HTTP/2.</p>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;grpc_http1_bridge&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;cors&quot;</span><span class="p">,</span>
   <span class="nt">&quot;config&quot;</span><span class="p">:</span> <span class="p">{}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<div class="section" id="statistics">
-<h2>Statistics<a class="headerlink" href="#statistics" title="Permalink to this headline">¶</a></h2>
-<p>The filter emits statistics in the <em>cluster.&lt;route target cluster&gt;.grpc.</em> namespace.</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="25%" />
-<col width="25%" />
-<col width="50%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Name</th>
-<th class="head">Type</th>
-<th class="head">Description</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>&lt;grpc service&gt;.&lt;grpc method&gt;.success</td>
-<td>Counter</td>
-<td>Total successful service/method calls</td>
-</tr>
-<tr class="row-odd"><td>&lt;grpc service&gt;.&lt;grpc method&gt;.failure</td>
-<td>Counter</td>
-<td>Total failed service/method calls</td>
-</tr>
-<tr class="row-even"><td>&lt;grpc service&gt;.&lt;grpc method&gt;.total</td>
-<td>Counter</td>
-<td>Total service/method calls</td>
-</tr>
-</tbody>
-</table>
+<div class="section" id="settings">
+<h2>Settings<a class="headerlink" href="#settings" title="Permalink to this headline">¶</a></h2>
+<p>Settings on a route take precedence over settings on the virtual host.
+Both the route and the virtual host need to set enabled to true.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;cors&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;enabled&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+      <span class="nt">&quot;allow_origin&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;http://foo.example&quot;</span><span class="p">],</span>
+      <span class="nt">&quot;allow_methods&quot;</span><span class="p">:</span> <span class="s2">&quot;POST, GET, OPTIONS&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;allow_headers&quot;</span><span class="p">:</span> <span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;allow_credentials&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+      <span class="nt">&quot;expose_headers&quot;</span><span class="p">:</span> <span class="s2">&quot;X-Custom-Header&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;max_age&quot;</span><span class="p">:</span> <span class="s2">&quot;86400&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>enabled</dt>
+<dd><em>(optional, boolean)</em> Defaults to true. Setting <em>enabled</em> to false on a route disables CORS
+for this route only. The setting has no effect on a virtual host.</dd>
+<dt>allow_origin</dt>
+<dd><em>(optional, array)</em> The origins that will be allowed to do CORS request.
+Wildcard &#8220;*&#8221; will allow any origin.</dd>
+<dt>allow_methods</dt>
+<dd><em>(optional, string)</em> The content for the access-control-allow-methods header.
+Comma separated list of HTTP methods.</dd>
+<dt>allow_headers</dt>
+<dd><em>(optional, string)</em> The content for the access-control-allow-headers header.
+Comma separated list of HTTP headers.</dd>
+<dt>allow_credentials</dt>
+<dd><em>(optional, boolean)</em> Whether the resource allows credentials.</dd>
+<dt>expose_headers</dt>
+<dd><em>(optional, string)</em> The content for the access-control-expose-headers header.
+Comma separated list of HTTP headers.</dd>
+<dt>max_age</dt>
+<dd><em>(optional, string)</em> The content for the access-control-max-age header.
+Value in seconds for how long the response to the preflight request can be cached.</dd>
+</dl>
 </div>
 </div>
 
@@ -271,10 +258,10 @@ normal gRPC requests over HTTP/2.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="grpc_json_transcoder_filter.html" class="btn btn-neutral float-right" title="gRPC-JSON transcoder filter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="fault_filter.html" class="btn btn-neutral float-right" title="Fault Injection" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dynamodb_filter.html" class="btn btn-neutral" title="DynamoDB" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="buffer_filter.html" class="btn btn-neutral" title="Buffer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

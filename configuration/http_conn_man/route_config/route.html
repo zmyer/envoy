@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Route &mdash; envoy 1.5.0-7b2815 documentation</title>
+  <title>Route &mdash; envoy 1.5.0-179574 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
   
   
   
@@ -35,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-7b2815 documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-179574 documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Virtual cluster" href="vcluster.html"/>
         <link rel="prev" title="Virtual host" href="vhost.html"/> 
@@ -67,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-7b2815
+                1.5.0-179574
               </div>
             
           
@@ -226,7 +228,8 @@ next (e.g., redirect, forward, rewrite, etc.).</p>
   <span class="nt">&quot;include_vh_rate_limits&quot;</span> <span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;hash_policy&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
   <span class="nt">&quot;request_headers_to_add&quot;</span> <span class="p">:</span> <span class="p">[],</span>
-  <span class="nt">&quot;opaque_config&quot;</span><span class="p">:</span> <span class="p">[]</span>
+  <span class="nt">&quot;opaque_config&quot;</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="nt">&quot;cors&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -238,6 +241,8 @@ must match the beginning of the :path header. Either <em>prefix</em> or <em>path
 <dd><em>(sometimes required, string)</em> If specified, the route is an exact path rule meaning that the path
 must exactly match the :path header once the query string is removed. Either <em>prefix</em> or <em>path</em>
 must be specified.</dd>
+<dt><a class="reference internal" href="../../http_filters/cors_filter.html#config-http-filters-cors"><span class="std std-ref">cors</span></a></dt>
+<dd><em>(optional, object)</em> Specifies the route&#8217;s CORS policy.</dd>
 </dl>
 <dl class="docutils" id="config-http-conn-man-route-table-route-cluster">
 <dt>cluster</dt>
@@ -617,7 +622,7 @@ string map.  Nested objects are not supported.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.5.0-7b2815',
+            VERSION:'1.5.0-179574',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

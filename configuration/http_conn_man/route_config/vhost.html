@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Virtual host &mdash; envoy 1.5.0-7b2815 documentation</title>
+  <title>Virtual host &mdash; envoy 1.5.0-179574 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
   
   
   
@@ -35,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-7b2815 documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-179574 documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Route" href="route.html"/>
         <link rel="prev" title="Route configuration" href="route_config.html"/> 
@@ -67,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-7b2815
+                1.5.0-179574
               </div>
             
           
@@ -228,6 +230,8 @@ will fail to load.</dd>
 <dt><a class="reference internal" href="route.html#config-http-conn-man-route-table-route"><span class="std std-ref">routes</span></a></dt>
 <dd><em>(required, array)</em> The list of routes that will be matched, in order, for incoming requests.
 The first route that matches will be used.</dd>
+<dt><a class="reference internal" href="../../http_filters/cors_filter.html#config-http-filters-cors"><span class="std std-ref">cors</span></a></dt>
+<dd><em>(optional, object)</em> Specifies the virtual host&#8217;s CORS policy.</dd>
 </dl>
 <dl class="docutils" id="config-http-conn-man-route-table-vhost-require-ssl">
 <dt>require_ssl</dt>
@@ -310,7 +314,7 @@ request handled by this virtual host. Headers are specified in the following for
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.5.0-7b2815',
+            VERSION:'1.5.0-179574',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
