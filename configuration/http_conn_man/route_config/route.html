@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Route &mdash; envoy 1.5.0-ade77e documentation</title>
+  <title>Route &mdash; envoy 1.5.0-ec3446 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-ade77e documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-ec3446 documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Virtual cluster" href="vcluster.html"/>
         <link rel="prev" title="Virtual host" href="vhost.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-ade77e
+                1.5.0-ec3446
               </div>
             
           
@@ -208,6 +208,7 @@ next (e.g., redirect, forward, rewrite, etc.).</p>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="nt">&quot;prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;regex&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;cluster&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;cluster_header&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;weighted_clusters&quot;</span> <span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
@@ -236,11 +237,27 @@ next (e.g., redirect, forward, rewrite, etc.).</p>
 <dl class="docutils">
 <dt>prefix</dt>
 <dd><em>(sometimes required, string)</em> If specified, the route is a prefix rule meaning that the prefix
-must match the beginning of the :path header. Either <em>prefix</em> or <em>path</em> must be specified.</dd>
+must match the beginning of the :path header. One of <em>prefix</em>, <em>path</em>, or <em>regex</em> must be specified.</dd>
 <dt>path</dt>
 <dd><em>(sometimes required, string)</em> If specified, the route is an exact path rule meaning that the path
-must exactly match the :path header once the query string is removed. Either <em>prefix</em> or <em>path</em>
-must be specified.</dd>
+must exactly match the :path header once the query string is removed. One of <em>prefix</em>, <em>path</em>, or
+<em>regex</em> must be specified.</dd>
+<dt>regex</dt>
+<dd><p class="first"><em>(sometimes required, string)</em> If specified, the route is a regular expression rule meaning that the
+regex must match the :path header once the query string is removed. The entire path (without the
+query string) must match the regex. The rule will not match if only a subsequence of the :path header
+matches the regex. The regex grammar is defined <a class="reference external" href="http://en.cppreference.com/w/cpp/regex/ecmascript">here</a>. One of <em>prefix</em>, <em>path</em>, or
+<em>regex</em> must be specified.</p>
+<p>Examples:</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li>The regex <em>/b[io]t</em> matches the path <em>/bit</em></li>
+<li>The regex <em>/b[io]t</em> matches the path <em>/bot</em></li>
+<li>The regex <em>/b[io]t</em> does not match the path <em>/bite</em></li>
+<li>The regex <em>/b[io]t</em> does not match the path <em>/bit/bot</em></li>
+</ul>
+</div></blockquote>
+</dd>
 <dt><a class="reference internal" href="../../http_filters/cors_filter.html#config-http-filters-cors"><span class="std std-ref">cors</span></a></dt>
 <dd><em>(optional, object)</em> Specifies the route&#8217;s CORS policy.</dd>
 </dl>
@@ -291,8 +308,9 @@ the original path before rewrite into the <a class="reference internal" href="..
 <dl class="docutils" id="config-http-conn-man-route-table-route-prefix-rewrite">
 <dt>prefix_rewrite</dt>
 <dd><em>(optional, string)</em> Indicates that during forwarding, the matched prefix (or path) should be
-swapped with this value. This option allows application URLs to be rooted at a different path
-from those exposed at the reverse proxy layer.</dd>
+swapped with this value. When using regex path matching, the entire path (not including
+the query string) will be swapped with this value. This option allows application URLs to be
+rooted at a different path from those exposed at the reverse proxy layer.</dd>
 </dl>
 <dl class="docutils" id="config-http-conn-man-route-table-route-host-rewrite">
 <dt>host_rewrite</dt>
@@ -468,9 +486,20 @@ requests will be shadowed.</dd>
 <dd><em>(optional, string)</em> Specifies the value of the header. If the value is absent a request that has
 the <em>name</em> header will match, regardless of the header&#8217;s value.</dd>
 <dt>regex</dt>
-<dd><em>(optional, boolean)</em> Specifies whether the header value is a regular
-expression or not. Defaults to false. The regex grammar used in the value field
-is defined <a class="reference external" href="http://en.cppreference.com/w/cpp/regex/ecmascript">here</a>.</dd>
+<dd><p class="first"><em>(optional, boolean)</em> Specifies whether the header value is a regular
+expression or not. Defaults to false. The entire request header value must match the regex. The
+rule will not match if only a subsequence of the request header value matches the regex. The
+regex grammar used in the value field is defined
+<a class="reference external" href="http://en.cppreference.com/w/cpp/regex/ecmascript">here</a>.</p>
+<p>Examples:</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li>The regex <em>d{3}</em> matches the value <em>123</em></li>
+<li>The regex <em>d{3}</em> does not match the value <em>1234</em></li>
+<li>The regex <em>d{3}</em> does not match the value <em>123.456</em></li>
+</ul>
+</div></blockquote>
+</dd>
 </dl>
 <div class="admonition attention">
 <p class="first admonition-title">Attention</p>
@@ -622,7 +651,7 @@ string map.  Nested objects are not supported.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.5.0-ade77e',
+            VERSION:'1.5.0-ec3446',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
