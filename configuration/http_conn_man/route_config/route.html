@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Route &mdash; envoy 1.5.0-7e71a8 documentation</title>
+  <title>Route &mdash; envoy 1.5.0-89982e documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-7e71a8 documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-89982e documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Virtual cluster" href="vcluster.html"/>
         <link rel="prev" title="Virtual host" href="vhost.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-7e71a8
+                1.5.0-89982e
               </div>
             
           
@@ -230,7 +230,8 @@ next (e.g., redirect, forward, rewrite, etc.).</p>
   <span class="nt">&quot;hash_policy&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
   <span class="nt">&quot;request_headers_to_add&quot;</span> <span class="p">:</span> <span class="p">[],</span>
   <span class="nt">&quot;opaque_config&quot;</span><span class="p">:</span> <span class="p">[],</span>
-  <span class="nt">&quot;cors&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span>
+  <span class="nt">&quot;cors&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;decorator&quot;</span> <span class="p">:</span> <span class="s2">&quot;{...}&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -386,6 +387,9 @@ request.</dd>
 <dt><a class="reference internal" href="#config-http-conn-man-route-table-hash-policy"><span class="std std-ref">hash_policy</span></a></dt>
 <dd><em>(optional, object)</em> Specifies the route&#8217;s hashing policy if the upstream cluster uses a hashing
 <a class="reference internal" href="../../../intro/arch_overview/load_balancing.html#arch-overview-load-balancing-types"><span class="std std-ref">load balancer</span></a>.</dd>
+<dt><a class="reference internal" href="#config-http-conn-man-route-table-decorator"><span class="std std-ref">decorator</span></a></dt>
+<dd><em>(optional, object)</em> Specifies the route&#8217;s decorator used to enhance information reported about
+the matched request.</dd>
 </dl>
 <div class="section" id="runtime">
 <span id="config-http-conn-man-route-table-route-runtime"></span><h2>Runtime<a class="headerlink" href="#runtime" title="Permalink to this headline">¶</a></h2>
@@ -578,6 +582,20 @@ the request header is not present, the load balancer will use a random number as
 effectively making the load balancing policy random.</dd>
 </dl>
 </div>
+<div class="section" id="decorator">
+<span id="config-http-conn-man-route-table-decorator"></span><h2>Decorator<a class="headerlink" href="#decorator" title="Permalink to this headline">¶</a></h2>
+<p>Specifies the route&#8217;s decorator.</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;operation&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>operation</dt>
+<dd><em>(required, string)</em> The operation name associated with the request matched to this route. If tracing is
+enabled, this information will be used as the span name reported for this request.</dd>
+</dl>
+</div>
 <div class="section" id="adding-custom-request-headers">
 <span id="config-http-conn-man-route-table-route-add-req-headers"></span><h2>Adding custom request headers<a class="headerlink" href="#adding-custom-request-headers" title="Permalink to this headline">¶</a></h2>
 <p>Custom request headers can be added to a request that matches a specific route. The headers are
@@ -651,7 +669,7 @@ string map.  Nested objects are not supported.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.5.0-7e71a8',
+            VERSION:'1.5.0-89982e',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
