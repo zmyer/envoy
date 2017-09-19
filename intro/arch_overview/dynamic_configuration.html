@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Dynamic configuration &mdash; envoy 1.5.0-3916b6 documentation</title>
+  <title>Dynamic configuration &mdash; envoy 1.5.0-123a1f documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-3916b6 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-123a1f documentation" href="../../index.html"/>
         <link rel="up" title="Architecture overview" href="arch_overview.html"/>
         <link rel="next" title="Initialization" href="init.html"/>
         <link rel="prev" title="Hot restart" href="hot_restart.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-3916b6
+                1.5.0-123a1f
               </div>
             
           
@@ -246,7 +246,7 @@ which Envoy can discover upstream clusters used during routing. Envoy will grace
 and remove clusters as specified by the API. This API allows implementors to build a topology in
 which Envoy does not need to be aware of all upstream clusters at initial configuration time.
 Typically, when doing HTTP routing along with CDS (but without route discovery service),
-implementors will make use of the router&#8217;s ability to forward requests to a cluster specified in an
+implementors will make use of the router’s ability to forward requests to a cluster specified in an
 <a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-cluster-header"><span class="std std-ref">HTTP request header</span></a>.</p>
 <p>Although it is possible to use CDS without SDS by specifying fully static clusters, we recommend
 still using the SDS API for clusters specified via CDS. Internally, when a cluster definition is
@@ -318,7 +318,7 @@ updates.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-3916b6',
+            VERSION:'1.5.0-123a1f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

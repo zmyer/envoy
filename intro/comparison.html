@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Comparison to similar systems &mdash; envoy 1.5.0-3916b6 documentation</title>
+  <title>Comparison to similar systems &mdash; envoy 1.5.0-123a1f documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="envoy 1.5.0-3916b6 documentation" href="../index.html"/>
+    <link rel="top" title="envoy 1.5.0-123a1f documentation" href="../index.html"/>
         <link rel="up" title="Introduction" href="intro.html"/>
         <link rel="next" title="Getting help" href="getting_help.html"/>
         <link rel="prev" title="Service to service, front proxy, and double proxy" href="deployment_types/double_proxy.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-3916b6
+                1.5.0-123a1f
               </div>
             
           
@@ -197,7 +197,7 @@ become out of date. If that is the case please let us know and we will fix it.</
 <h2><a class="reference external" href="https://nginx.org/en/">nginx</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>nginx is the canonical modern web server. It supports serving static content, HTTP L7 reverse proxy
 load balancing, HTTP/2, and many other features. nginx has far more overall features than Envoy as
-an edge reverse proxy, though we think that most modern service oriented architectures don&#8217;t
+an edge reverse proxy, though we think that most modern service oriented architectures don’t
 typically make use of them. Envoy provides the following main advantages over nginx as an edge
 proxy:</p>
 <ul class="simple">
@@ -227,7 +227,7 @@ settings when a single process is deployed per machine versus potentially multip
 </div>
 <div class="section" id="id3">
 <h2><a class="reference external" href="https://aws.amazon.com/elasticloadbalancing/">AWS ELB</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
-<p>Amazon&#8217;s ELB is the standard solution for service discovery and load balancing for applications in
+<p>Amazon’s ELB is the standard solution for service discovery and load balancing for applications in
 EC2. Envoy provides the following main advantages of ELB as a load balancer and service discovery
 system:</p>
 <ul class="simple">
@@ -242,7 +242,7 @@ supports advanced features such as retry.</li>
 </ul>
 <p>AWS recently released the <em>application load balancer</em> product. This product adds HTTP/2 support as
 well as basic HTTP L7 request routing to multiple backend clusters. The feature set is still small
-compared to Envoy and performance and stability are unknown, but it&#8217;s clear that AWS will continue
+compared to Envoy and performance and stability are unknown, but it’s clear that AWS will continue
 to invest in this area in the future.</p>
 </div>
 <div class="section" id="id4">
@@ -259,7 +259,7 @@ high performance package.</li>
 </div>
 <div class="section" id="id5">
 <h2><a class="reference external" href="https://twitter.github.io/finagle/">Finagle</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
-<p>Finagle is Twitter&#8217;s Scala/JVM service to service communication library. It is used by Twitter and
+<p>Finagle is Twitter’s Scala/JVM service to service communication library. It is used by Twitter and
 many other companies that have a primarily JVM based architecture. It has many of the same features
 as Envoy such as service discovery, load balancing, filters, etc. Envoy provides the following main
 advantages over Finagle as a load balancer and service discovery package:</p>
@@ -272,7 +272,7 @@ latency properties).</li>
 </div>
 <div class="section" id="proxygen-and-wangle">
 <h2><a class="reference external" href="https://github.com/facebook/proxygen">proxygen</a> and <a class="reference external" href="https://github.com/facebook/wangle">wangle</a><a class="headerlink" href="#proxygen-and-wangle" title="Permalink to this headline">¶</a></h2>
-<p>proxygen is Facebook&#8217;s high performance C++11 HTTP proxy library, written on top of a Finagle like
+<p>proxygen is Facebook’s high performance C++11 HTTP proxy library, written on top of a Finagle like
 C++ library called wangle. From a code perspective, Envoy uses most of the same techniques as
 proxygen to obtain high performance as an HTTP library/proxy. Beyond that however the two projects
 are not really comparable as Envoy is a complete self contained server with a large feature set
@@ -309,7 +309,7 @@ as well as a reverse proxy (nghttpx). From a comparison perspective, Envoy is mo
 nghttpx. nghttpx is a transparent HTTP/1 &lt;-&gt; HTTP/2 reverse proxy, supports TLS termination,
 correctly supports gRPC proxying, among a variety of other features. With that said, we consider
 nghttpx to be an excellent example of a variety of proxy features, rather than a robust production
-ready solution. Envoy&#8217;s focus is much more targeted towards observability, general operational
+ready solution. Envoy’s focus is much more targeted towards observability, general operational
 agility, and advanced load balancing features.</p>
 </div>
 </div>
@@ -358,7 +358,7 @@ agility, and advanced load balancing features.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.5.0-3916b6',
+            VERSION:'1.5.0-123a1f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

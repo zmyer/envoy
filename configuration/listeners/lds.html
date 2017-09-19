@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Listener discovery service &mdash; envoy 1.5.0-3916b6 documentation</title>
+  <title>Listener discovery service &mdash; envoy 1.5.0-123a1f documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-3916b6 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-123a1f documentation" href="../../index.html"/>
         <link rel="up" title="Listeners" href="listeners.html"/>
         <link rel="next" title="Network filters" href="../network_filters/network_filters.html"/>
         <link rel="prev" title="Runtime" href="runtime.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-3916b6
+                1.5.0-123a1f
               </div>
             
           
@@ -198,13 +198,13 @@ depending on what is required.</p>
 <li>Every listener must have a unique <a class="reference internal" href="listeners.html#config-listeners-name"><span class="std std-ref">name</span></a>. If a name is not
 provided, Envoy will create a UUID. Listeners that are to be dynamically updated should have a
 unique name supplied by the management server.</li>
-<li>When a listener is added, it will be &#8220;warmed&#8221; before taking traffic. For example, if the listener
+<li>When a listener is added, it will be “warmed” before taking traffic. For example, if the listener
 references an <a class="reference internal" href="../http_conn_man/rds.html#config-http-conn-man-rds"><span class="std std-ref">RDS</span></a> configuration, that configuration will be
-resolved and fetched before the listener is moved to &#8220;active.&#8221;</li>
+resolved and fetched before the listener is moved to “active.”</li>
 <li>Listeners are effectively constant once created. Thus, when a listener is updated, an entirely
 new listener is created (with the same listen socket). This listener goes through the same
 warming process described above for a newly added listener.</li>
-<li>When a listener is updated or removed, the old listener will be placed into a &#8220;draining&#8221; state
+<li>When a listener is updated or removed, the old listener will be placed into a “draining” state
 much like when the entire server is drained for restart. Connections owned by the listener will
 be gracefully closed (if possible) for some period of time before the listener is removed and any
 remaining connections are closed. The drain time is set via the <a class="reference internal" href="../../operations/cli.html#cmdoption-drain-time-s"><code class="xref std std-option docutils literal"><span class="pre">--drain-time-s</span></code></a> option.</li>
@@ -330,7 +330,7 @@ add/modify/remove listeners as necessary.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-3916b6',
+            VERSION:'1.5.0-123a1f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

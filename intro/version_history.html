@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Version history &mdash; envoy 1.5.0-3916b6 documentation</title>
+  <title>Version history &mdash; envoy 1.5.0-123a1f documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="envoy 1.5.0-3916b6 documentation" href="../index.html"/>
+    <link rel="top" title="envoy 1.5.0-123a1f documentation" href="../index.html"/>
         <link rel="up" title="Introduction" href="intro.html"/>
         <link rel="next" title="Building and installation" href="../install/install.html"/>
         <link rel="prev" title="Getting help" href="getting_help.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-3916b6
+                1.5.0-123a1f
               </div>
             
           
@@ -247,7 +247,7 @@ Full end to end flow control will be available in a future release.</li>
 <li><a class="reference internal" href="../configuration/cluster_manager/cluster_hc.html#config-cluster-manager-cluster-hc"><span class="std std-ref">Redis health checking</span></a> has been added as an active
 health check type. Full Redis support will be documented/supported in 1.4.0.</li>
 <li><a class="reference internal" href="../configuration/cluster_manager/cluster_hc.html#config-cluster-manager-cluster-hc-tcp-health-checking"><span class="std std-ref">TCP health checking</span></a> now supports a
-&#8220;connect only&#8221; mode that only checks if the remote server can be connected to without
+“connect only” mode that only checks if the remote server can be connected to without
 writing/reading any data.</li>
 <li><a class="reference external" href="https://boringssl.googlesource.com/boringssl">BoringSSL</a> is now the only supported TLS provider.
 The default cipher suites and ECDH curves have been updated with more modern defaults for both
@@ -263,7 +263,7 @@ desired.</li>
 <li>The <a class="reference internal" href="../install/ref_configs.html#install-ref-configs"><span class="std std-ref">example configurations</span></a> have been refreshed to demonstrate the
 latest features.</li>
 <li><a class="reference internal" href="../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-route-retry"><span class="std std-ref">per_try_timeout_ms</span></a> can now be configured in
-a route&#8217;s retry policy in addition to via the <a class="reference internal" href="../configuration/http_filters/router_filter.html#config-http-filters-router-x-envoy-upstream-rq-per-try-timeout-ms"><span class="std std-ref">x-envoy-upstream-rq-per-try-timeout-ms</span></a> HTTP header.</li>
+a route’s retry policy in addition to via the <a class="reference internal" href="../configuration/http_filters/router_filter.html#config-http-filters-router-x-envoy-upstream-rq-per-try-timeout-ms"><span class="std std-ref">x-envoy-upstream-rq-per-try-timeout-ms</span></a> HTTP header.</li>
 <li><a class="reference internal" href="../configuration/http_conn_man/route_config/vhost.html#config-http-conn-man-route-table-vhost"><span class="std std-ref">HTTP virtual host matching</span></a> now includes support
 for prefix wildcard domains (e.g., <cite>*.lyft.com</cite>).</li>
 <li>The default for tracing random sampling has been changed to 100% and is still configurable in
@@ -406,7 +406,7 @@ few new configuration flags to allow disabling expensive features if they are no
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.5.0-3916b6',
+            VERSION:'1.5.0-123a1f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

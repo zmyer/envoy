@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Route table check tool &mdash; envoy 1.5.0-3916b6 documentation</title>
+  <title>Route table check tool &mdash; envoy 1.5.0-123a1f documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-3916b6 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-123a1f documentation" href="../../index.html"/>
         <link rel="up" title="Configuration reference" href="../configuration.html"/>
         <link rel="next" title="Operations and administration" href="../../operations/operations.html"/>
         <link rel="prev" title="Cluster discovery service" href="../cluster_manager/cds.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-3916b6
+                1.5.0-123a1f
               </div>
             
           
@@ -177,7 +177,7 @@
   <div class="section" id="route-table-check-tool">
 <span id="config-tools-router-check-tool"></span><h1>Route table check tool<a class="headerlink" href="#route-table-check-tool" title="Permalink to this headline">¶</a></h1>
 <p><strong>NOTE: The following configuration is for the route table check tool only and is not part of the Envoy binary.
-The route table check tool is a standalone binary that can be used to verify Envoy&#8217;s routing for a given configuration
+The route table check tool is a standalone binary that can be used to verify Envoy’s routing for a given configuration
 file.</strong></p>
 <p>The following specifies input to the route table check tool. The route table check tool checks if
 the route returned by a <a class="reference internal" href="../http_conn_man/route_config/route_config.html#config-http-conn-man-route-table"><span class="std std-ref">router</span></a> matches what is expected.
@@ -199,7 +199,7 @@ sent to the router and are required. All other input fields are optional.</dd>
 case is required.</dd>
 </dl>
 <p>A simple tool configuration json has one test case and is writen as follows. The test
-expects a cluster name match of &#8220;instant-server&#8221;.:</p>
+expects a cluster name match of “instant-server”.:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span>
   <span class="p">{</span>
     <span class="s2">&quot;test_name: &quot;</span><span class="n">Cluster_name_test</span><span class="s2">&quot;,</span>
@@ -269,14 +269,14 @@ expects a cluster name match of &#8220;instant-server&#8221;.:</p>
 <dl class="last docutils">
 <dt>:authority</dt>
 <dd><em>(required, string)</em> The url authority. This value along with the path parameter define
-the url to be matched. An example authority value is &#8220;api.lyft.com&#8221;.</dd>
+the url to be matched. An example authority value is “api.lyft.com”.</dd>
 <dt>:path</dt>
-<dd><em>(required, string)</em> The url path. An example path value is &#8220;/foo&#8221;.</dd>
+<dd><em>(required, string)</em> The url path. An example path value is “/foo”.</dd>
 <dt>:method</dt>
 <dd><em>(optional, string)</em> The request method. If not specified, the default method is GET. The options
 are GET, PUT, or POST.</dd>
 <dt>internal</dt>
-<dd><em>(optional, boolean)</em> A flag that determines whether to set x-envoy-internal to &#8220;true&#8221;.
+<dd><em>(optional, boolean)</em> A flag that determines whether to set x-envoy-internal to “true”.
 If not specified, or if internal is equal to false, x-envoy-internal is not set.</dd>
 <dt>random_value</dt>
 <dd><em>(optional, integer)</em> An integer used to identify the target for weighted cluster selection.
@@ -287,8 +287,8 @@ By setting x-forwarded-proto to a given protocol, the tool is able to simulate t
 a client issuing a request via http or https. By default ssl is false which corresponds to
 x-forwarded-proto set to http.</dd>
 <dt>additional_headers</dt>
-<dd><p class="first"><em>(optional, array)</em>  Additional headers to be added as input for route determination. The &#8221;:authority&#8221;,
-&#8221;:path&#8221;, &#8221;:method&#8221;, &#8220;x-forwarded-proto&#8221;, and &#8220;x-envoy-internal&#8221; fields are specified by the other config
+<dd><p class="first"><em>(optional, array)</em>  Additional headers to be added as input for route determination. The “:authority”,
+“:path”, “:method”, “x-forwarded-proto”, and “x-envoy-internal” fields are specified by the other config
 options and should not be set here.</p>
 <dl class="last docutils">
 <dt>field</dt>
@@ -301,8 +301,8 @@ options and should not be set here.</p>
 </dd>
 <dt>validate</dt>
 <dd><p class="first"><em>(required, object)</em> The validate object specifies the returned route parameters to match. At least one
-test parameter must be specificed. Use &#8220;&#8221; (empty string) to indicate that no return value is expected.
-For example, to test that no cluster match is expected use {&#8220;cluster_name&#8221;: &#8220;&#8221;}.</p>
+test parameter must be specificed. Use “” (empty string) to indicate that no return value is expected.
+For example, to test that no cluster match is expected use {“cluster_name”: “”}.</p>
 <dl class="last docutils">
 <dt>cluster_name</dt>
 <dd><em>(optional, string)</em> Match the cluster name.</dd>
@@ -317,8 +317,8 @@ For example, to test that no cluster match is expected use {&#8220;cluster_name&
 <dt>path_redirect</dt>
 <dd><em>(optional, string)</em> Match the returned redirect path.</dd>
 <dt>header_fields</dt>
-<dd><p class="first"><em>(optional, array)</em>  Match the listed header fields. Examples header fields include the &#8221;:path&#8221;, &#8220;cookie&#8221;,
-and &#8220;date&#8221; fields. The header fields are checked after all other test cases. Thus, the header fields checked
+<dd><p class="first"><em>(optional, array)</em>  Match the listed header fields. Examples header fields include the “:path”, “cookie”,
+and “date” fields. The header fields are checked after all other test cases. Thus, the header fields checked
 will be those of the redirected or rewriten routes when applicable.</p>
 <dl class="last docutils">
 <dt>field</dt>
@@ -376,7 +376,7 @@ will be those of the redirected or rewriten routes when applicable.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-3916b6',
+            VERSION:'1.5.0-123a1f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

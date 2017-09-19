@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>TLS context &mdash; envoy 1.5.0-3916b6 documentation</title>
+  <title>TLS context &mdash; envoy 1.5.0-123a1f documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-3916b6 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-123a1f documentation" href="../../index.html"/>
         <link rel="up" title="Cluster" href="cluster.html"/>
         <link rel="next" title="Statistics" href="cluster_stats.html"/>
         <link rel="prev" title="Circuit breakers" href="cluster_circuit_breakers.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-3916b6
+                1.5.0-123a1f
               </div>
             
           
@@ -214,7 +214,7 @@
 <dd><p class="first"><em>(optional, string)</em> Supplies the list of ALPN protocols that connections should request. In
 practice this is likely to be set to a single value or not set at all:</p>
 <ul class="last simple">
-<li>&#8220;h2&#8221; If upstream connections should use HTTP/2. In the current implementation this must be set
+<li>“h2” If upstream connections should use HTTP/2. In the current implementation this must be set
 alongside the <em>http2</em> cluster <a class="reference internal" href="cluster.html#config-cluster-manager-cluster-features"><span class="std std-ref">features</span></a> option.
 The two options together will use ALPN to tell a server that expects ALPN that Envoy supports
 HTTP/2. Then the <em>http2</em> feature will cause new connections to use HTTP/2.</li>
@@ -233,7 +233,7 @@ a presented server certificate.</dd>
 certificate.</dd>
 <dt>verify_subject_alt_name</dt>
 <dd><em>(optional, array)</em> An optional list of subject alt names. If specified, Envoy will verify
-that the server certificate&#8217;s subject alt name matches one of the specified values.</dd>
+that the server certificate’s subject alt name matches one of the specified values.</dd>
 <dt>cipher_suites</dt>
 <dd><em>(optional, string)</em> If specified, the TLS connection will only support the specified <a class="reference external" href="https://commondatastorage.googleapis.com/chromium-boringssl-docs/ssl.h.html#Cipher-suite-configuration">cipher list</a>.
 If not specified, the default list:</dd>
@@ -313,7 +313,7 @@ handshake.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-3916b6',
+            VERSION:'1.5.0-123a1f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Zipkin Tracing &mdash; envoy 1.5.0-3916b6 documentation</title>
+  <title>Zipkin Tracing &mdash; envoy 1.5.0-123a1f documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-3916b6 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-123a1f documentation" href="../../index.html"/>
         <link rel="up" title="Sandboxes" href="sandboxes.html"/>
         <link rel="next" title="Jaeger Tracing" href="jaeger_tracing.html"/>
         <link rel="prev" title="Front Proxy" href="front_proxy.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-3916b6
+                1.5.0-123a1f
               </div>
             
           
@@ -187,7 +187,7 @@
             
   <div class="section" id="zipkin-tracing">
 <span id="install-sandboxes-zipkin-tracing"></span><h1>Zipkin Tracing<a class="headerlink" href="#zipkin-tracing" title="Permalink to this headline">¶</a></h1>
-<p>The Zipkin tracing sandbox demonstrates Envoy&#8217;s <a class="reference internal" href="../../intro/arch_overview/tracing.html#arch-overview-tracing"><span class="std std-ref">request tracing</span></a>
+<p>The Zipkin tracing sandbox demonstrates Envoy’s <a class="reference internal" href="../../intro/arch_overview/tracing.html#arch-overview-tracing"><span class="std std-ref">request tracing</span></a>
 capabilities using <a class="reference external" href="http://zipkin.io/">Zipkin</a> as the tracing provider. This sandbox
 is very similar to the front proxy architecture described above, with one difference:
 service1 makes an API call to service2 before returning a response.
@@ -250,7 +250,7 @@ Hello from behind Envoy (service 1)! hostname: f26027f1ce28 resolvedhostname: 17
 </div>
 <p><strong>Step 3: View the traces in Zipkin UI</strong></p>
 <p>Point your browser to <a class="reference external" href="http://localhost:9411">http://localhost:9411</a> . You should see the Zipkin dashboard.
-Set the service to &#8220;front-proxy&#8221; and set the start time to a few minutes before
+Set the service to “front-proxy” and set the start time to a few minutes before
 the start of the test (step 2) and hit enter. You should see traces from the front-proxy.
 Click on a trace to explore the path taken by the request from front-proxy to service1
 to service2, as well as the latency incurred at each hop.</p>
@@ -301,7 +301,7 @@ to service2, as well as the latency incurred at each hop.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-3916b6',
+            VERSION:'1.5.0-123a1f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

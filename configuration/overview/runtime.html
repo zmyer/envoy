@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Runtime &mdash; envoy 1.5.0-3916b6 documentation</title>
+  <title>Runtime &mdash; envoy 1.5.0-123a1f documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-3916b6 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-123a1f documentation" href="../../index.html"/>
         <link rel="up" title="Overview" href="overview.html"/>
         <link rel="next" title="Listeners" href="../listeners/listeners.html"/>
         <link rel="prev" title="Rate limit service" href="rate_limit.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-3916b6
+                1.5.0-123a1f
               </div>
             
           
@@ -190,7 +190,7 @@
   <div class="section" id="runtime">
 <span id="config-runtime"></span><h1>Runtime<a class="headerlink" href="#runtime" title="Permalink to this headline">¶</a></h1>
 <p>The <a class="reference internal" href="../../intro/arch_overview/runtime.html#arch-overview-runtime"><span class="std std-ref">runtime configuration</span></a> specifies the location of the local file
-system tree that contains re-loadable configuration elements. If runtime is not configured, a &#8220;null&#8221;
+system tree that contains re-loadable configuration elements. If runtime is not configured, a “null”
 provider is used which has the effect of using all defaults built into the code.</p>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="nt">&quot;symlink_root&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
@@ -232,7 +232,7 @@ runtime:</p>
 <li><em>override_subdirectory</em>: <code class="docutils literal"><span class="pre">envoy_override</span></code></li>
 </ul>
 <p>Where <code class="docutils literal"><span class="pre">/srv/runtime/current</span></code> is a symbolic link to <code class="docutils literal"><span class="pre">/srv/runtime/v1</span></code>.</p>
-<p>Each &#8216;.&#8217; in a runtime key indicates a new directory in the hierarchy, rooted at <em>symlink_root</em> +
+<p>Each ‘.’ in a runtime key indicates a new directory in the hierarchy, rooted at <em>symlink_root</em> +
 <em>subdirectory</em>. For example, the <em>health_check.min_interval</em> key would have the following full
 file system path (using the symbolic link):</p>
 <p><code class="docutils literal"><span class="pre">/srv/runtime/current/envoy/health_check/min_interval</span></code></p>
@@ -253,7 +253,7 @@ old tree to the new runtime tree, using the equivalent of the following command:
 <div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">/srv/runtime:~$ ln -s /srv/runtime/v2 new &amp;&amp; mv -Tf new current</span>
 </pre></div>
 </div>
-<p>It&#8217;s beyond the scope of this document how the file system data is deployed, garbage collected, etc.</p>
+<p>It’s beyond the scope of this document how the file system data is deployed, garbage collected, etc.</p>
 </div>
 <div class="section" id="statistics">
 <h2>Statistics<a class="headerlink" href="#statistics" title="Permalink to this headline">¶</a></h2>
@@ -340,7 +340,7 @@ old tree to the new runtime tree, using the equivalent of the following command:
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-3916b6',
+            VERSION:'1.5.0-123a1f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

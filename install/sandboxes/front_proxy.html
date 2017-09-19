@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Front Proxy &mdash; envoy 1.5.0-3916b6 documentation</title>
+  <title>Front Proxy &mdash; envoy 1.5.0-123a1f documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-3916b6 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-123a1f documentation" href="../../index.html"/>
         <link rel="up" title="Sandboxes" href="sandboxes.html"/>
         <link rel="next" title="Zipkin Tracing" href="zipkin_tracing.html"/>
         <link rel="prev" title="Sandboxes" href="sandboxes.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-3916b6
+                1.5.0-123a1f
               </div>
             
           
@@ -212,7 +212,7 @@ as is described in the image above.</p>
 <code class="docutils literal"><span class="pre">docker-machine</span></code> installed.</p>
 <p>A simple way to achieve this is via the <a class="reference external" href="https://www.docker.com/products/docker-toolbox">Docker Toolbox</a>.</p>
 <p><strong>Step 2: Docker Machine setup</strong></p>
-<p>First let&#8217;s create a new machine which will hold the containers:</p>
+<p>First let’s create a new machine which will hold the containers:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>$ docker-machine create --driver virtualbox default
 $ eval $(docker-machine env default)
 </pre></div>
@@ -231,7 +231,7 @@ example_service2_1      /bin/sh -c /usr/local/bin/ ...    Up       80/tcp
 example_front-envoy_1   /bin/sh -c /usr/local/bin/ ...    Up       0.0.0.0:8000-&gt;80/tcp, 0.0.0.0:8001-&gt;8001/tcp
 </pre></div>
 </div>
-<p><strong>Step 5: Test Envoy&#8217;s routing capabilities</strong></p>
+<p><strong>Step 5: Test Envoy’s routing capabilities</strong></p>
 <p>You can now send a request to both services via the front-envoy.</p>
 <p>For service1:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>$ curl -v $(docker-machine ip default):8000/service/1
@@ -277,8 +277,8 @@ Hello from behind Envoy (service 2)! hostname: 92f4a3737bbc resolvedhostname: 17
 </div>
 <p>Notice that each request, while sent to the front envoy, was correctly routed
 to the respective application.</p>
-<p><strong>Step 6: Test Envoy&#8217;s load balancing capabilities</strong></p>
-<p>Now let&#8217;s scale up our service1 nodes to demonstrate the clustering abilities
+<p><strong>Step 6: Test Envoy’s load balancing capabilities</strong></p>
+<p>Now let’s scale up our service1 nodes to demonstrate the clustering abilities
 of envoy.:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>$ docker-compose scale service1=3
 Creating and starting example_service1_2 ... done
@@ -439,7 +439,7 @@ stats.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-3916b6',
+            VERSION:'1.5.0-123a1f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

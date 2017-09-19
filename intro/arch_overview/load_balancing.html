@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Load balancing &mdash; envoy 1.5.0-3916b6 documentation</title>
+  <title>Load balancing &mdash; envoy 1.5.0-123a1f documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-3916b6 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-123a1f documentation" href="../../index.html"/>
         <link rel="up" title="Architecture overview" href="arch_overview.html"/>
         <link rel="next" title="Outlier detection" href="outlier.html"/>
         <link rel="prev" title="Connection pooling" href="connection_pooling.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-3916b6
+                1.5.0-123a1f
               </div>
             
           
@@ -236,7 +236,7 @@ case.</p>
 <h3>Ring hash<a class="headerlink" href="#ring-hash" title="Permalink to this headline">¶</a></h3>
 <p>The ring/modulo hash load balancer implements consistent hashing to upstream hosts. The algorithm is
 based on mapping all hosts onto a circle such that the addition or removal of a host from the host
-set changes only affect 1/N requests. This technique is also commonly known as <a class="reference external" href="https://github.com/RJ/ketama">&#8220;ketama&#8221;</a> hashing. The consistent hashing load balancer is only effective
+set changes only affect 1/N requests. This technique is also commonly known as <a class="reference external" href="https://github.com/RJ/ketama">“ketama”</a> hashing. The consistent hashing load balancer is only effective
 when protocol routing is used that specifies a value to hash on. Currently the only implemented
 mechanism is to hash via <a class="reference internal" href="../../configuration/http_conn_man/route_config/route.html#config-http-conn-man-route-table-hash-policy"><span class="std std-ref">HTTP header values</span></a> in
 the <a class="reference internal" href="http_routing.html#arch-overview-http-routing"><span class="std std-ref">HTTP router filter</span></a>. The default minimum ring size is
@@ -362,7 +362,7 @@ in the originating cluster (if needed).</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-3916b6',
+            VERSION:'1.5.0-123a1f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

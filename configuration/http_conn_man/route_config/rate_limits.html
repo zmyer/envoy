@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Rate limit configuration &mdash; envoy 1.5.0-3916b6 documentation</title>
+  <title>Rate limit configuration &mdash; envoy 1.5.0-123a1f documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-3916b6 documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-123a1f documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Route matching" href="route_matching.html"/>
         <link rel="prev" title="Virtual cluster" href="vcluster.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-3916b6
+                1.5.0-123a1f
               </div>
             
           
@@ -283,7 +283,7 @@ header in the request contains the target cluster.</li>
 </div>
 <dl class="docutils">
 <dt>header_name</dt>
-<dd><em>(required, string)</em> The header name to be queried from the request headers. The header&#8217;s value is
+<dd><em>(required, string)</em> The header name to be queried from the request headers. The header’s value is
 used to populate the value of the descriptor entry for the descriptor_key.</dd>
 <dt>descriptor_key</dt>
 <dd><em>(required, string)</em> The key to use in the descriptor entry.</dd>
@@ -344,14 +344,14 @@ the action will append a descriptor entry when the request does not match the
 <a class="reference internal" href="route.html#config-http-conn-man-route-table-route-headers"><span class="std std-ref">headers</span></a>. The default value is true.</dd>
 <dt><a class="reference internal" href="route.html#config-http-conn-man-route-table-route-headers"><span class="std std-ref">headers</span></a></dt>
 <dd><em>(required, array)</em> Specifies a set of headers that the rate limit action should match on. The
-action will check the request&#8217;s headers against all the specified headers in the config. A match
+action will check the request’s headers against all the specified headers in the config. A match
 will happen if all the headers in the config are present in the request with the same values (or
 based on presence if the <code class="docutils literal"><span class="pre">value</span></code> field is not in the config).</dd>
 </dl>
 <p>The following descriptor entry is appended to the descriptor:
 .. code-block:: cpp</p>
 <blockquote>
-<div>(&#8220;header_match&#8221;, &#8220;&lt;descriptor_value&gt;&#8221;)</div></blockquote>
+<div>(“header_match”, “&lt;descriptor_value&gt;”)</div></blockquote>
 </div>
 </div>
 <div class="section" id="composing-actions">
@@ -383,7 +383,7 @@ will be populated in the order the actions are specified in the configuration.</
 </div>
 <div class="section" id="example-2">
 <h3>Example 2<a class="headerlink" href="#example-2" title="Permalink to this headline">¶</a></h3>
-<p>If an action doesn&#8217;t append a descriptor entry, no descriptor is generated for
+<p>If an action doesn’t append a descriptor entry, no descriptor is generated for
 the configuration.</p>
 <p>For the following configuration:</p>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -459,7 +459,7 @@ the following descriptor is generated:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.5.0-3916b6',
+            VERSION:'1.5.0-123a1f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gRPC Bridge &mdash; envoy 1.5.0-3916b6 documentation</title>
+  <title>gRPC Bridge &mdash; envoy 1.5.0-123a1f documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-3916b6 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-123a1f documentation" href="../../index.html"/>
         <link rel="up" title="Sandboxes" href="sandboxes.html"/>
         <link rel="next" title="Building an Envoy Docker image" href="local_docker_build.html"/>
         <link rel="prev" title="Jaeger Tracing" href="jaeger_tracing.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-3916b6
+                1.5.0-123a1f
               </div>
             
           
@@ -192,13 +192,13 @@
 <span id="install-sandboxes-grpc-bridge"></span><h1>gRPC Bridge<a class="headerlink" href="#grpc-bridge" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="envoy-grpc">
 <h2>Envoy gRPC<a class="headerlink" href="#envoy-grpc" title="Permalink to this headline">¶</a></h2>
-<p>The gRPC bridge sandbox is an example usage of Envoy&#8217;s
+<p>The gRPC bridge sandbox is an example usage of Envoy’s
 <a class="reference internal" href="../../configuration/http_filters/grpc_http1_bridge_filter.html#config-http-filters-grpc-bridge"><span class="std std-ref">gRPC bridge filter</span></a>.
 Included in the sandbox is a gRPC in-memory Key/Value store with a Python HTTP
 client. The Python client makes HTTP/1 requests through the Envoy sidecar
 process which are upgraded into HTTP/2 gRPC requests. Response trailers are then
 buffered and sent back to the client as a HTTP/1 header payload.</p>
-<p>Another Envoy feature demonstrated in this example is Envoy&#8217;s ability to do authority
+<p>Another Envoy feature demonstrated in this example is Envoy’s ability to do authority
 base routing via its route configuration.</p>
 </div>
 <div class="section" id="building-the-go-service">
@@ -297,7 +297,7 @@ baz
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-3916b6',
+            VERSION:'1.5.0-123a1f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

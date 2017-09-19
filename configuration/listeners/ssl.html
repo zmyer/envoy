@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>TLS context &mdash; envoy 1.5.0-3916b6 documentation</title>
+  <title>TLS context &mdash; envoy 1.5.0-123a1f documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-3916b6 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-123a1f documentation" href="../../index.html"/>
         <link rel="up" title="Listeners" href="listeners.html"/>
         <link rel="next" title="Statistics" href="stats.html"/>
         <link rel="prev" title="Filters" href="filters.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-3916b6
+                1.5.0-123a1f
               </div>
             
           
@@ -211,8 +211,8 @@ practice this is likely to be set to one of two values (see the
 <a class="reference internal" href="../http_conn_man/http_conn_man.html#config-http-conn-man-codec-type"><span class="std std-ref">codec_type</span></a> parameter in the HTTP connection
 manager for more information):</p>
 <ul class="last simple">
-<li>&#8220;h2,http/1.1&#8221; If the listener is going to support both HTTP/2 and HTTP/1.1.</li>
-<li>&#8220;http/1.1&#8221; If the listener is only going to support HTTP/1.1</li>
+<li>“h2,http/1.1” If the listener is going to support both HTTP/2 and HTTP/1.1.</li>
+<li>“http/1.1” If the listener is only going to support HTTP/1.1</li>
 </ul>
 </dd>
 </dl>
@@ -242,7 +242,7 @@ side certificate.</dd>
 <dl class="docutils" id="config-listener-ssl-context-verify-subject-alt-name">
 <dt>verify_subject_alt_name</dt>
 <dd><em>(optional, array)</em> An optional list of subject alt names. If specified, Envoy will verify
-that the client certificate&#8217;s subject alt name matches one of the specified values.</dd>
+that the client certificate’s subject alt name matches one of the specified values.</dd>
 <dt>cipher_suites</dt>
 <dd><em>(optional, string)</em> If specified, the TLS listener will only support the specified <a class="reference external" href="https://commondatastorage.googleapis.com/chromium-boringssl-docs/ssl.h.html#Cipher-suite-configuration">cipher list</a>.
 If not specified, the default list:</dd>
@@ -319,7 +319,7 @@ If not specified, the default curves (X25519, P-256) will be used.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-3916b6',
+            VERSION:'1.5.0-123a1f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

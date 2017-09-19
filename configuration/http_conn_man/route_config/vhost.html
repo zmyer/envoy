@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Virtual host &mdash; envoy 1.5.0-3916b6 documentation</title>
+  <title>Virtual host &mdash; envoy 1.5.0-123a1f documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-3916b6 documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-123a1f documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Route" href="route.html"/>
         <link rel="prev" title="Route configuration" href="route_config.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-3916b6
+                1.5.0-123a1f
               </div>
             
           
@@ -200,7 +200,7 @@
   <div class="section" id="virtual-host">
 <span id="config-http-conn-man-route-table-vhost"></span><h1>Virtual host<a class="headerlink" href="#virtual-host" title="Permalink to this headline">¶</a></h1>
 <p>The top level element in the routing configuration is a virtual host. Each virtual host has
-a logical name as well as a set of domains that get routed to it based on the incoming request&#8217;s
+a logical name as well as a set of domains that get routed to it based on the incoming request’s
 host header. This allows a single listener to service multiple top level domain path trees. Once a
 virtual host is selected based on the domain, the routes are processed in order to see which
 upstream cluster to route to or whether to perform a redirect.</p>
@@ -221,17 +221,17 @@ upstream cluster to route to or whether to perform a redirect.</p>
 statistics but is not relevant for forwarding.</dd>
 <dt>domains</dt>
 <dd><em>(required, array)</em> A list of domains (host/authority header) that will be matched to this
-virtual host. Wildcard hosts are supported in the form of &#8220;*.foo.com&#8221; or &#8220;*-bar.foo.com&#8221;.
-Note that the wildcard will not match the empty string. e.g. &#8220;*-bar.foo.com&#8221; will match
-&#8220;baz-bar.foo.com&#8221; but not &#8220;-bar.foo.com&#8221;.  Additionally, a special entry &#8220;*&#8221; is allowed
+virtual host. Wildcard hosts are supported in the form of “*.foo.com” or “*-bar.foo.com”.
+Note that the wildcard will not match the empty string. e.g. “*-bar.foo.com” will match
+“baz-bar.foo.com” but not “-bar.foo.com”.  Additionally, a special entry “*” is allowed
 which will match any host/authority header.  Only a single virtual host in the entire route
-configuration can match on &#8220;*&#8221;.  A domain must be unique across all virtual hosts or the config
+configuration can match on “*”.  A domain must be unique across all virtual hosts or the config
 will fail to load.</dd>
 <dt><a class="reference internal" href="route.html#config-http-conn-man-route-table-route"><span class="std std-ref">routes</span></a></dt>
 <dd><em>(required, array)</em> The list of routes that will be matched, in order, for incoming requests.
 The first route that matches will be used.</dd>
 <dt><a class="reference internal" href="../../http_filters/cors_filter.html#config-http-filters-cors"><span class="std std-ref">cors</span></a></dt>
-<dd><em>(optional, object)</em> Specifies the virtual host&#8217;s CORS policy.</dd>
+<dd><em>(optional, object)</em> Specifies the virtual host’s CORS policy.</dd>
 </dl>
 <dl class="docutils" id="config-http-conn-man-route-table-vhost-require-ssl">
 <dt>require_ssl</dt>
@@ -314,7 +314,7 @@ request handled by this virtual host. Headers are specified in the following for
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.5.0-3916b6',
+            VERSION:'1.5.0-123a1f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

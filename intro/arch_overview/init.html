@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Initialization &mdash; envoy 1.5.0-3916b6 documentation</title>
+  <title>Initialization &mdash; envoy 1.5.0-123a1f documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-3916b6 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-123a1f documentation" href="../../index.html"/>
         <link rel="up" title="Architecture overview" href="arch_overview.html"/>
         <link rel="next" title="Deployment types" href="../deployment_types/deployment_types.html"/>
         <link rel="prev" title="Dynamic configuration" href="dynamic_configuration.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-3916b6
+                1.5.0-123a1f
               </div>
             
           
@@ -219,7 +219,7 @@ and does the same primary/secondary initialization of CDS provided clusters.</li
 single active HC round.</li>
 <li>Once cluster manager initialization is done, <a class="reference internal" href="dynamic_configuration.html#arch-overview-dynamic-config-rds"><span class="std std-ref">RDS</span></a> and
 <a class="reference internal" href="dynamic_configuration.html#arch-overview-dynamic-config-lds"><span class="std std-ref">LDS</span></a> initialize (if applicable). The server
-doesn&#8217;t start accepting connections until there has been at least one response (or failure) for
+doesn’t start accepting connections until there has been at least one response (or failure) for
 LDS/RDS requests.</li>
 <li>If LDS itself returns a listener that needs an RDS response, Envoy further waits until an RDS
 response (or failure) is received. Note that this process takes place on every future listener
@@ -274,7 +274,7 @@ processing new connections before the draining of the old process begins.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-3916b6',
+            VERSION:'1.5.0-123a1f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

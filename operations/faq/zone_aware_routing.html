@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Zone aware routing setup &mdash; envoy 1.5.0-3916b6 documentation</title>
+  <title>Zone aware routing setup &mdash; envoy 1.5.0-123a1f documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-3916b6 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-123a1f documentation" href="../../index.html"/>
         <link rel="up" title="Envoy FAQ" href="overview.html"/>
         <link rel="next" title="Request tracing with Zipkin" href="zipkin_tracing.html"/>
         <link rel="prev" title="Envoy FAQ" href="overview.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-3916b6
+                1.5.0-123a1f
               </div>
             
           
@@ -189,7 +189,7 @@
   <div class="section" id="zone-aware-routing-setup">
 <span id="common-configuration-zone-aware-routing"></span><h1>Zone aware routing setup<a class="headerlink" href="#zone-aware-routing-setup" title="Permalink to this headline">¶</a></h1>
 <p>There are several steps required for enabling <a class="reference internal" href="../../intro/arch_overview/load_balancing.html#arch-overview-load-balancing-zone-aware-routing"><span class="std std-ref">zone aware routing</span></a>
-between source service (&#8220;cluster_a&#8221;) and destination service (&#8220;cluster_b&#8221;).</p>
+between source service (“cluster_a”) and destination service (“cluster_b”).</p>
 <div class="section" id="envoy-configuration-on-the-source-service">
 <h2>Envoy configuration on the source service<a class="headerlink" href="#envoy-configuration-on-the-source-service" title="Permalink to this headline">¶</a></h2>
 <p>This section describes the specific configuration for the Envoy running side by side with the source service.
@@ -222,7 +222,7 @@ These are the requirements:</p>
 </div>
 <div class="section" id="envoy-configuration-on-the-destination-service">
 <h2>Envoy configuration on the destination service<a class="headerlink" href="#envoy-configuration-on-the-destination-service" title="Permalink to this headline">¶</a></h2>
-<p>It&#8217;s not necessary to run Envoy side by side with the destination service, but it&#8217;s important that each host
+<p>It’s not necessary to run Envoy side by side with the destination service, but it’s important that each host
 in the destination cluster registers with the discovery service
 <a class="reference internal" href="../../configuration/cluster_manager/sds_api.html#config-cluster-manager-sds-api"><span class="std std-ref">queried by the source service Envoy</span></a>.
 <a class="reference internal" href="../../configuration/cluster_manager/sds_api.html#config-cluster-manager-sds-api-host"><span class="std std-ref">Zone</span></a> information must be available as part of that response.</p>
@@ -292,7 +292,7 @@ when zone aware routing is <a class="reference internal" href="../../intro/arch_
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-3916b6',
+            VERSION:'1.5.0-123a1f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

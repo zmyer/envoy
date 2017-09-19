@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Listeners &mdash; envoy 1.5.0-3916b6 documentation</title>
+  <title>Listeners &mdash; envoy 1.5.0-123a1f documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-3916b6 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-123a1f documentation" href="../../index.html"/>
         <link rel="up" title="Configuration reference" href="../configuration.html"/>
         <link rel="next" title="Filters" href="filters.html"/>
         <link rel="prev" title="Runtime" href="../overview/runtime.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-3916b6
+                1.5.0-123a1f
               </div>
             
           
@@ -207,7 +207,7 @@ Envoy will allocate an internal UUID for the listener. If the listener is to be 
 updated or removed via <a class="reference internal" href="lds.html#config-listeners-lds"><span class="std std-ref">LDS</span></a> a unique name must be provided.</dd>
 <dt>address</dt>
 <dd><em>(required, string)</em> The address that the listener should listen on. Currently only TCP
-listeners are supported, e.g., &#8220;<a class="reference external" href="tcp://127.0.0.1:80">tcp://127.0.0.1:80</a>&#8221;. Note, &#8220;<a class="reference external" href="tcp://0.0.0.0:80">tcp://0.0.0.0:80</a>&#8221; is the wild card
+listeners are supported, e.g., “<a class="reference external" href="tcp://127.0.0.1:80">tcp://127.0.0.1:80</a>”. Note, “<a class="reference external" href="tcp://0.0.0.0:80">tcp://0.0.0.0:80</a>” is the wild card
 match for any IPv4 address with port 80.</dd>
 <dt><a class="reference internal" href="filters.html#config-listener-filters"><span class="std std-ref">filters</span></a></dt>
 <dd><p class="first"><em>(required, array)</em> A list of individual <a class="reference internal" href="../../intro/arch_overview/network_filters.html#arch-overview-network-filters"><span class="std std-ref">network filters</span></a>
@@ -219,7 +219,7 @@ filters are processed sequentially as connection events happen.</p>
 <dd><em>(optional, object)</em> The <a class="reference internal" href="../../intro/arch_overview/ssl.html#arch-overview-ssl"><span class="std std-ref">TLS</span></a> context configuration for a TLS listener.
 If no TLS context block is defined, the listener is a plain text listener.</dd>
 <dt>bind_to_port</dt>
-<dd><em>(optional, boolean)</em> Whether the listener should bind to the port. A listener that doesn&#8217;t bind
+<dd><em>(optional, boolean)</em> Whether the listener should bind to the port. A listener that doesn’t bind
 can only receive connections redirected from other listeners that set use_original_dst parameter to
 true. Default is true.</dd>
 <dt>use_proxy_proto</dt>
@@ -238,7 +238,7 @@ connection is handled by the listener that receives it. Default is false.</dd>
 </dl>
 <dl class="docutils" id="config-listeners-per-connection-buffer-limit-bytes">
 <dt>per_connection_buffer_limit_bytes</dt>
-<dd><em>(optional, integer)</em> Soft limit on size of the listener&#8217;s new connection read and write buffers.
+<dd><em>(optional, integer)</em> Soft limit on size of the listener’s new connection read and write buffers.
 If unspecified, an implementation defined default is applied (1MiB).</dd>
 </dl>
 <div class="section" id="statistics">
@@ -339,7 +339,7 @@ statistics:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-3916b6',
+            VERSION:'1.5.0-123a1f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
