@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Listener discovery service &mdash; envoy 1.5.0-20d27a documentation</title>
+  <title>Listener discovery service &mdash; envoy 1.5.0-84a387 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-20d27a documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-84a387 documentation" href="../../index.html"/>
         <link rel="up" title="Listeners" href="listeners.html"/>
         <link rel="next" title="Network filters" href="../network_filters/network_filters.html"/>
         <link rel="prev" title="Runtime" href="runtime.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-20d27a
+                1.5.0-84a387
               </div>
             
           
@@ -210,14 +210,14 @@ be gracefully closed (if possible) for some period of time before the listener i
 remaining connections are closed. The drain time is set via the <a class="reference internal" href="../../operations/cli.html#cmdoption-drain-time-s"><code class="xref std std-option docutils literal"><span class="pre">--drain-time-s</span></code></a> option.</li>
 </ul>
 <div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;cluster&quot;</span><span class="p">:</span> <span class="s2">&quot;{...}&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;cluster&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;refresh_delay_ms&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <dl class="docutils">
 <dt>cluster</dt>
-<dd><em>(required, object)</em> The name of an upstream <a class="reference internal" href="../cluster_manager/cluster.html#config-cluster-manager-cluster"><span class="std std-ref">cluster</span></a> that
+<dd><em>(required, string)</em> The name of an upstream <a class="reference internal" href="../cluster_manager/cluster.html#config-cluster-manager-cluster"><span class="std std-ref">cluster</span></a> that
 hosts the listener discovery service. The cluster must run a REST service that implements the
 <a class="reference internal" href="#config-listeners-lds-api"><span class="std std-ref">LDS HTTP API</span></a>. NOTE: This is the <em>name</em> of a cluster defined
 in the <a class="reference internal" href="../cluster_manager/cluster_manager.html#config-cluster-manager"><span class="std std-ref">cluster manager</span></a> configuration, not the full definition of
@@ -330,7 +330,7 @@ add/modify/remove listeners as necessary.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-20d27a',
+            VERSION:'1.5.0-84a387',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
