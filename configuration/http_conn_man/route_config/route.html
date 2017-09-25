@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Route &mdash; envoy 1.5.0-076fbb documentation</title>
+  <title>Route &mdash; envoy 1.5.0-9e933d documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-076fbb documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-9e933d documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Virtual cluster" href="vcluster.html"/>
         <link rel="prev" title="Virtual host" href="vhost.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-076fbb
+                1.5.0-9e933d
               </div>
             
           
@@ -606,6 +606,21 @@ specified in the following form:</p>
 <span class="p">]</span>
 </pre></div>
 </div>
+<p>Envoy supports adding static and dynamic values to the request headers. Supported dynamic values are:</p>
+<dl class="docutils">
+<dt>%CLIENT_IP%</dt>
+<dd>The original client IP which is already added by envoy as a
+<a class="reference internal" href="../headers.html#config-http-conn-man-headers-x-forwarded-for"><span class="std std-ref">X-Forwarded-For</span></a> request header.</dd>
+<dt>%PROTOCOL%</dt>
+<dd>The original protocol which is already added by envoy as a
+<a class="reference internal" href="../headers.html#config-http-conn-man-headers-x-forwarded-proto"><span class="std std-ref">X-Forwarded-Proto</span></a> request header.</dd>
+</dl>
+<p>An example for adding a dynamic value to the request headers is as follows:</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">[</span>
+ <span class="p">{</span><span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;X-Client-IP&quot;</span><span class="p">,</span> <span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="s2">&quot;%CLIENT_IP%&quot;</span><span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
 <p><em>Note:</em> Headers are appended to requests in the following order:
 route-level headers, <a class="reference internal" href="vhost.html#config-http-conn-man-route-table-vhost-add-req-headers"><span class="std std-ref">virtual host level</span></a>
 headers and finally global <a class="reference internal" href="route_config.html#config-http-conn-man-route-table-add-req-headers"><span class="std std-ref">route_config</span></a>
@@ -669,7 +684,7 @@ string map.  Nested objects are not supported.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.5.0-076fbb',
+            VERSION:'1.5.0-9e933d',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
