@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Command line options &mdash; envoy 1.5.0-647eed documentation</title>
+  <title>Command line options &mdash; envoy 1.5.0-201b03 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="envoy 1.5.0-647eed documentation" href="../index.html"/>
+    <link rel="top" title="envoy 1.5.0-201b03 documentation" href="../index.html"/>
         <link rel="up" title="Operations and administration" href="operations.html"/>
         <link rel="next" title="Hot restart Python wrapper" href="hot_restarter.html"/>
         <link rel="prev" title="Operations and administration" href="operations.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-647eed
+                1.5.0-201b03
               </div>
             
           
@@ -235,6 +235,13 @@ help text for the available log levels and the default.</p>
 </dd></dl>
 
 <dl class="option">
+<dt id="cmdoption-log-path">
+<code class="descname">--log-path</code><code class="descclassname"> &lt;path string&gt;</code><a class="headerlink" href="#cmdoption-log-path" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>(optional)</em> The output file path where logs should be written.  This file will be re-opened
+when SIGUSR1 is handled.  If this is not set, log to stderr.</p>
+</dd></dl>
+
+<dl class="option">
 <dt id="cmdoption-restart-epoch">
 <code class="descname">--restart-epoch</code><code class="descclassname"> &lt;integer&gt;</code><a class="headerlink" href="#cmdoption-restart-epoch" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>(optional)</em> The <a class="reference internal" href="../intro/arch_overview/hot_restart.html#arch-overview-hot-restart"><span class="std std-ref">hot restart</span></a> epoch. (The number of times
@@ -353,7 +360,7 @@ information. Defaults to 900 seconds (15 minutes).</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.5.0-647eed',
+            VERSION:'1.5.0-201b03',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
