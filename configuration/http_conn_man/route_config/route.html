@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Route &mdash; envoy 1.5.0-e7f454 documentation</title>
+  <title>Route &mdash; envoy 1.5.0-13e4bb documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-e7f454 documentation" href="../../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-13e4bb documentation" href="../../../index.html"/>
         <link rel="up" title="Route configuration" href="route_config.html"/>
         <link rel="next" title="Virtual cluster" href="vcluster.html"/>
         <link rel="prev" title="Virtual host" href="vhost.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-e7f454
+                1.5.0-13e4bb
               </div>
             
           
@@ -334,17 +334,16 @@ is true.</dd>
 <dl class="docutils" id="config-http-conn-man-route-table-route-use-websocket">
 <dt>use_websocket</dt>
 <dd><p class="first"><em>(optional, boolean)</em> Indicates that a HTTP/1.1 client connection to this particular route
-should be allowed (and expected) to upgrade to a WebSocket connection. The default is false.</p>
+should be allowed to upgrade to a WebSocket connection. The default is false.</p>
 <div class="last admonition attention">
 <p class="first admonition-title">Attention</p>
 <p>If set to true, Envoy will expect the first request matching this route to contain WebSocket
-upgrade headers. If the headers are not present, the connection will be rejected. If set to
-true, Envoy will setup plain TCP proxying between the client and the upstream server. Hence,
-an upstream server that rejects the WebSocket upgrade request is also responsible for closing
-the associated connection. Until then, Envoy will continue to proxy data from the client to
-the upstream server.</p>
-<p class="last">Redirects, timeouts and retries are not supported on routes where websocket upgrades are
-allowed.</p>
+upgrade headers. If the headers are not present, the connection will be processed as a normal
+HTTP/1.1 connection. If the upgrade headers are present, Envoy will setup plain TCP proxying
+between the client and the upstream server. Hence, an upstream server that rejects the WebSocket
+upgrade request is also responsible for closing the associated connection. Until then, Envoy will
+continue to proxy data from the client to the upstream server.</p>
+<p class="last">Redirects, timeouts and retries are not supported on requests with WebSocket upgrade headers.</p>
 </div>
 </dd>
 </dl>
@@ -684,7 +683,7 @@ string map.  Nested objects are not supported.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.5.0-e7f454',
+            VERSION:'1.5.0-13e4bb',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
