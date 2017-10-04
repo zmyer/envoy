@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Listener discovery service &mdash; envoy 1.5.0-cec484 documentation</title>
+  <title>Listener discovery service &mdash; envoy 1.5.0-cff186 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-cec484 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-cff186 documentation" href="../../index.html"/>
         <link rel="up" title="Listeners" href="listeners.html"/>
         <link rel="next" title="Network filters" href="../network_filters/network_filters.html"/>
         <link rel="prev" title="Runtime" href="runtime.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-cec484
+                1.5.0-cff186
               </div>
             
           
@@ -269,17 +269,25 @@ add/modify/remove listeners as necessary.</dd>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>update_attempt</td>
+<tr class="row-even"><td>config_reload</td>
+<td>Counter</td>
+<td>Total API fetches that resulted in a config reload due to a different config</td>
+</tr>
+<tr class="row-odd"><td>update_attempt</td>
 <td>Counter</td>
 <td>Total API fetches attempted</td>
 </tr>
-<tr class="row-odd"><td>update_success</td>
+<tr class="row-even"><td>update_success</td>
 <td>Counter</td>
 <td>Total API fetches completed successfully</td>
 </tr>
-<tr class="row-even"><td>update_failure</td>
+<tr class="row-odd"><td>update_failure</td>
 <td>Counter</td>
 <td>Total API fetches that failed (either network or schema errors)</td>
+</tr>
+<tr class="row-even"><td>version</td>
+<td>Gauge</td>
+<td>Hash of the contents from the last successful API fetch</td>
 </tr>
 </tbody>
 </table>
@@ -330,7 +338,7 @@ add/modify/remove listeners as necessary.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-cec484',
+            VERSION:'1.5.0-cff186',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

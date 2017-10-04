@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Route discovery service &mdash; envoy 1.5.0-cec484 documentation</title>
+  <title>Route discovery service &mdash; envoy 1.5.0-cff186 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-cec484 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-cff186 documentation" href="../../index.html"/>
         <link rel="up" title="HTTP connection manager" href="http_conn_man.html"/>
         <link rel="next" title="HTTP filters" href="../http_filters/http_filters.html"/>
         <link rel="prev" title="Runtime" href="runtime.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-cec484
+                1.5.0-cff186
               </div>
             
           
@@ -253,7 +253,9 @@ the router filter.</p>
 </div>
 <div class="section" id="statistics">
 <h2>Statistics<a class="headerlink" href="#statistics" title="Permalink to this headline">¶</a></h2>
-<p>RDS has a statistics tree rooted at <em>http.&lt;stat_prefix&gt;.rds.</em> with the following statistics:</p>
+<p>RDS has a statistics tree rooted at <em>http.&lt;stat_prefix&gt;.rds.&lt;route_config_name&gt;.</em>.
+Any <code class="docutils literal"><span class="pre">:</span></code> character in the <code class="docutils literal"><span class="pre">route_config_name</span></code> name gets replaced with <code class="docutils literal"><span class="pre">_</span></code> in the
+stats tree. The stats tree contains the following statistics:</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="25%" />
@@ -282,6 +284,10 @@ the router filter.</p>
 <tr class="row-odd"><td>update_failure</td>
 <td>Counter</td>
 <td>Total API fetches that failed (either network or schema errors)</td>
+</tr>
+<tr class="row-even"><td>version</td>
+<td>Gauge</td>
+<td>Hash of the contents from the last successful API fetch</td>
 </tr>
 </tbody>
 </table>
@@ -332,7 +338,7 @@ the router filter.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-cec484',
+            VERSION:'1.5.0-cff186',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
