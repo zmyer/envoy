@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Statistics &mdash; envoy 1.5.0-31f4a5 documentation</title>
+  <title>Statistics &mdash; envoy 1.5.0-d1431c documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-31f4a5 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-d1431c documentation" href="../../index.html"/>
         <link rel="up" title="Architecture overview" href="arch_overview.html"/>
         <link rel="next" title="Runtime configuration" href="runtime.html"/>
         <link rel="prev" title="TLS" href="ssl.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-31f4a5
+                1.5.0-d1431c
               </div>
             
           
@@ -221,7 +221,9 @@ mesh give a very detailed picture of each hop and overall network health. The st
 documented in detail in the operations guide.</p>
 <p>Envoy uses statsd as the statistics output format, though plugging in a different statistics sink
 would not be difficult. Both TCP and UDP statsd is supported. Internally, counters and gauges are
-batched and periodically flushed to improve performance. Timers are written as they are received.</p>
+batched and periodically flushed to improve performance. Histograms are written as they are
+received. Note: what were previously referred to as timers have become histograms as the only
+difference between the two representations was the units.</p>
 <p>Statistics <a class="reference internal" href="../../configuration/overview/overview.html#config-overview"><span class="std std-ref">configuration</span></a>.</p>
 </div>
 
@@ -269,7 +271,7 @@ batched and periodically flushed to improve performance. Timers are written as t
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-31f4a5',
+            VERSION:'1.5.0-d1431c',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

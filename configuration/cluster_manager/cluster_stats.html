@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Statistics &mdash; envoy 1.5.0-31f4a5 documentation</title>
+  <title>Statistics &mdash; envoy 1.5.0-d1431c documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-31f4a5 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-d1431c documentation" href="../../index.html"/>
         <link rel="up" title="Cluster" href="cluster.html"/>
         <link rel="next" title="Runtime" href="cluster_runtime.html"/>
         <link rel="prev" title="TLS context" href="cluster_ssl.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-31f4a5
+                1.5.0-d1431c
               </div>
             
           
@@ -252,11 +252,11 @@
 <td>Total times that the cluster’s connection circuit breaker overflowed</td>
 </tr>
 <tr class="row-odd"><td>upstream_cx_connect_ms</td>
-<td>Timer</td>
+<td>Histogram</td>
 <td>Connection establishment milliseconds</td>
 </tr>
 <tr class="row-even"><td>upstream_cx_length_ms</td>
-<td>Timer</td>
+<td>Histogram</td>
 <td>Connection length milliseconds</td>
 </tr>
 <tr class="row-odd"><td>upstream_cx_destroy</td>
@@ -549,7 +549,7 @@ are rooted at <em>cluster.&lt;name&gt;.</em> and contain the following statistic
 <td>Specific HTTP response codes (e.g., 201, 302, etc.)</td>
 </tr>
 <tr class="row-even"><td>upstream_rq_time</td>
-<td>Timer</td>
+<td>Histogram</td>
 <td>Request time milliseconds</td>
 </tr>
 <tr class="row-odd"><td>canary.upstream_rq_&lt;*xx&gt;</td>
@@ -561,7 +561,7 @@ are rooted at <em>cluster.&lt;name&gt;.</em> and contain the following statistic
 <td>Upstream canary specific HTTP response codes</td>
 </tr>
 <tr class="row-odd"><td>canary.upstream_rq_time</td>
-<td>Timer</td>
+<td>Histogram</td>
 <td>Upstream canary request time milliseconds</td>
 </tr>
 <tr class="row-even"><td>internal.upstream_rq_&lt;*xx&gt;</td>
@@ -573,7 +573,7 @@ are rooted at <em>cluster.&lt;name&gt;.</em> and contain the following statistic
 <td>Internal origin specific HTTP response codes</td>
 </tr>
 <tr class="row-even"><td>internal.upstream_rq_time</td>
-<td>Timer</td>
+<td>Histogram</td>
 <td>Internal origin request time milliseconds</td>
 </tr>
 <tr class="row-odd"><td>external.upstream_rq_&lt;*xx&gt;</td>
@@ -585,7 +585,7 @@ are rooted at <em>cluster.&lt;name&gt;.</em> and contain the following statistic
 <td>External origin specific HTTP response codes</td>
 </tr>
 <tr class="row-odd"><td>external.upstream_rq_time</td>
-<td>Timer</td>
+<td>Histogram</td>
 <td>External origin request time milliseconds</td>
 </tr>
 </tbody>
@@ -624,7 +624,7 @@ Envoy will track the following statistics in <em>cluster.&lt;name&gt;.zone.&lt;f
 <td>Specific HTTP response codes (e.g., 201, 302, etc.)</td>
 </tr>
 <tr class="row-even"><td>upstream_rq_time</td>
-<td>Timer</td>
+<td>Histogram</td>
 <td>Request time milliseconds</td>
 </tr>
 </tbody>
@@ -724,7 +724,7 @@ the following statistics:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-31f4a5',
+            VERSION:'1.5.0-d1431c',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

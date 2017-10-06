@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>DynamoDB &mdash; envoy 1.5.0-31f4a5 documentation</title>
+  <title>DynamoDB &mdash; envoy 1.5.0-d1431c documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-31f4a5 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-d1431c documentation" href="../../index.html"/>
         <link rel="up" title="HTTP filters" href="http_filters.html"/>
         <link rel="next" title="gRPC HTTP/1.1 bridge" href="grpc_http1_bridge_filter.html"/>
         <link rel="prev" title="Fault Injection" href="fault_filter.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-31f4a5
+                1.5.0-d1431c
               </div>
             
           
@@ -233,7 +233,7 @@ namespace.</p>
 <td>Total number of requests with &lt;operation_name&gt;</td>
 </tr>
 <tr class="row-odd"><td>upstream_rq_time</td>
-<td>Timer</td>
+<td>Histogram</td>
 <td>Time spent on &lt;operation_name&gt;</td>
 </tr>
 <tr class="row-even"><td>upstream_rq_total_xxx</td>
@@ -241,7 +241,7 @@ namespace.</p>
 <td>Total number of requests with &lt;operation_name&gt; per response code (503/2xx/etc)</td>
 </tr>
 <tr class="row-odd"><td>upstream_rq_time_xxx</td>
-<td>Timer</td>
+<td>Histogram</td>
 <td>Time spent on &lt;operation_name&gt; per response code (400/3xx/etc)</td>
 </tr>
 </tbody>
@@ -270,7 +270,7 @@ in all operations from the batch.</p>
 <td>Total number of requests on &lt;table_name&gt; table</td>
 </tr>
 <tr class="row-odd"><td>upstream_rq_time</td>
-<td>Timer</td>
+<td>Histogram</td>
 <td>Time spent on &lt;table_name&gt; table</td>
 </tr>
 <tr class="row-even"><td>upstream_rq_total_xxx</td>
@@ -278,7 +278,7 @@ in all operations from the batch.</p>
 <td>Total number of requests on &lt;table_name&gt; table per response code (503/2xx/etc)</td>
 </tr>
 <tr class="row-odd"><td>upstream_rq_time_xxx</td>
-<td>Timer</td>
+<td>Histogram</td>
 <td>Time spent on &lt;table_name&gt; table per response code (400/3xx/etc)</td>
 </tr>
 </tbody>
@@ -393,7 +393,7 @@ table and failure are tracked in the <em>http.&lt;stat_prefix&gt;.dynamodb.error
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-31f4a5',
+            VERSION:'1.5.0-d1431c',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
