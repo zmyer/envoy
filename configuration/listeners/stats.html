@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Statistics &mdash; envoy 1.5.0-2beeca documentation</title>
+  <title>Statistics &mdash; envoy 1.5.0-6f4e69 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-2beeca documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-6f4e69 documentation" href="../../index.html"/>
         <link rel="up" title="Listeners" href="listeners.html"/>
         <link rel="next" title="Runtime" href="runtime.html"/>
         <link rel="prev" title="TLS context" href="ssl.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-2beeca
+                1.5.0-6f4e69
               </div>
             
           
@@ -224,27 +224,31 @@
 <td>Counter</td>
 <td>Total successful TLS connection handshakes</td>
 </tr>
-<tr class="row-even"><td>ssl.no_certificate</td>
+<tr class="row-even"><td>ssl.session_reused</td>
+<td>Counter</td>
+<td>Total successful TLS session resumptions</td>
+</tr>
+<tr class="row-odd"><td>ssl.no_certificate</td>
 <td>Counter</td>
 <td>Total successul TLS connections with no client certificate</td>
 </tr>
-<tr class="row-odd"><td>ssl.fail_verify_no_cert</td>
+<tr class="row-even"><td>ssl.fail_verify_no_cert</td>
 <td>Counter</td>
 <td>Total TLS connections that failed because of missing client certificate</td>
 </tr>
-<tr class="row-even"><td>ssl.fail_verify_error</td>
+<tr class="row-odd"><td>ssl.fail_verify_error</td>
 <td>Counter</td>
 <td>Total TLS connections that failed CA verification</td>
 </tr>
-<tr class="row-odd"><td>ssl.fail_verify_san</td>
+<tr class="row-even"><td>ssl.fail_verify_san</td>
 <td>Counter</td>
 <td>Total TLS connections that failed SAN verification</td>
 </tr>
-<tr class="row-even"><td>ssl.fail_verify_cert_hash</td>
+<tr class="row-odd"><td>ssl.fail_verify_cert_hash</td>
 <td>Counter</td>
 <td>Total TLS connections that failed certificate pinning verification</td>
 </tr>
-<tr class="row-odd"><td>ssl.cipher.&lt;cipher&gt;</td>
+<tr class="row-even"><td>ssl.cipher.&lt;cipher&gt;</td>
 <td>Counter</td>
 <td>Total TLS connections that used &lt;cipher&gt;</td>
 </tr>
@@ -296,7 +300,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-2beeca',
+            VERSION:'1.5.0-6f4e69',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

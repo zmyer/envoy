@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>TLS context &mdash; envoy 1.5.0-2beeca documentation</title>
+  <title>TLS context &mdash; envoy 1.5.0-6f4e69 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-2beeca documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-6f4e69 documentation" href="../../index.html"/>
         <link rel="up" title="Listeners" href="listeners.html"/>
         <link rel="next" title="Statistics" href="stats.html"/>
         <link rel="prev" title="Filters" href="filters.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-2beeca
+                1.5.0-6f4e69
               </div>
             
           
@@ -196,7 +196,8 @@
   <span class="nt">&quot;verify_certificate_hash&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
   <span class="nt">&quot;verify_subject_alt_name&quot;</span><span class="p">:</span> <span class="p">[],</span>
   <span class="nt">&quot;cipher_suites&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;ecdh_curves&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>
+  <span class="nt">&quot;ecdh_curves&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;session_ticket_key_paths&quot;</span><span class="p">:</span> <span class="p">[]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -272,6 +273,29 @@ AES256-SHA
 <dt>ecdh_curves</dt>
 <dd><em>(optional, string)</em> If specified, the TLS connection will only support the specified ECDH curves.
 If not specified, the default curves (X25519, P-256) will be used.</dd>
+<dt>session_ticket_key_paths</dt>
+<dd><p class="first"><em>(optional, array)</em> Paths to keyfiles for encrypting and decrypting TLS session tickets. The
+first keyfile in the array contains the key to encrypt all new sessions created by this context.
+All keys are candidates for decrypting received tickets. This allows for easy rotation of keys
+by, for example, putting the new keyfile first, and the previous keyfile second.</p>
+<p>If <cite>session_ticket_key_paths</cite> is not specified, the TLS library will still support resuming
+sessions via tickets, but it will use an internally-generated and managed key, so sessions cannot
+be resumed across hot restarts or on different hosts.</p>
+<p>Each keyfile must contain exactly 80 bytes of cryptographically-secure random data.  For example,
+the output of <code class="docutils literal"><span class="pre">openssl</span> <span class="pre">rand</span> <span class="pre">80</span></code>.</p>
+<div class="last admonition attention">
+<p class="first admonition-title">Attention</p>
+<p>Using this feature has serious security considerations and risks. Improper handling of keys may
+result in loss of secrecy in connections, even if ciphers supporting perfect forward secrecy
+are used. See <a class="reference external" href="https://www.imperialviolet.org/2013/06/27/botchingpfs.html">https://www.imperialviolet.org/2013/06/27/botchingpfs.html</a> for some discussion.
+To minimize the risk, you must:</p>
+<ul class="last simple">
+<li>Keep the session ticket keys at least as secure as your TLS certificate private keys</li>
+<li>Rotate session ticket keys at least daily, and preferably hourly</li>
+<li>Always generate keys using a cryptographically-secure random data source</li>
+</ul>
+</div>
+</dd>
 </dl>
 </div>
 
@@ -319,7 +343,7 @@ If not specified, the default curves (X25519, P-256) will be used.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-2beeca',
+            VERSION:'1.5.0-6f4e69',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
