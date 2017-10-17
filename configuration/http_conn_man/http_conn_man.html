@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>HTTP connection manager &mdash; envoy 1.5.0-1f433a documentation</title>
+  <title>HTTP connection manager &mdash; envoy 1.5.0-74f20b documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-1f433a documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-74f20b documentation" href="../../index.html"/>
         <link rel="up" title="Configuration reference" href="../configuration.html"/>
         <link rel="next" title="Route configuration" href="route_config/route_config.html"/>
         <link rel="prev" title="TCP proxy" href="../network_filters/tcp_proxy_filter.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-1f433a
+                1.5.0-74f20b
               </div>
             
           
@@ -269,10 +269,13 @@ emits <a class="reference internal" href="../../intro/arch_overview/tracing.html
 <dl class="docutils" id="config-http-conn-man-http1-settings">
 <dt>http1_settings</dt>
 <dd><p class="first"><em>(optional, object)</em> Additional HTTP/1 settings that are passed to the HTTP/1 codec.</p>
-<p class="last">allow_absolute_url
-<em>(optional, boolean)</em> Handle http requests with absolute urls in the requests. These requests are generally
-sent by clients to forward/explicit proxies. This allows clients to configure envoy as their http proxy.
-In Unix, for example, this is typically done by setting the http_proxy environment variable.</p>
+<dl class="last docutils">
+<dt>allow_absolute_url</dt>
+<dd><em>(optional, boolean)</em> Handle http requests with absolute urls in the requests. These requests
+are generally sent by clients to forward/explicit proxies. This allows clients to configure
+envoy as their http proxy. In Unix, for example, this is typically done by setting the
+http_proxy environment variable.</dd>
+</dl>
 </dd>
 </dl>
 <dl class="docutils" id="config-http-conn-man-http2-settings">
@@ -422,7 +425,7 @@ feature is not desired it can be disabled.</dd>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-1f433a',
+            VERSION:'1.5.0-74f20b',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
