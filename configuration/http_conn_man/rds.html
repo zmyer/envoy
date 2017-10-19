@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Route discovery service &mdash; envoy 1.5.0-546917 documentation</title>
+  <title>Route discovery service &mdash; envoy 1.5.0-e366bc documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="envoy 1.5.0-546917 documentation" href="../../index.html"/>
+    <link rel="top" title="envoy 1.5.0-e366bc documentation" href="../../index.html"/>
         <link rel="up" title="HTTP connection manager" href="http_conn_man.html"/>
         <link rel="next" title="HTTP filters" href="../http_filters/http_filters.html"/>
         <link rel="prev" title="Runtime" href="runtime.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.5.0-546917
+                1.5.0-e366bc
               </div>
             
           
@@ -216,7 +216,9 @@ a cluster as in the case of SDS and CDS.</dd>
 <dd><em>(required, string)</em> The name of the route configuration. This name will be passed to the
 <a class="reference internal" href="#config-http-conn-man-rds-api"><span class="std std-ref">RDS HTTP API</span></a>. This allows an Envoy configuration with
 multiple HTTP listeners (and associated HTTP connection manager filters) to use different route
-configurations.</dd>
+configurations. By default, the maximum length of the name is limited to 60 characters. This
+limit can be increased by setting the <a class="reference internal" href="../../operations/cli.html#cmdoption-max-obj-name-len"><code class="xref std std-option docutils literal"><span class="pre">--max-obj-name-len</span></code></a> command line argument to the
+desired value.</dd>
 <dt>refresh_delay_ms</dt>
 <dd><em>(optional, integer)</em> The delay, in milliseconds, between fetches to the RDS API. Envoy will add
 an additional random jitter to the delay that is between zero and <em>refresh_delay_ms</em>
@@ -338,7 +340,7 @@ stats tree. The stats tree contains the following statistics:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.5.0-546917',
+            VERSION:'1.5.0-e366bc',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
