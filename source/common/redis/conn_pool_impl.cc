@@ -198,6 +198,10 @@ PoolRequest* InstanceImpl::makeRequest(const std::string& hash_key, const RespVa
   return tls_->getTyped<ThreadLocalPool>().makeRequest(hash_key, value, callbacks);
 }
 
+const std::string& InstanceImpl::getHost(const std::string& hash_key) {
+  return tls_->getTyped<ThreadLocalPool>().getHost(hash_key);
+}
+
 InstanceImpl::ThreadLocalPool::ThreadLocalPool(InstanceImpl& parent, Event::Dispatcher& dispatcher,
                                                const std::string& cluster_name)
     : parent_(parent), dispatcher_(dispatcher), cluster_(parent_.cm_.get(cluster_name)) {
@@ -230,6 +234,11 @@ void InstanceImpl::ThreadLocalPool::onHostsRemoved(
       it->second->redis_client_->close();
     }
   }
+}
+
+const std::string& InstanceImpl::ThreadLocalPool::getHost(const std::string& hash_key) {
+  LbContextImpl lb_context(hash_key);
+  return cluster_->loadBalancer().chooseHost(&lb_context)->address()->asString();
 }
 
 PoolRequest* InstanceImpl::ThreadLocalPool::makeRequest(const std::string& hash_key,

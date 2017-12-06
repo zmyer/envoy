@@ -49,7 +49,7 @@ public:
   void addConnectionCallbacks(Network::ConnectionCallbacks& callbacks) override {
     connection_->addConnectionCallbacks(callbacks);
   }
-  void close() override;
+  void close() override;  
   PoolRequest* makeRequest(const RespValue& request, PoolCallbacks& callbacks) override;
 
 private:
@@ -119,8 +119,10 @@ public:
   InstanceImpl(const std::string& cluster_name, Upstream::ClusterManager& cm,
                ClientFactory& client_factory, ThreadLocal::SlotAllocator& tls,
                const envoy::api::v2::filter::network::RedisProxy::ConnPoolSettings& config);
-
+  
+  
   // Redis::ConnPool::Instance
+  const std::string& getHost(const std::string& hash_key) override;
   PoolRequest* makeRequest(const std::string& hash_key, const RespValue& request,
                            PoolCallbacks& callbacks) override;
 
@@ -146,6 +148,7 @@ private:
     ThreadLocalPool(InstanceImpl& parent, Event::Dispatcher& dispatcher,
                     const std::string& cluster_name);
     ~ThreadLocalPool();
+    const std::string& getHost(const std::string& hash_key);
     PoolRequest* makeRequest(const std::string& hash_key, const RespValue& request,
                              PoolCallbacks& callbacks);
     void onHostsRemoved(const std::vector<Upstream::HostSharedPtr>& hosts_removed);

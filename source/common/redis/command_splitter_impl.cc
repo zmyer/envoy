@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "common/common/assert.h"
@@ -115,14 +116,61 @@ SplitRequestPtr MGETRequest::create(ConnPool::Instance& conn_pool,
 
   std::vector<RespValue> values(2);
   values[0].type(RespType::BulkString);
-  values[0].asString() = "mget";
+  values[0].asString() = "MGET";
   values[1].type(RespType::BulkString);
 
   RespValue single_mget;
   single_mget.type(RespType::Array);
   single_mget.asArray().swap(values);
+  
+
+  
+  // first generate a map of unique hosts to hash_key, original_index pairs
+  // server1 -> { (foo, 0), (bar, 3), ... }
+  std::unordered_map<std::string, std::vector<std::pair<std::string, uint32_t>>> request_map;
+  for (uint64_t i = 1; i < incoming_request.asArray().size(); i++) {
+    const std::string& hash_key = incoming_request.asArray()[i].asString();
+    const std::string& host = conn_pool.getHost(hash_key);
+    
+    auto key_and_index = std::make_pair(hash_key, i); 
+    
+    auto collapsed_request = request_map.find(host);
+    if (collapsed_request != request_map.end()) {
+      collapsed_request->second.push_back(key_and_index);
+    } else {
+      request_map[host] = {key_and_index};
+    }
+  }
+  
+  // now build the requests
+  RespValue mget;
+  mget.type(RespType::Array);
+  uint64_t i = 0;
+  for (auto element : request_map ) {
+    std::vector<uint32_t> response_indexes;
+
+    std::vector<RespValue> request(element.second.size() + 1);
+    request[0].type(RespType::BulkString);
+    request[0].asString() = "MGET";
+    
+    for (uint64_t j = 0; j < element.second.size(); j++) {
+      response_indexes.push_back(element.second[j].second);      
+      request[j + 1].type(RespType::BulkString);
+      request[j + 1].asString() = element.second[j].first;
+    }
+    mget.asArray().swap(request);
+
+    ENVOY_LOG(info, "redis mget {}: {}", i, mget.toString());
+    i++;
+  }
+
   for (uint64_t i = 1; i < incoming_request.asArray().size(); i++) {
     std::vector<uint32_t> response_indexes{static_cast<uint32_t>(i - 1)};
+
+    // need map of hash_key to server
+    // then build pairs of request vectors with vector of original indexes
+    // map[server] = pair<Request, vector>
+    auto hash_key = incoming_request.asArray()[i].asString();
     request_ptr->pending_requests_.emplace_back(*request_ptr, i - 1, response_indexes);
     PendingRequest& pending_request = request_ptr->pending_requests_.back();
 
