@@ -100,21 +100,25 @@ protected:
   FragmentedRequest(SplitCallbacks& callbacks) : callbacks_(callbacks) {}
 
   struct PendingRequest : public ConnPool::PoolCallbacks {
-    PendingRequest(FragmentedRequest& parent, uint32_t index) : parent_(parent), index_(index) {}
+    PendingRequest(FragmentedRequest& parent, uint32_t index,
+                   std::vector<uint32_t> response_indexes)
+        : parent_(parent), index_(index), response_indexes_(response_indexes) {}
 
     // Redis::ConnPool::PoolCallbacks
     void onResponse(RespValuePtr&& value) override {
-      parent_.onChildResponse(std::move(value), index_);
+      parent_.onChildResponse(std::move(value), index_, response_indexes_);
     }
-    void onFailure() override { parent_.onChildFailure(index_); }
+    void onFailure() override { parent_.onChildFailure(index_, response_indexes_); }
 
     FragmentedRequest& parent_;
     const uint32_t index_;
+    const std::vector<uint32_t> response_indexes_;
     ConnPool::PoolRequest* handle_{};
   };
 
-  virtual void onChildResponse(RespValuePtr&& value, uint32_t index) PURE;
-  void onChildFailure(uint32_t index);
+  virtual void onChildResponse(RespValuePtr&& value, uint32_t index,
+                               std::vector<uint32_t> response_indexes) PURE;
+  void onChildFailure(uint32_t index, std::vector<uint32_t> response_indexes);
 
   SplitCallbacks& callbacks_;
   RespValuePtr pending_response_;
@@ -136,45 +140,49 @@ private:
   MGETRequest(SplitCallbacks& callbacks) : FragmentedRequest(callbacks) {}
 
   // Redis::CommandSplitter::FragmentedRequest
-  void onChildResponse(RespValuePtr&& value, uint32_t index) override;
+  void onChildResponse(RespValuePtr&& value, uint32_t index,
+                       std::vector<uint32_t> response_indexes) override;
 };
 
-/**
- * SplitKeysSumResultRequest takes each key from the command and sends the same incoming command
- * with each key to the appropriate Redis server. The response from each Redis (which must be an
- * integer) is summed and returned to the user. If there is any error or failure in processing the
- * fragmented commands, an error will be returned.
- */
-class SplitKeysSumResultRequest : public FragmentedRequest, Logger::Loggable<Logger::Id::redis> {
-public:
-  static SplitRequestPtr create(ConnPool::Instance& conn_pool, const RespValue& incoming_request,
-                                SplitCallbacks& callbacks);
+// /**
+//  * SplitKeysSumResultRequest takes each key from the command and sends the same incoming command
+//  * with each key to the appropriate Redis server. The response from each Redis (which must be an
+//  * integer) is summed and returned to the user. If there is any error or failure in processing
+//  the
+//  * fragmented commands, an error will be returned.
+//  */
+// class SplitKeysSumResultRequest : public FragmentedRequest, Logger::Loggable<Logger::Id::redis> {
+// public:
+//   static SplitRequestPtr create(ConnPool::Instance& conn_pool, const RespValue& incoming_request,
+//                                 SplitCallbacks& callbacks);
 
-private:
-  SplitKeysSumResultRequest(SplitCallbacks& callbacks) : FragmentedRequest(callbacks) {}
+// private:
+//   SplitKeysSumResultRequest(SplitCallbacks& callbacks) : FragmentedRequest(callbacks) {}
 
-  // Redis::CommandSplitter::FragmentedRequest
-  void onChildResponse(RespValuePtr&& value, uint32_t index) override;
+//   // Redis::CommandSplitter::FragmentedRequest
+//   void onChildResponse(RespValuePtr&& value, uint32_t index, std::vector<uint32_t>
+//   response_indexes) override;
 
-  int64_t total_{0};
-};
+//   int64_t total_{0};
+// };
 
-/**
- * MSETRequest takes each key and value pair from the command and sends a SET for each to the
- * appropriate Redis server. The response is an OK if all commands succeeded or an ERR if any
- * failed.
- */
-class MSETRequest : public FragmentedRequest, Logger::Loggable<Logger::Id::redis> {
-public:
-  static SplitRequestPtr create(ConnPool::Instance& conn_pool, const RespValue& incoming_request,
-                                SplitCallbacks& callbacks);
+// /**
+//  * MSETRequest takes each key and value pair from the command and sends a SET for each to the
+//  * appropriate Redis server. The response is an OK if all commands succeeded or an ERR if any
+//  * failed.
+//  */
+// class MSETRequest : public FragmentedRequest, Logger::Loggable<Logger::Id::redis> {
+// public:
+//   static SplitRequestPtr create(ConnPool::Instance& conn_pool, const RespValue& incoming_request,
+//                                 SplitCallbacks& callbacks);
 
-private:
-  MSETRequest(SplitCallbacks& callbacks) : FragmentedRequest(callbacks) {}
+// private:
+//   MSETRequest(SplitCallbacks& callbacks) : FragmentedRequest(callbacks) {}
 
-  // Redis::CommandSplitter::FragmentedRequest
-  void onChildResponse(RespValuePtr&& value, uint32_t index) override;
-};
+//   // Redis::CommandSplitter::FragmentedRequest
+//   void onChildResponse(RespValuePtr&& value, uint32_t index, std::vector<uint32_t>
+//   response_indexes) override;
+// };
 
 /**
  * CommandHandlerFactory is placed in the command lookup map for each supported command and is used
@@ -227,8 +235,8 @@ private:
   CommandHandlerFactory<SimpleRequest> simple_command_handler_;
   CommandHandlerFactory<EvalRequest> eval_command_handler_;
   CommandHandlerFactory<MGETRequest> mget_handler_;
-  CommandHandlerFactory<MSETRequest> mset_handler_;
-  CommandHandlerFactory<SplitKeysSumResultRequest> split_keys_sum_result_handler_;
+  // CommandHandlerFactory<MSETRequest> mset_handler_;
+  // CommandHandlerFactory<SplitKeysSumResultRequest> split_keys_sum_result_handler_;
   std::unordered_map<std::string, HandlerData> command_map_;
   InstanceStats stats_;
   const ToLowerTable to_lower_table_;
