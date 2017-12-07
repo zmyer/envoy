@@ -104,35 +104,13 @@ void FragmentedRequest::onChildFailure(uint32_t index, std::vector<uint32_t> res
 
 SplitRequestPtr MGETRequest::create(ConnPool::Instance& conn_pool,
                                     const RespValue& incoming_request, SplitCallbacks& callbacks) {
-  std::unique_ptr<MGETRequest> request_ptr{new MGETRequest(callbacks)};
-
-  request_ptr->num_pending_responses_ = incoming_request.asArray().size() - 1;
-  request_ptr->pending_requests_.reserve(request_ptr->num_pending_responses_);
-
-  request_ptr->pending_response_.reset(new RespValue());
-  request_ptr->pending_response_->type(RespType::Array);
-  std::vector<RespValue> responses(request_ptr->num_pending_responses_);
-  request_ptr->pending_response_->asArray().swap(responses);
-
-  std::vector<RespValue> values(2);
-  values[0].type(RespType::BulkString);
-  values[0].asString() = "MGET";
-  values[1].type(RespType::BulkString);
-
-  RespValue single_mget;
-  single_mget.type(RespType::Array);
-  single_mget.asArray().swap(values);
-  
-
-  
-  // first generate a map of unique hosts to hash_key, original_index pairs
-  // server1 -> { (foo, 0), (bar, 3), ... }
+  // Generate a map of hosts to keys and their original index in the request.
   std::unordered_map<std::string, std::vector<std::pair<std::string, uint32_t>>> request_map;
-  for (uint64_t i = 1; i < incoming_request.asArray().size(); i++) {
+  for (uint32_t i = 1; i < incoming_request.asArray().size(); i++) {
     const std::string& hash_key = incoming_request.asArray()[i].asString();
     const std::string& host = conn_pool.getHost(hash_key);
     
-    auto key_and_index = std::make_pair(hash_key, i); 
+    std::pair<std::string, uint32_t> key_and_index = {hash_key, i - 1}; 
     
     auto collapsed_request = request_map.find(host);
     if (collapsed_request != request_map.end()) {
@@ -141,46 +119,48 @@ SplitRequestPtr MGETRequest::create(ConnPool::Instance& conn_pool,
       request_map[host] = {key_and_index};
     }
   }
+
+  // Initialize empty request.
+  std::unique_ptr<MGETRequest> request_ptr{new MGETRequest(callbacks)};
+  request_ptr->num_pending_responses_ = request_map.size();
+  request_ptr->pending_requests_.reserve(request_ptr->num_pending_responses_);
+
+  // Initalize empty response.
+  request_ptr->pending_response_.reset(new RespValue());
+  request_ptr->pending_response_->type(RespType::Array);
+  std::vector<RespValue> responses(incoming_request.asArray().size() - 1);
+  request_ptr->pending_response_->asArray().swap(responses);
   
-  // now build the requests
+  // Each entry in the map represents a request. Create each request and pass the original index of
+  // each key with it.
   RespValue mget;
   mget.type(RespType::Array);
-  uint64_t i = 0;
-  for (auto element : request_map ) {
-    std::vector<uint32_t> response_indexes;
 
-    std::vector<RespValue> request(element.second.size() + 1);
-    request[0].type(RespType::BulkString);
-    request[0].asString() = "MGET";
+  uint32_t request_index{};
+  for (const auto& request : request_map) {
+    const std::vector<std::pair<std::string, uint32_t>>& key_index_pairs = request.second;
+
+    std::vector<RespValue> collapsed_request(key_index_pairs.size() + 1);
+    collapsed_request[0].type(RespType::BulkString);
+    collapsed_request[0].asString() = "MGET";
     
-    for (uint64_t j = 0; j < element.second.size(); j++) {
-      response_indexes.push_back(element.second[j].second);      
-      request[j + 1].type(RespType::BulkString);
-      request[j + 1].asString() = element.second[j].first;
+    std::vector<uint32_t> response_indexes;
+    for (uint32_t i = 0; i < key_index_pairs.size(); i++) {
+      collapsed_request[i + 1].type(RespType::BulkString);
+      collapsed_request[i + 1].asString() = key_index_pairs[i].first;
+      response_indexes.push_back(key_index_pairs[i].second);
     }
-    mget.asArray().swap(request);
+    mget.asArray().swap(collapsed_request);
 
-    ENVOY_LOG(info, "redis mget {}: {}", i, mget.toString());
-    i++;
-  }
-
-  for (uint64_t i = 1; i < incoming_request.asArray().size(); i++) {
-    std::vector<uint32_t> response_indexes{static_cast<uint32_t>(i - 1)};
-
-    // need map of hash_key to server
-    // then build pairs of request vectors with vector of original indexes
-    // map[server] = pair<Request, vector>
-    auto hash_key = incoming_request.asArray()[i].asString();
-    request_ptr->pending_requests_.emplace_back(*request_ptr, i - 1, response_indexes);
+    request_ptr->pending_requests_.emplace_back(*request_ptr, request_index, response_indexes);
     PendingRequest& pending_request = request_ptr->pending_requests_.back();
 
-    single_mget.asArray()[1].asString() = incoming_request.asArray()[i].asString();
-    ENVOY_LOG(debug, "redis: parallel get: '{}'", single_mget.toString());
-    pending_request.handle_ = conn_pool.makeRequest(incoming_request.asArray()[i].asString(),
-                                                    single_mget, pending_request);
+    pending_request.handle_ = conn_pool.makeRequest(mget.asArray()[1].asString(), mget, pending_request);
     if (!pending_request.handle_) {
       pending_request.onResponse(Utility::makeError("no upstream host"));
     }
+
+    request_index++;
   }
 
   return request_ptr->num_pending_responses_ > 0 ? std::move(request_ptr) : nullptr;
@@ -189,34 +169,45 @@ SplitRequestPtr MGETRequest::create(ConnPool::Instance& conn_pool,
 void MGETRequest::onChildResponse(RespValuePtr&& value, uint32_t index,
                                   std::vector<uint32_t> response_indexes) {
   pending_requests_[index].handle_ = nullptr;
-
-  pending_response_->asArray()[index].type(value->type());
+  
   switch (value->type()) {
   case RespType::Integer:
+  case RespType::Null:
   case RespType::SimpleString: {
-    pending_response_->asArray()[index].type(RespType::Error);
-    pending_response_->asArray()[index].asString() = "upstream protocol error";
-    error_count_++;
+    for (const uint32_t response_index : response_indexes) {
+      pending_response_->asArray()[response_index].type(RespType::Error);
+      pending_response_->asArray()[response_index].asString() = "upstream protocol error";
+      error_count_++;
+    }
     break;
   }
   case RespType::Error:
   case RespType::BulkString: {
-    error_count_++;
-    pending_response_->asArray()[index].asString().swap(value->asString());
+    for (const uint32_t response_index : response_indexes) {
+      pending_response_->asArray()[response_index].type(value->type());
+      pending_response_->asArray()[index].asString().swap(value->asString());
+    }
     break;
   }
-  case RespType::Array:
-    // for real
-    for (uint64_t i = 0; i < response_indexes.size(); i++) {
-      RespType element_type = value->asArray()[i].type();
-      pending_response_->asArray()[index].type(element_type);
-      if (element_type != RespType::Null) {
-        pending_response_->asArray()[index].asString().swap(value->asArray()[i].asString());
+  case RespType::Array: {
+    ASSERT(response_indexes.size() == value->asArray().size());
+    for (uint32_t i = 0; i < response_indexes.size(); i++) {
+      RespValue& nested_value = value->asArray()[i];
+
+      pending_response_->asArray()[response_indexes[i]].type(nested_value.type());
+      switch (nested_value.type()) {
+        case RespType::Null:
+          break;
+        case RespType::BulkString: {
+          pending_response_->asArray()[response_indexes[i]].asString().swap(nested_value.asString());
+          break;
+        }
+        default:
+          NOT_REACHED;
       }
     }
     break;
-  case RespType::Null:
-    break;
+  }
   }
 
   ASSERT(num_pending_responses_ > 0);
@@ -251,8 +242,8 @@ void MGETRequest::onChildResponse(RespValuePtr&& value, uint32_t index,
 //   single_mset.type(RespType::Array);
 //   single_mset.asArray().swap(values);
 
-//   uint64_t fragment_index = 0;
-//   for (uint64_t i = 1; i < incoming_request.asArray().size(); i += 2) {
+//   uint32_t fragment_index = 0;
+//   for (uint32_t i = 1; i < incoming_request.asArray().size(); i += 2) {
 //     request_ptr->pending_requests_.emplace_back(*request_ptr, fragment_index++);
 //     PendingRequest& pending_request = request_ptr->pending_requests_.back();
 
@@ -318,7 +309,7 @@ void MGETRequest::onChildResponse(RespValuePtr&& value, uint32_t index,
 //   single_fragment.type(RespType::Array);
 //   single_fragment.asArray().swap(values);
 
-//   for (uint64_t i = 1; i < incoming_request.asArray().size(); i++) {
+//   for (uint32_t i = 1; i < incoming_request.asArray().size(); i++) {
 //     request_ptr->pending_requests_.emplace_back(*request_ptr, i - 1);
 //     PendingRequest& pending_request = request_ptr->pending_requests_.back();
 

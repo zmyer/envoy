@@ -124,7 +124,7 @@ protected:
   RespValuePtr pending_response_;
   std::vector<PendingRequest> pending_requests_;
   uint32_t num_pending_responses_;
-  uint32_t error_count_{0};
+  uint32_t error_count_{};
 };
 
 /**
