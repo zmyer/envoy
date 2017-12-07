@@ -133,7 +133,7 @@ SplitRequestPtr MGETRequest::create(ConnPool::Instance& conn_pool,
   
   // Each entry in the map represents a request. Create each request and pass the original index of
   // each key with it.
-  RespValue mget;
+  RespValue mget; 
   mget.type(RespType::Array);
 
   uint32_t request_index{};
@@ -145,6 +145,7 @@ SplitRequestPtr MGETRequest::create(ConnPool::Instance& conn_pool,
     collapsed_request[0].asString() = "MGET";
     
     std::vector<uint32_t> response_indexes;
+    response_indexes.reserve(key_index_pairs.size());
     for (uint32_t i = 0; i < key_index_pairs.size(); i++) {
       collapsed_request[i + 1].type(RespType::BulkString);
       collapsed_request[i + 1].asString() = key_index_pairs[i].first;
