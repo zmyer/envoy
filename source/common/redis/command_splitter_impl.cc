@@ -186,7 +186,8 @@ void MGETRequest::onChildResponse(RespValuePtr&& value, uint32_t index,
   case RespType::BulkString: {
     for (const uint32_t response_index : response_indexes) {
       pending_response_->asArray()[response_index].type(value->type());
-      pending_response_->asArray()[index].asString().swap(value->asString());
+      pending_response_->asArray()[response_index].asString().swap(value->asString());
+      error_count_++;
     }
     break;
   }
