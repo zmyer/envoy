@@ -144,6 +144,24 @@ private:
                        std::vector<uint32_t> response_indexes) override;
 };
 
+/**
+ * MSETRequest takes each key and value pair from the command and sends a SET for each to the
+ * appropriate Redis server. The response is an OK if all commands succeeded or an ERR if any
+ * failed.
+ */
+class MSETRequest : public FragmentedRequest, Logger::Loggable<Logger::Id::redis> {
+public:
+  static SplitRequestPtr create(ConnPool::Instance& conn_pool, const RespValue& incoming_request,
+                                SplitCallbacks& callbacks);
+
+private:
+  MSETRequest(SplitCallbacks& callbacks) : FragmentedRequest(callbacks) {}
+
+  // Redis::CommandSplitter::FragmentedRequest
+  void onChildResponse(RespValuePtr&& value, uint32_t index, std::vector<uint32_t>
+  response_indexes) override;
+};
+
 // /**
 //  * SplitKeysSumResultRequest takes each key from the command and sends the same incoming command
 //  * with each key to the appropriate Redis server. The response from each Redis (which must be an
@@ -166,23 +184,6 @@ private:
 //   int64_t total_{0};
 // };
 
-// /**
-//  * MSETRequest takes each key and value pair from the command and sends a SET for each to the
-//  * appropriate Redis server. The response is an OK if all commands succeeded or an ERR if any
-//  * failed.
-//  */
-// class MSETRequest : public FragmentedRequest, Logger::Loggable<Logger::Id::redis> {
-// public:
-//   static SplitRequestPtr create(ConnPool::Instance& conn_pool, const RespValue& incoming_request,
-//                                 SplitCallbacks& callbacks);
-
-// private:
-//   MSETRequest(SplitCallbacks& callbacks) : FragmentedRequest(callbacks) {}
-
-//   // Redis::CommandSplitter::FragmentedRequest
-//   void onChildResponse(RespValuePtr&& value, uint32_t index, std::vector<uint32_t>
-//   response_indexes) override;
-// };
 
 /**
  * CommandHandlerFactory is placed in the command lookup map for each supported command and is used
@@ -235,7 +236,7 @@ private:
   CommandHandlerFactory<SimpleRequest> simple_command_handler_;
   CommandHandlerFactory<EvalRequest> eval_command_handler_;
   CommandHandlerFactory<MGETRequest> mget_handler_;
-  // CommandHandlerFactory<MSETRequest> mset_handler_;
+  CommandHandlerFactory<MSETRequest> mset_handler_;
   // CommandHandlerFactory<SplitKeysSumResultRequest> split_keys_sum_result_handler_;
   std::unordered_map<std::string, HandlerData> command_map_;
   InstanceStats stats_;
