@@ -108,7 +108,7 @@ SplitRequestPtr MGETRequest::create(ConnPool::Instance& conn_pool,
   std::unordered_map<std::string, std::vector<std::pair<std::string, uint32_t>>> request_map;
   for (uint32_t i = 1; i < incoming_request.asArray().size(); i++) {
     const std::string& key = incoming_request.asArray()[i].asString();
-    const std::string& host = conn_pool.getHost(key);
+    const std::string& host = conn_pool.getHostAddress(key);
 
     const std::pair<std::string, uint32_t> key_and_index{key, i - 1};
     auto collapsed_request = request_map.find(host);
@@ -229,7 +229,7 @@ SplitRequestPtr MSETRequest::create(ConnPool::Instance& conn_pool,
   for (uint32_t i = 1; i < incoming_request.asArray().size(); i += 2) {
     const std::string& key = incoming_request.asArray()[i].asString();
     const std::string& value = incoming_request.asArray()[i + 1].asString();
-    const std::string& host = conn_pool.getHost(key);
+    const std::string& host = conn_pool.getHostAddress(key);
 
     std::tuple<std::string, std::string, uint32_t> command_and_index{key, value, i - 1};
 
@@ -324,7 +324,7 @@ SplitRequestPtr SplitKeysSumResultRequest::create(ConnPool::Instance& conn_pool,
   std::unordered_map<std::string, std::vector<std::pair<std::string, uint32_t>>> request_map;
   for (uint32_t i = 1; i < incoming_request.asArray().size(); i++) {
     const std::string& key = incoming_request.asArray()[i].asString();
-    const std::string& host = conn_pool.getHost(key);
+    const std::string& host = conn_pool.getHostAddress(key);
 
     const std::pair<std::string, uint32_t> key_and_index{key, i - 1};
     auto collapsed_request = request_map.find(host);

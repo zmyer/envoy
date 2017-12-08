@@ -119,7 +119,12 @@ class Instance {
 public:
   virtual ~Instance() {}
 
-  virtual const std::string& getHost(const std::string& hash_key) PURE;
+  /**
+   * Returns the address of the host that a key hashes to.
+   * @param hash_key supplies the key to hash.
+   * @return const std::string& the address of the selected host.
+   */
+  virtual const std::string& getHostAddress(const std::string& hash_key) PURE;
 
   /**
    * Makes a redis request.
