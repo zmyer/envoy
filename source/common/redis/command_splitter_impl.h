@@ -158,32 +158,31 @@ private:
   MSETRequest(SplitCallbacks& callbacks) : FragmentedRequest(callbacks) {}
 
   // Redis::CommandSplitter::FragmentedRequest
-  void onChildResponse(RespValuePtr&& value, uint32_t index, std::vector<uint32_t>
-  response_indexes) override;
+  void onChildResponse(RespValuePtr&& value, uint32_t index,
+                       std::vector<uint32_t> response_indexes) override;
 };
 
-// /**
-//  * SplitKeysSumResultRequest takes each key from the command and sends the same incoming command
-//  * with each key to the appropriate Redis server. The response from each Redis (which must be an
-//  * integer) is summed and returned to the user. If there is any error or failure in processing
-//  the
-//  * fragmented commands, an error will be returned.
-//  */
-// class SplitKeysSumResultRequest : public FragmentedRequest, Logger::Loggable<Logger::Id::redis> {
-// public:
-//   static SplitRequestPtr create(ConnPool::Instance& conn_pool, const RespValue& incoming_request,
-//                                 SplitCallbacks& callbacks);
+/**
+ * SplitKeysSumResultRequest takes each key from the command and sends the same incoming command
+ * with each key to the appropriate Redis server. The response from each Redis (which must be an
+ * integer) is summed and returned to the user. If there is any error or failure in processing
+ the
+ * fragmented commands, an error will be returned.
+ */
+class SplitKeysSumResultRequest : public FragmentedRequest, Logger::Loggable<Logger::Id::redis> {
+public:
+  static SplitRequestPtr create(ConnPool::Instance& conn_pool, const RespValue& incoming_request,
+                                SplitCallbacks& callbacks);
 
-// private:
-//   SplitKeysSumResultRequest(SplitCallbacks& callbacks) : FragmentedRequest(callbacks) {}
+private:
+  SplitKeysSumResultRequest(SplitCallbacks& callbacks) : FragmentedRequest(callbacks) {}
 
-//   // Redis::CommandSplitter::FragmentedRequest
-//   void onChildResponse(RespValuePtr&& value, uint32_t index, std::vector<uint32_t>
-//   response_indexes) override;
+  // Redis::CommandSplitter::FragmentedRequest
+  void onChildResponse(RespValuePtr&& value, uint32_t index,
+                       std::vector<uint32_t> response_indexes) override;
 
-//   int64_t total_{0};
-// };
-
+  int64_t total_{0};
+};
 
 /**
  * CommandHandlerFactory is placed in the command lookup map for each supported command and is used
@@ -237,7 +236,7 @@ private:
   CommandHandlerFactory<EvalRequest> eval_command_handler_;
   CommandHandlerFactory<MGETRequest> mget_handler_;
   CommandHandlerFactory<MSETRequest> mset_handler_;
-  // CommandHandlerFactory<SplitKeysSumResultRequest> split_keys_sum_result_handler_;
+  CommandHandlerFactory<SplitKeysSumResultRequest> split_keys_sum_result_handler_;
   std::unordered_map<std::string, HandlerData> command_map_;
   InstanceStats stats_;
   const ToLowerTable to_lower_table_;

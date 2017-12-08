@@ -109,8 +109,8 @@ SplitRequestPtr MGETRequest::create(ConnPool::Instance& conn_pool,
   for (uint32_t i = 1; i < incoming_request.asArray().size(); i++) {
     const std::string& key = incoming_request.asArray()[i].asString();
     const std::string& host = conn_pool.getHost(key);
-    
-    const std::pair<std::string, uint32_t> key_and_index {key, i - 1}; 
+
+    const std::pair<std::string, uint32_t> key_and_index{key, i - 1};
     auto collapsed_request = request_map.find(host);
     if (collapsed_request != request_map.end()) {
       collapsed_request->second.push_back(key_and_index);
@@ -129,12 +129,11 @@ SplitRequestPtr MGETRequest::create(ConnPool::Instance& conn_pool,
   request_ptr->pending_response_->type(RespType::Array);
   std::vector<RespValue> responses(incoming_request.asArray().size() - 1);
   request_ptr->pending_response_->asArray().swap(responses);
-  
+
   // Each entry in the map represents a request. Create each request and pass the original index of
   // each key with it.
-  RespValue mget; 
+  RespValue mget;
   mget.type(RespType::Array);
-
   uint32_t request_index{};
   for (const auto& request : request_map) {
     const std::vector<std::pair<std::string, uint32_t>>& key_index_pairs = request.second;
@@ -142,7 +141,7 @@ SplitRequestPtr MGETRequest::create(ConnPool::Instance& conn_pool,
     std::vector<RespValue> collapsed_request(key_index_pairs.size() + 1);
     collapsed_request[0].type(RespType::BulkString);
     collapsed_request[0].asString() = "MGET";
-    
+
     std::vector<uint32_t> response_indexes;
     response_indexes.reserve(key_index_pairs.size());
     for (uint32_t i = 0; i < key_index_pairs.size(); i++) {
@@ -155,7 +154,8 @@ SplitRequestPtr MGETRequest::create(ConnPool::Instance& conn_pool,
     request_ptr->pending_requests_.emplace_back(*request_ptr, request_index++, response_indexes);
     PendingRequest& pending_request = request_ptr->pending_requests_.back();
 
-    pending_request.handle_ = conn_pool.makeRequest(mget.asArray()[1].asString(), mget, pending_request);
+    pending_request.handle_ =
+        conn_pool.makeRequest(mget.asArray()[1].asString(), mget, pending_request);
     if (!pending_request.handle_) {
       pending_request.onResponse(Utility::makeError("no upstream host"));
     }
@@ -167,7 +167,7 @@ SplitRequestPtr MGETRequest::create(ConnPool::Instance& conn_pool,
 void MGETRequest::onChildResponse(RespValuePtr&& value, uint32_t index,
                                   std::vector<uint32_t> response_indexes) {
   pending_requests_[index].handle_ = nullptr;
-  
+
   switch (value->type()) {
   case RespType::Integer:
   case RespType::Null:
@@ -195,14 +195,14 @@ void MGETRequest::onChildResponse(RespValuePtr&& value, uint32_t index,
 
       pending_response_->asArray()[response_indexes[i]].type(nested_value.type());
       switch (nested_value.type()) {
-        case RespType::Null:
-          break;
-        case RespType::BulkString: {
-          pending_response_->asArray()[response_indexes[i]].asString().swap(nested_value.asString());
-          break;
-        }
-        default:
-          NOT_REACHED;
+      case RespType::Null:
+        break;
+      case RespType::BulkString: {
+        pending_response_->asArray()[response_indexes[i]].asString().swap(nested_value.asString());
+        break;
+      }
+      default:
+        NOT_REACHED;
       }
     }
     break;
@@ -217,22 +217,22 @@ void MGETRequest::onChildResponse(RespValuePtr&& value, uint32_t index,
 }
 
 SplitRequestPtr MSETRequest::create(ConnPool::Instance& conn_pool,
-                                    const RespValue& incoming_request, SplitCallbacks& callbacks)
-                                    {
+                                    const RespValue& incoming_request, SplitCallbacks& callbacks) {
   if ((incoming_request.asArray().size() - 1) % 2 != 0) {
     onWrongNumberOfArguments(callbacks, incoming_request);
     return nullptr;
   }
 
   // Generate a map of hosts to keys and their original index in the request.
-  std::unordered_map<std::string, std::vector<std::tuple<std::string, std::string, uint32_t>>> request_map;
+  std::unordered_map<std::string, std::vector<std::tuple<std::string, std::string, uint32_t>>>
+      request_map;
   for (uint32_t i = 1; i < incoming_request.asArray().size(); i += 2) {
     const std::string& key = incoming_request.asArray()[i].asString();
     const std::string& value = incoming_request.asArray()[i + 1].asString();
     const std::string& host = conn_pool.getHost(key);
-    
-    std::tuple<std::string, std::string, uint32_t> command_and_index {key, value, i - 1}; 
-    
+
+    std::tuple<std::string, std::string, uint32_t> command_and_index{key, value, i - 1};
+
     auto collapsed_request = request_map.find(host);
     if (collapsed_request != request_map.end()) {
       collapsed_request->second.push_back(command_and_index);
@@ -249,18 +249,20 @@ SplitRequestPtr MSETRequest::create(ConnPool::Instance& conn_pool,
   // Initalize empty response.
   request_ptr->pending_response_.reset(new RespValue());
   request_ptr->pending_response_->type(RespType::SimpleString);
-  
-  RespValue mset; 
-  mset.type(RespType::Array);
 
+  // Each entry in the map represents a request. Create each request and pass the original index of
+  // each key with it.
+  RespValue mset;
+  mset.type(RespType::Array);
   uint32_t request_index{};
   for (const auto& request : request_map) {
-    const std::vector<std::tuple<std::string, std::string, uint32_t>>& command_index_pairs = request.second;
+    const std::vector<std::tuple<std::string, std::string, uint32_t>>& command_index_pairs =
+        request.second;
 
     std::vector<RespValue> collapsed_request((command_index_pairs.size() * 2) + 1);
     collapsed_request[0].type(RespType::BulkString);
     collapsed_request[0].asString() = "MSET";
-    
+
     std::vector<uint32_t> response_indexes;
     response_indexes.reserve(command_index_pairs.size());
     for (uint32_t i = 0; i < command_index_pairs.size(); i++) {
@@ -276,7 +278,8 @@ SplitRequestPtr MSETRequest::create(ConnPool::Instance& conn_pool,
     request_ptr->pending_requests_.emplace_back(*request_ptr, request_index++, response_indexes);
     PendingRequest& pending_request = request_ptr->pending_requests_.back();
 
-    pending_request.handle_ = conn_pool.makeRequest(mset.asArray()[1].asString(), mset, pending_request);
+    pending_request.handle_ =
+        conn_pool.makeRequest(mset.asArray()[1].asString(), mset, pending_request);
     if (!pending_request.handle_) {
       pending_request.onResponse(Utility::makeError("no upstream host"));
     }
@@ -285,7 +288,8 @@ SplitRequestPtr MSETRequest::create(ConnPool::Instance& conn_pool,
   return request_ptr->num_pending_responses_ > 0 ? std::move(request_ptr) : nullptr;
 }
 
-void MSETRequest::onChildResponse(RespValuePtr&& value, uint32_t index, std::vector<uint32_t> response_indexes) {
+void MSETRequest::onChildResponse(RespValuePtr&& value, uint32_t index,
+                                  std::vector<uint32_t> response_indexes) {
   pending_requests_[index].handle_ = nullptr;
 
   switch (value->type()) {
@@ -296,7 +300,7 @@ void MSETRequest::onChildResponse(RespValuePtr&& value, uint32_t index, std::vec
     FALLTHRU;
   }
   default: {
-    error_count_+= response_indexes.size();
+    error_count_ += response_indexes.size();
     break;
   }
   }
@@ -313,83 +317,100 @@ void MSETRequest::onChildResponse(RespValuePtr&& value, uint32_t index, std::vec
   }
 }
 
-// SplitRequestPtr SplitKeysSumResultRequest::create(ConnPool::Instance& conn_pool,
-//                                                   const RespValue& incoming_request,
-//                                                   SplitCallbacks& callbacks) {
-//   std::unique_ptr<SplitKeysSumResultRequest> request_ptr{new
-//   SplitKeysSumResultRequest(callbacks)};
+SplitRequestPtr SplitKeysSumResultRequest::create(ConnPool::Instance& conn_pool,
+                                                  const RespValue& incoming_request,
+                                                  SplitCallbacks& callbacks) {
+  // Generate a map of hosts to keys and their original index in the request.
+  std::unordered_map<std::string, std::vector<std::pair<std::string, uint32_t>>> request_map;
+  for (uint32_t i = 1; i < incoming_request.asArray().size(); i++) {
+    const std::string& key = incoming_request.asArray()[i].asString();
+    const std::string& host = conn_pool.getHost(key);
 
-//   request_ptr->num_pending_responses_ = incoming_request.asArray().size() - 1;
-//   request_ptr->pending_requests_.reserve(request_ptr->num_pending_responses_);
+    const std::pair<std::string, uint32_t> key_and_index{key, i - 1};
+    auto collapsed_request = request_map.find(host);
+    if (collapsed_request != request_map.end()) {
+      collapsed_request->second.push_back(key_and_index);
+    } else {
+      request_map[host] = {key_and_index};
+    }
+  }
 
-//   request_ptr->pending_response_.reset(new RespValue());
-//   request_ptr->pending_response_->type(RespType::Integer);
+  // Initialize empty request.
+  std::unique_ptr<SplitKeysSumResultRequest> request_ptr{new SplitKeysSumResultRequest(callbacks)};
+  request_ptr->num_pending_responses_ = request_map.size();
+  request_ptr->pending_requests_.reserve(request_ptr->num_pending_responses_);
 
-//   std::vector<RespValue> values(2);
-//   values[0].type(RespType::BulkString);
-//   values[0].asString() = incoming_request.asArray()[0].asString();
-//   values[1].type(RespType::BulkString);
-//   RespValue single_fragment;
-//   single_fragment.type(RespType::Array);
-//   single_fragment.asArray().swap(values);
+  // Initialize empty response.
+  request_ptr->pending_response_.reset(new RespValue());
+  request_ptr->pending_response_->type(RespType::Integer);
 
-//   for (uint32_t i = 1; i < incoming_request.asArray().size(); i++) {
-//     request_ptr->pending_requests_.emplace_back(*request_ptr, i - 1);
-//     PendingRequest& pending_request = request_ptr->pending_requests_.back();
+  // Each entry in the map represents a request. Create each request and pass the original index of
+  // each key with it.
+  RespValue fragment;
+  fragment.type(RespType::Array);
+  uint32_t request_index{};
+  for (const auto& request : request_map) {
+    const std::vector<std::pair<std::string, uint32_t>>& key_index_pairs = request.second;
 
-//     single_fragment.asArray()[1].asString() = incoming_request.asArray()[i].asString();
-//     ENVOY_LOG(debug, "redis: parallel {}: '{}'", incoming_request.asArray()[0].asString(),
-//               single_fragment.toString());
-//     pending_request.handle_ = conn_pool.makeRequest(incoming_request.asArray()[i].asString(),
-//                                                     single_fragment, pending_request);
-//     if (!pending_request.handle_) {
-//       pending_request.onResponse(Utility::makeError("no upstream host"));
-//     }
-//   }
+    std::vector<RespValue> collapsed_request(key_index_pairs.size() + 1);
+    collapsed_request[0].type(RespType::BulkString);
+    collapsed_request[0].asString() = incoming_request.asArray()[0].asString();
 
-//   return request_ptr->num_pending_responses_ > 0 ? std::move(request_ptr) : nullptr;
-// }
+    std::vector<uint32_t> response_indexes;
+    response_indexes.reserve(key_index_pairs.size());
+    for (uint32_t i = 0; i < key_index_pairs.size(); i++) {
+      collapsed_request[i + 1].type(RespType::BulkString);
+      collapsed_request[i + 1].asString() = key_index_pairs[i].first;
+      response_indexes.push_back(key_index_pairs[i].second);
+    }
+    fragment.asArray().swap(collapsed_request);
 
-// void SplitKeysSumResultRequest::onChildResponse(RespValuePtr&& value, uint32_t index) {
-//   pending_requests_[index].handle_ = nullptr;
+    request_ptr->pending_requests_.emplace_back(*request_ptr, request_index++, response_indexes);
+    PendingRequest& pending_request = request_ptr->pending_requests_.back();
 
-//   switch (value->type()) {
-//   case RespType::Integer: {
-//     total_ += value->asInteger();
-//     break;
-//   }
-//   default: {
-//     error_count_++;
-//     break;
-//   }
-//   }
+    pending_request.handle_ =
+        conn_pool.makeRequest(fragment.asArray()[1].asString(), fragment, pending_request);
+    if (!pending_request.handle_) {
+      pending_request.onResponse(Utility::makeError("no upstream host"));
+    }
+  }
 
-//   ASSERT(num_pending_responses_ > 0);
-//   if (--num_pending_responses_ == 0) {
-//     if (error_count_ == 0) {
-//       pending_response_->asInteger() = total_;
-//       callbacks_.onResponse(std::move(pending_response_));
-//     } else {
-//       callbacks_.onResponse(
-//           Utility::makeError(fmt::format("finished with {} error(s)", error_count_)));
-//     }
-//   }
-// }
+  return request_ptr->num_pending_responses_ > 0 ? std::move(request_ptr) : nullptr;
+}
+
+void SplitKeysSumResultRequest::onChildResponse(RespValuePtr&& value, uint32_t index,
+                                                std::vector<uint32_t> response_indexes) {
+  pending_requests_[index].handle_ = nullptr;
+
+  switch (value->type()) {
+  case RespType::Integer: {
+    total_ += value->asInteger();
+    break;
+  }
+  default: {
+    error_count_ += response_indexes.size();
+    break;
+  }
+  }
+
+  ASSERT(num_pending_responses_ > 0);
+  if (--num_pending_responses_ == 0) {
+    if (error_count_ == 0) {
+      pending_response_->asInteger() = total_;
+      callbacks_.onResponse(std::move(pending_response_));
+    } else {
+      callbacks_.onResponse(
+          Utility::makeError(fmt::format("finished with {} error(s)", error_count_)));
+    }
+  }
+}
 
 InstanceImpl::InstanceImpl(ConnPool::InstancePtr&& conn_pool, Stats::Scope& scope,
                            const std::string& stat_prefix)
     : conn_pool_(std::move(conn_pool)), simple_command_handler_(*conn_pool_),
-      eval_command_handler_(*conn_pool_),
-      mget_handler_(*conn_pool_), mset_handler_(*conn_pool_), stats_{ALL_COMMAND_SPLITTER_STATS(
-                                      POOL_COUNTER_PREFIX(scope, stat_prefix + "splitter."))} {
-
-  // InstanceImpl::InstanceImpl(ConnPool::InstancePtr&& conn_pool, Stats::Scope& scope,
-  //                            const std::string& stat_prefix)
-  //     : conn_pool_(std::move(conn_pool)), simple_command_handler_(*conn_pool_),
-  //       eval_command_handler_(*conn_pool_), mget_handler_(*conn_pool_),
-  //       mset_handler_(*conn_pool_), split_keys_sum_result_handler_(*conn_pool_),
-  //       stats_{ALL_COMMAND_SPLITTER_STATS(POOL_COUNTER_PREFIX(scope, stat_prefix + "splitter."))}
-  //       {
+      eval_command_handler_(*conn_pool_), mget_handler_(*conn_pool_), mset_handler_(*conn_pool_),
+      split_keys_sum_result_handler_(*conn_pool_),
+      stats_{ALL_COMMAND_SPLITTER_STATS(POOL_COUNTER_PREFIX(scope, stat_prefix + "splitter."))} {
 
   // TODO(mattklein123) PERF: Make this a trie (like in header_map_impl).
   for (const std::string& command : SupportedCommands::simpleCommands()) {
@@ -400,9 +421,9 @@ InstanceImpl::InstanceImpl(ConnPool::InstancePtr&& conn_pool, Stats::Scope& scop
     addHandler(scope, stat_prefix, command, eval_command_handler_);
   }
 
-  // for (const std::string& command : SupportedCommands::hashMultipleSumResultCommands()) {
-  //   addHandler(scope, stat_prefix, command, split_keys_sum_result_handler_);
-  // }
+  for (const std::string& command : SupportedCommands::hashMultipleSumResultCommands()) {
+    addHandler(scope, stat_prefix, command, split_keys_sum_result_handler_);
+  }
 
   addHandler(scope, stat_prefix, SupportedCommands::mget(), mget_handler_);
   addHandler(scope, stat_prefix, SupportedCommands::mset(), mset_handler_);
