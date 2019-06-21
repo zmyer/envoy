@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "extensions/tracers/common/ot/opentracing_driver_impl.h"
 
 #include "test/mocks/http/mocks.h"
@@ -9,21 +11,19 @@
 #include "opentracing/mocktracer/in_memory_recorder.h"
 #include "opentracing/mocktracer/tracer.h"
 
-using testing::Test;
-
 namespace Envoy {
 namespace Extensions {
 namespace Tracers {
 namespace Common {
 namespace Ot {
+namespace {
 
 class TestDriver : public OpenTracingDriver {
 public:
   TestDriver(OpenTracingDriver::PropagationMode propagation_mode,
              const opentracing::mocktracer::PropagationOptions& propagation_options,
-             Stats::Store& stats, bool useTagForSamplingDecision)
-      : OpenTracingDriver{stats}, propagation_mode_{propagation_mode},
-        useTagForSamplingDecision_(useTagForSamplingDecision) {
+             Stats::Store& stats)
+      : OpenTracingDriver{stats}, propagation_mode_{propagation_mode} {
     opentracing::mocktracer::MockTracerOptions options;
     auto recorder = new opentracing::mocktracer::InMemoryRecorder{};
     recorder_ = recorder;
@@ -39,24 +39,19 @@ public:
 
   PropagationMode propagationMode() const override { return propagation_mode_; }
 
-protected:
-  bool useTagForSamplingDecision() override { return useTagForSamplingDecision_; }
-
 private:
   const OpenTracingDriver::PropagationMode propagation_mode_;
   const opentracing::mocktracer::InMemoryRecorder* recorder_;
   std::shared_ptr<opentracing::mocktracer::MockTracer> tracer_;
-  bool useTagForSamplingDecision_;
 };
 
-class OpenTracingDriverTest : public Test {
+class OpenTracingDriverTest : public testing::Test {
 public:
-  void setupValidDriver(OpenTracingDriver::PropagationMode propagation_mode =
-                            OpenTracingDriver::PropagationMode::SingleHeader,
-                        const opentracing::mocktracer::PropagationOptions& propagation_options = {},
-                        const bool useTagForSamplingDecision = false) {
-    driver_.reset(
-        new TestDriver{propagation_mode, propagation_options, stats_, useTagForSamplingDecision});
+  void
+  setupValidDriver(OpenTracingDriver::PropagationMode propagation_mode =
+                       OpenTracingDriver::PropagationMode::SingleHeader,
+                   const opentracing::mocktracer::PropagationOptions& propagation_options = {}) {
+    driver_ = std::make_unique<TestDriver>(propagation_mode, propagation_options, stats_);
   }
 
   const std::string operation_name_{"test"};
@@ -79,29 +74,89 @@ TEST_F(OpenTracingDriverTest, FlushSpanWithTag) {
   first_span->setTag("abc", "123");
   first_span->finishSpan();
 
-  const std::unordered_map<std::string, opentracing::Value> expected_tags = {
-      {"abc", std::string{"123"}}};
+  const std::map<std::string, opentracing::Value> expected_tags = {
+      {"abc", std::string{"123"}},
+      {opentracing::ext::span_kind, std::string{opentracing::ext::span_kind_rpc_server}}};
 
   EXPECT_EQ(1, driver_->recorder().spans().size());
   EXPECT_EQ(expected_tags, driver_->recorder().top().tags);
 }
 
-TEST_F(OpenTracingDriverTest, NoSpanSamplingFalse) {
-  setupValidDriver(OpenTracingDriver::PropagationMode::SingleHeader, {}, false);
+TEST_F(OpenTracingDriverTest, FlushSpanWithLog) {
+  setupValidDriver();
 
-  EXPECT_EQ(nullptr, driver_->startSpan(config_, request_headers_, operation_name_, start_time_,
-                                        {Tracing::Reason::Sampling, false}));
+  Tracing::SpanPtr first_span = driver_->startSpan(config_, request_headers_, operation_name_,
+                                                   start_time_, {Tracing::Reason::Sampling, true});
+  const auto timestamp =
+      SystemTime{std::chrono::duration_cast<SystemTime::duration>(std::chrono::hours{123})};
+  first_span->log(timestamp, "abc");
+  first_span->finishSpan();
+
+  const std::vector<opentracing::LogRecord> expected_logs = {
+      {timestamp, {{"event", std::string{"abc"}}}}};
+
+  EXPECT_EQ(1, driver_->recorder().spans().size());
+  EXPECT_EQ(expected_logs, driver_->recorder().top().logs);
 }
 
-TEST_F(OpenTracingDriverTest, TagSamplingFalse) {
-  setupValidDriver(OpenTracingDriver::PropagationMode::TracerNative, {}, true);
+TEST_F(OpenTracingDriverTest, TagSamplingFalseByDecision) {
+  setupValidDriver(OpenTracingDriver::PropagationMode::TracerNative, {});
 
   Tracing::SpanPtr first_span = driver_->startSpan(config_, request_headers_, operation_name_,
                                                    start_time_, {Tracing::Reason::Sampling, false});
   first_span->finishSpan();
 
-  const std::unordered_map<std::string, opentracing::Value> expected_tags = {
-      {opentracing::ext::sampling_priority, 0}};
+  const std::map<std::string, opentracing::Value> expected_tags = {
+      {opentracing::ext::sampling_priority, 0},
+      {opentracing::ext::span_kind, std::string{opentracing::ext::span_kind_rpc_server}}};
+
+  EXPECT_EQ(1, driver_->recorder().spans().size());
+  EXPECT_EQ(expected_tags, driver_->recorder().top().tags);
+}
+
+TEST_F(OpenTracingDriverTest, TagSamplingFalseByFlag) {
+  setupValidDriver(OpenTracingDriver::PropagationMode::TracerNative, {});
+
+  Tracing::SpanPtr first_span = driver_->startSpan(config_, request_headers_, operation_name_,
+                                                   start_time_, {Tracing::Reason::Sampling, true});
+  first_span->setSampled(false);
+  first_span->finishSpan();
+
+  const std::map<std::string, opentracing::Value> expected_tags = {
+      {opentracing::ext::sampling_priority, 0},
+      {opentracing::ext::span_kind, std::string{opentracing::ext::span_kind_rpc_server}}};
+
+  EXPECT_EQ(1, driver_->recorder().spans().size());
+  EXPECT_EQ(expected_tags, driver_->recorder().top().tags);
+}
+
+TEST_F(OpenTracingDriverTest, TagSpanKindClient) {
+  setupValidDriver(OpenTracingDriver::PropagationMode::TracerNative, {});
+
+  ON_CALL(config_, operationName()).WillByDefault(testing::Return(Tracing::OperationName::Egress));
+
+  Tracing::SpanPtr first_span = driver_->startSpan(config_, request_headers_, operation_name_,
+                                                   start_time_, {Tracing::Reason::Sampling, true});
+  first_span->finishSpan();
+
+  const std::map<std::string, opentracing::Value> expected_tags = {
+      {opentracing::ext::span_kind, std::string{opentracing::ext::span_kind_rpc_client}}};
+
+  EXPECT_EQ(1, driver_->recorder().spans().size());
+  EXPECT_EQ(expected_tags, driver_->recorder().top().tags);
+}
+
+TEST_F(OpenTracingDriverTest, TagSpanKindServer) {
+  setupValidDriver(OpenTracingDriver::PropagationMode::TracerNative, {});
+
+  ON_CALL(config_, operationName()).WillByDefault(testing::Return(Tracing::OperationName::Ingress));
+
+  Tracing::SpanPtr first_span = driver_->startSpan(config_, request_headers_, operation_name_,
+                                                   start_time_, {Tracing::Reason::Sampling, true});
+  first_span->finishSpan();
+
+  const std::map<std::string, opentracing::Value> expected_tags = {
+      {opentracing::ext::span_kind, std::string{opentracing::ext::span_kind_rpc_server}}};
 
   EXPECT_EQ(1, driver_->recorder().spans().size());
   EXPECT_EQ(expected_tags, driver_->recorder().top().tags);
@@ -146,6 +201,7 @@ TEST_F(OpenTracingDriverTest, ExtractWithUnindexedHeader) {
   EXPECT_EQ(spans.at(1).span_context.span_id, spans.at(0).references.at(0).span_id);
 }
 
+} // namespace
 } // namespace Ot
 } // namespace Common
 } // namespace Tracers

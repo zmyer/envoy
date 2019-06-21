@@ -52,7 +52,7 @@ public:
   const std::string IP = "envoy.ip";
 };
 
-typedef ConstSingleton<AddressResolverNameValues> AddressResolverNames;
+using AddressResolverNames = ConstSingleton<AddressResolverNameValues>;
 
 /**
  * Well-known metadata filter namespaces.
@@ -63,7 +63,7 @@ public:
   const std::string ENVOY_LB = "envoy.lb";
 };
 
-typedef ConstSingleton<MetadataFilterValues> MetadataFilters;
+using MetadataFilters = ConstSingleton<MetadataFilterValues>;
 
 /**
  * Keys for MetadataFilterValues::ENVOY_LB metadata.
@@ -74,7 +74,7 @@ public:
   const std::string CANARY = "canary";
 };
 
-typedef ConstSingleton<MetadataEnvoyLbKeyValues> MetadataEnvoyLbKeys;
+using MetadataEnvoyLbKeys = ConstSingleton<MetadataEnvoyLbKeyValues>;
 
 /**
  * Well known tags values and a mapping from these names to the regexes they
@@ -130,7 +130,7 @@ public:
   // Operation name for the Dynamo http filter
   const std::string DYNAMO_OPERATION = "envoy.dynamo_operation";
   // Table name for the Dynamo http filter
-  const std::string DYNAMO_TABLE = "envoy.dyanmo_table";
+  const std::string DYNAMO_TABLE = "envoy.dynamo_table";
   // Partition ID for the Dynamo http filter
   const std::string DYNAMO_PARTITION_ID = "envoy.dynamo_partition_id";
   // Request service name GRPC Bridge http filter
@@ -145,6 +145,10 @@ public:
   const std::string RESPONSE_CODE = "envoy.response_code";
   // Request response code class
   const std::string RESPONSE_CODE_CLASS = "envoy.response_code_class";
+  // Route config name for RDS updates
+  const std::string RDS_ROUTE_CONFIG = "envoy.rds_route_config";
+  // Listener manager worker id
+  const std::string WORKER_ID = "envoy.worker_id";
 
   // Mapping from the names above to their respective regex strings.
   const std::vector<std::pair<std::string, std::string>> name_regex_pairs_;
@@ -159,7 +163,7 @@ private:
   std::vector<Descriptor> descriptor_vec_;
 };
 
-typedef ConstSingleton<TagNameValues> TagNames;
+using TagNames = ConstSingleton<TagNameValues>;
 
 } // namespace Config
 } // namespace Envoy

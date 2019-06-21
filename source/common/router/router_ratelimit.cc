@@ -40,7 +40,8 @@ bool RequestHeadersAction::populateDescriptor(const Router::RouteEntry&,
     return false;
   }
 
-  descriptor.entries_.push_back({descriptor_key_, header_value->value().c_str()});
+  descriptor.entries_.push_back(
+      {descriptor_key_, std::string(header_value->value().getStringView())});
   return true;
 }
 
@@ -76,7 +77,7 @@ bool HeaderValueMatchAction::populateDescriptor(const Router::RouteEntry&,
                                                 RateLimit::Descriptor& descriptor,
                                                 const std::string&, const Http::HeaderMap& headers,
                                                 const Network::Address::Instance&) const {
-  if (expect_match_ == ConfigUtility::matchHeaders(headers, action_headers_)) {
+  if (expect_match_ == Http::HeaderUtility::matchHeaders(headers, action_headers_)) {
     descriptor.entries_.push_back({"header_match", descriptor_value_});
     return true;
   } else {
@@ -108,7 +109,7 @@ RateLimitPolicyEntryImpl::RateLimitPolicyEntryImpl(const envoy::api::v2::route::
       actions_.emplace_back(new HeaderValueMatchAction(action.header_value_match()));
       break;
     default:
-      NOT_REACHED;
+      NOT_REACHED_GCOVR_EXCL_LINE;
     }
   }
 }

@@ -5,8 +5,8 @@
 #include <memory>
 #include <string>
 
+#include "envoy/config/filter/http/buffer/v2/buffer.pb.h"
 #include "envoy/http/filter.h"
-#include "envoy/stats/stats_macros.h"
 
 #include "common/buffer/buffer_impl.h"
 
@@ -15,44 +15,43 @@ namespace Extensions {
 namespace HttpFilters {
 namespace BufferFilter {
 
-/**
- * All stats for the buffer filter. @see stats_macros.h
- */
-// clang-format off
-#define ALL_BUFFER_FILTER_STATS(COUNTER)                                                           \
-  COUNTER(rq_timeout)
-// clang-format on
+class BufferFilterSettings : public Router::RouteSpecificFilterConfig {
+public:
+  BufferFilterSettings(const envoy::config::filter::http::buffer::v2::Buffer&);
+  BufferFilterSettings(const envoy::config::filter::http::buffer::v2::BufferPerRoute&);
 
-/**
- * Wrapper struct for buffer filter stats. @see stats_macros.h
- */
-struct BufferFilterStats {
-  ALL_BUFFER_FILTER_STATS(GENERATE_COUNTER_STRUCT)
+  bool disabled() const { return disabled_; }
+  uint64_t maxRequestBytes() const { return max_request_bytes_; }
+
+private:
+  bool disabled_;
+  uint64_t max_request_bytes_;
 };
 
 /**
  * Configuration for the buffer filter.
  */
-struct BufferFilterConfig {
-  BufferFilterStats stats_;
-  uint64_t max_request_bytes_;
-  std::chrono::seconds max_request_time_;
+class BufferFilterConfig {
+public:
+  BufferFilterConfig(const envoy::config::filter::http::buffer::v2::Buffer& proto_config);
+
+  const BufferFilterSettings* settings() const { return &settings_; }
+
+private:
+  const BufferFilterSettings settings_;
 };
 
-typedef std::shared_ptr<const BufferFilterConfig> BufferFilterConfigConstSharedPtr;
+using BufferFilterConfigSharedPtr = std::shared_ptr<BufferFilterConfig>;
 
 /**
  * A filter that is capable of buffering an entire request before dispatching it upstream.
  */
 class BufferFilter : public Http::StreamDecoderFilter {
 public:
-  BufferFilter(BufferFilterConfigConstSharedPtr config);
-  ~BufferFilter();
-
-  static BufferFilterStats generateStats(const std::string& prefix, Stats::Scope& scope);
+  BufferFilter(BufferFilterConfigSharedPtr config);
 
   // Http::StreamFilterBase
-  void onDestroy() override;
+  void onDestroy() override {}
 
   // Http::StreamDecoderFilter
   Http::FilterHeadersStatus decodeHeaders(Http::HeaderMap& headers, bool end_stream) override;
@@ -61,13 +60,12 @@ public:
   void setDecoderFilterCallbacks(Http::StreamDecoderFilterCallbacks& callbacks) override;
 
 private:
-  void onRequestTimeout();
-  void resetInternalState();
+  void initConfig();
 
-  BufferFilterConfigConstSharedPtr config_;
+  BufferFilterConfigSharedPtr config_;
+  const BufferFilterSettings* settings_;
   Http::StreamDecoderFilterCallbacks* callbacks_{};
-  Event::TimerPtr request_timeout_;
-  bool stream_destroyed_{};
+  bool config_initialized_{};
 };
 
 } // namespace BufferFilter

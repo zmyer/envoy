@@ -4,15 +4,21 @@
 
 #include "envoy/access_log/access_log.h"
 #include "envoy/api/v2/core/base.pb.h"
+#include "envoy/grpc/context.h"
+#include "envoy/http/codes.h"
+#include "envoy/http/context.h"
 #include "envoy/http/filter.h"
-#include "envoy/init/init.h"
+#include "envoy/init/manager.h"
 #include "envoy/json/json_object.h"
 #include "envoy/network/drain_decision.h"
 #include "envoy/network/filter.h"
-#include "envoy/ratelimit/ratelimit.h"
 #include "envoy/runtime/runtime.h"
 #include "envoy/server/admin.h"
+#include "envoy/server/lifecycle_notifier.h"
+#include "envoy/server/overload_manager.h"
+#include "envoy/server/process_context.h"
 #include "envoy/singleton/manager.h"
+#include "envoy/stats/scope.h"
 #include "envoy/thread_local/thread_local.h"
 #include "envoy/tracing/http_tracer.h"
 #include "envoy/upstream/cluster_manager.h"
@@ -32,7 +38,7 @@ namespace Configuration {
  */
 class FactoryContext {
 public:
-  virtual ~FactoryContext() {}
+  virtual ~FactoryContext() = default;
 
   /**
    * @return AccessLogManager for use by the entire server.
@@ -77,20 +83,19 @@ public:
   virtual Init::Manager& initManager() PURE;
 
   /**
+   * @return ServerLifecycleNotifier& the lifecycle notifier for the server.
+   */
+  virtual ServerLifecycleNotifier& lifecycleNotifier() PURE;
+
+  /**
    * @return information about the local environment the server is running in.
    */
-  virtual const LocalInfo::LocalInfo& localInfo() PURE;
+  virtual const LocalInfo::LocalInfo& localInfo() const PURE;
 
   /**
    * @return RandomGenerator& the random generator for the server.
    */
   virtual Envoy::Runtime::RandomGenerator& random() PURE;
-
-  /**
-   * @return a new ratelimit client. The implementation depends on the configuration of the server.
-   */
-  virtual RateLimit::ClientPtr
-  rateLimitClient(const absl::optional<std::chrono::milliseconds>& timeout) PURE;
 
   /**
    * @return Runtime::Loader& the singleton runtime loader for the server.
@@ -128,51 +133,69 @@ public:
    * listener.
    */
   virtual const envoy::api::v2::core::Metadata& listenerMetadata() const PURE;
+
+  /**
+   * @return TimeSource& a reference to the time source.
+   */
+  virtual TimeSource& timeSource() PURE;
+
+  /**
+   * @return OverloadManager& the overload manager for the server.
+   */
+  virtual OverloadManager& overloadManager() PURE;
+
+  /**
+   * @return Http::Context& a reference to the http context.
+   */
+  virtual Http::Context& httpContext() PURE;
+
+  /**
+   * @return Grpc::Context& a reference to the grpc context.
+   */
+  virtual Grpc::Context& grpcContext() PURE;
+
+  /**
+   * @return ProcessContext& a reference to the process context.
+   */
+  virtual ProcessContext& processContext() PURE;
+
+  /**
+   * @return ProtobufMessage::ValidationVisitor& validation visitor for filter configuration
+   *         messages.
+   */
+  virtual ProtobufMessage::ValidationVisitor& messageValidationVisitor() PURE;
+
+  /**
+   * @return Api::Api& a reference to the api object.
+   */
+  virtual Api::Api& api() PURE;
 };
 
-class ListenerFactoryContext : public FactoryContext {
+class ListenerFactoryContext : public virtual FactoryContext {
 public:
   /**
    * Store socket options to be set on the listen socket before listening.
    */
   virtual void addListenSocketOption(const Network::Socket::OptionConstSharedPtr& option) PURE;
+
+  virtual void addListenSocketOptions(const Network::Socket::OptionsSharedPtr& options) PURE;
+
+  /**
+   * Give access to the listener configuration
+   */
+  virtual const Network::ListenerConfig& listenerConfig() const PURE;
 };
 
 /**
- * This function is used to wrap the creation of a listener filter chain for new sockets as they are
- * created. Filter factories create the lambda at configuration initialization time, and then they
- * are used at runtime.
- * @param filter_manager supplies the filter manager for the listener to install filters to.
- * Typically the function will install a single filter, but it's technically possibly to install
- * more than one if desired.
+ * Common interface for listener filters and UDP listener filters
  */
-typedef std::function<void(Network::ListenerFilterManager& filter_manager)> ListenerFilterFactoryCb;
-
-/**
- * Implemented by each listener filter and registered via Registry::registerFactory()
- * or the convenience class RegisterFactory.
- */
-class NamedListenerFilterConfigFactory {
+class ListenerFilterConfigFactoryBase {
 public:
-  virtual ~NamedListenerFilterConfigFactory() {}
+  virtual ~ListenerFilterConfigFactoryBase() = default;
 
   /**
-   * Create a particular listener filter factory implementation. If the implementation is unable to
-   * produce a factory with the provided parameters, it should throw an EnvoyException in the case
-   * of general error or a Json::Exception if the json configuration is erroneous. The returned
-   * callback should always be initialized.
-   * @param config supplies the general protobuf configuration for the filter
-   * @param context supplies the filter's context.
-   * @return ListenerFilterFactoryCb the factory creation function.
-   */
-  virtual ListenerFilterFactoryCb
-  createFilterFactoryFromProto(const Protobuf::Message& config,
-                               ListenerFactoryContext& context) PURE;
-
-  /**
-   * @return ProtobufTypes::MessagePtr create empty config proto message for v2. The filter
+   * @return ProtobufTypes::MessagePtr create empty config proto message. The filter
    *         config, which arrives in an opaque message, will be parsed into this empty proto.
-   *         Optional today, will be compulsory when v1 is deprecated.
    */
   virtual ProtobufTypes::MessagePtr createEmptyConfigProto() PURE;
 
@@ -184,22 +207,83 @@ public:
 };
 
 /**
- * This function is used to wrap the creation of a network filter chain for new connections as
- * they come in. Filter factories create the lambda at configuration initialization time, and then
- * they are used at runtime.
- * @param filter_manager supplies the filter manager for the connection to install filters
- * to. Typically the function will install a single filter, but it's technically possibly to
- * install more than one if desired.
+ * Implemented by each listener filter and registered via Registry::registerFactory()
+ * or the convenience class RegisterFactory.
  */
-typedef std::function<void(Network::FilterManager& filter_manager)> NetworkFilterFactoryCb;
+class NamedListenerFilterConfigFactory : public ListenerFilterConfigFactoryBase {
+public:
+  ~NamedListenerFilterConfigFactory() override = default;
+
+  /**
+   * Create a particular listener filter factory implementation. If the implementation is unable to
+   * produce a factory with the provided parameters, it should throw an EnvoyException in the case
+   * of general error or a Json::Exception if the json configuration is erroneous. The returned
+   * callback should always be initialized.
+   * @param config supplies the general protobuf configuration for the filter
+   * @param context supplies the filter's context.
+   * @return Network::ListenerFilterFactoryCb the factory creation function.
+   */
+  virtual Network::ListenerFilterFactoryCb
+  createFilterFactoryFromProto(const Protobuf::Message& config,
+                               ListenerFactoryContext& context) PURE;
+};
+
+/**
+ * Implemented by each UDP listener filter and registered via Registry::registerFactory()
+ * or the convenience class RegisterFactory.
+ */
+class NamedUdpListenerFilterConfigFactory : public ListenerFilterConfigFactoryBase {
+public:
+  ~NamedUdpListenerFilterConfigFactory() override = default;
+
+  /**
+   * Create a particular UDP listener filter factory implementation. If the implementation is unable
+   * to produce a factory with the provided parameters, it should throw an EnvoyException.
+   * The returned callback should always be initialized.
+   * @param config supplies the general protobuf configuration for the filter
+   * @param context supplies the filter's context.
+   * @return Network::UdpListenerFilterFactoryCb the factory creation function.
+   */
+  virtual Network::UdpListenerFilterFactoryCb
+  createFilterFactoryFromProto(const Protobuf::Message& config,
+                               ListenerFactoryContext& context) PURE;
+};
+
+/**
+ * Implemented by filter factories that require more options to process the protocol used by the
+ * upstream cluster.
+ */
+class ProtocolOptionsFactory {
+public:
+  virtual ~ProtocolOptionsFactory() = default;
+
+  /**
+   * Create a particular filter's protocol specific options implementation. If the factory
+   * implementation is unable to produce a factory with the provided parameters, it should throw an
+   * EnvoyException.
+   * @param config supplies the protobuf configuration for the filter
+   * @return Upstream::ProtocolOptionsConfigConstSharedPtr the protocol options
+   */
+  virtual Upstream::ProtocolOptionsConfigConstSharedPtr
+  createProtocolOptionsConfig(const Protobuf::Message& config) {
+    UNREFERENCED_PARAMETER(config);
+    return nullptr;
+  }
+
+  /**
+   * @return ProtobufTypes::MessagePtr a newly created empty protocol specific options message or
+   *         nullptr if protocol specific options are not available.
+   */
+  virtual ProtobufTypes::MessagePtr createEmptyProtocolOptionsProto() { return nullptr; }
+};
 
 /**
  * Implemented by each network filter and registered via Registry::registerFactory()
  * or the convenience class RegisterFactory.
  */
-class NamedNetworkFilterConfigFactory {
+class NamedNetworkFilterConfigFactory : public ProtocolOptionsFactory {
 public:
-  virtual ~NamedNetworkFilterConfigFactory() {}
+  ~NamedNetworkFilterConfigFactory() override = default;
 
   /**
    * Create a particular network filter factory implementation. If the implementation is unable to
@@ -208,20 +292,20 @@ public:
    * callback should always be initialized.
    * @param config supplies the general json configuration for the filter
    * @param context supplies the filter's context.
-   * @return NetworkFilterFactoryCb the factory creation function.
+   * @return Network::FilterFactoryCb the factory creation function.
    */
-  virtual NetworkFilterFactoryCb createFilterFactory(const Json::Object& config,
-                                                     FactoryContext& context) PURE;
+  virtual Network::FilterFactoryCb createFilterFactory(const Json::Object& config,
+                                                       FactoryContext& context) PURE;
 
   /**
    * v2 variant of createFilterFactory(..), where filter configs are specified as proto. This may be
    * optionally implemented today, but will in the future become compulsory once v1 is deprecated.
    */
-  virtual NetworkFilterFactoryCb createFilterFactoryFromProto(const Protobuf::Message& config,
-                                                              FactoryContext& context) {
+  virtual Network::FilterFactoryCb createFilterFactoryFromProto(const Protobuf::Message& config,
+                                                                FactoryContext& context) {
     UNREFERENCED_PARAMETER(config);
     UNREFERENCED_PARAMETER(context);
-    NOT_IMPLEMENTED;
+    NOT_IMPLEMENTED_GCOVR_EXCL_LINE;
   }
 
   /**
@@ -240,22 +324,12 @@ public:
 };
 
 /**
- * This function is used to wrap the creation of an HTTP filter chain for new streams as they
- * come in. Filter factories create the function at configuration initialization time, and then
- * they are used at runtime.
- * @param callbacks supplies the callbacks for the stream to install filters to. Typically the
- * function will install a single filter, but it's technically possibly to install more than one
- * if desired.
- */
-typedef std::function<void(Http::FilterChainFactoryCallbacks& callbacks)> HttpFilterFactoryCb;
-
-/**
  * Implemented by each HTTP filter and registered via Registry::registerFactory or the
  * convenience class RegisterFactory.
  */
-class NamedHttpFilterConfigFactory {
+class NamedHttpFilterConfigFactory : public ProtocolOptionsFactory {
 public:
-  virtual ~NamedHttpFilterConfigFactory() {}
+  ~NamedHttpFilterConfigFactory() override = default;
 
   /**
    * Create a particular http filter factory implementation. If the implementation is unable to
@@ -266,24 +340,24 @@ public:
    * @param config supplies the general json configuration for the filter
    * @param stat_prefix prefix for stat logging
    * @param context supplies the filter's context.
-   * @return HttpFilterFactoryCb the factory creation function.
+   * @return Http::FilterFactoryCb the factory creation function.
    */
-  virtual HttpFilterFactoryCb createFilterFactory(const Json::Object& config,
-                                                  const std::string& stat_prefix,
-                                                  FactoryContext& context) PURE;
+  virtual Http::FilterFactoryCb createFilterFactory(const Json::Object& config,
+                                                    const std::string& stat_prefix,
+                                                    FactoryContext& context) PURE;
 
   /**
    * v2 API variant of createFilterFactory(..), where filter configs are specified as proto. This
    * may be optionally implemented today, but will in the future become compulsory once v1 is
    * deprecated.
    */
-  virtual HttpFilterFactoryCb createFilterFactoryFromProto(const Protobuf::Message& config,
-                                                           const std::string& stat_prefix,
-                                                           FactoryContext& context) {
+  virtual Http::FilterFactoryCb createFilterFactoryFromProto(const Protobuf::Message& config,
+                                                             const std::string& stat_prefix,
+                                                             FactoryContext& context) {
     UNREFERENCED_PARAMETER(config);
     UNREFERENCED_PARAMETER(stat_prefix);
     UNREFERENCED_PARAMETER(context);
-    NOT_IMPLEMENTED;
+    NOT_IMPLEMENTED_GCOVR_EXCL_LINE;
   }
 
   /**
@@ -310,7 +384,7 @@ public:
    * config. Returned object will be stored in the loaded route configuration.
    */
   virtual Router::RouteSpecificFilterConfigConstSharedPtr
-  createRouteSpecificFilterConfig(const Protobuf::Message&) {
+  createRouteSpecificFilterConfig(const Protobuf::Message&, FactoryContext&) {
     return nullptr;
   }
 

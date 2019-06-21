@@ -1,7 +1,7 @@
 #include "common/network/dns_impl.h"
 
 #include <netdb.h>
-#include <netinet/ip.h>
+#include <netinet/in.h>
 #include <sys/socket.h>
 
 #include <chrono>
@@ -11,6 +11,7 @@
 #include <string>
 
 #include "common/common/assert.h"
+#include "common/common/fmt.h"
 #include "common/network/address_impl.h"
 #include "common/network/utility.h"
 
@@ -24,11 +25,6 @@ DnsResolverImpl::DnsResolverImpl(
     const std::vector<Network::Address::InstanceConstSharedPtr>& resolvers)
     : dispatcher_(dispatcher),
       timer_(dispatcher.createTimer([this] { onEventCallback(ARES_SOCKET_BAD, 0); })) {
-  // This is also done in main(), to satisfy the requirement that c-ares is
-  // initialized prior to threading. The additional call to ares_library_init()
-  // here is a nop in normal execution, but exists for testing where we don't
-  // launch via main().
-  ares_library_init(ARES_LIB_INIT_ALL);
   ares_options options;
 
   initializeChannel(&options, 0);
@@ -40,22 +36,27 @@ DnsResolverImpl::DnsResolverImpl(
       // This should be an IP address (i.e. not a pipe).
       if (resolver->ip() == nullptr) {
         ares_destroy(channel_);
-        ares_library_cleanup();
         throw EnvoyException(
             fmt::format("DNS resolver '{}' is not an IP address", resolver->asString()));
       }
-      resolver_addrs.push_back(resolver->asString());
+      // Note that the ip()->port() may be zero if the port is not fully specified by the
+      // Address::Instance.
+      // resolver->asString() is avoided as that format may be modified by custom
+      // Address::Instance implementations in ways that make the <port> not a simple
+      // integer. See https://github.com/envoyproxy/envoy/pull/3366.
+      resolver_addrs.push_back(fmt::format(resolver->ip()->ipv6() ? "[{}]:{}" : "{}:{}",
+                                           resolver->ip()->addressAsString(),
+                                           resolver->ip()->port()));
     }
     const std::string resolvers_csv = StringUtil::join(resolver_addrs, ",");
     int result = ares_set_servers_ports_csv(channel_, resolvers_csv.c_str());
-    RELEASE_ASSERT(result == ARES_SUCCESS);
+    RELEASE_ASSERT(result == ARES_SUCCESS, "");
   }
 }
 
 DnsResolverImpl::~DnsResolverImpl() {
   timer_->disableTimer();
   ares_destroy(channel_);
-  ares_library_cleanup();
 }
 
 void DnsResolverImpl::initializeChannel(ares_options* options, int optmask) {
@@ -112,7 +113,18 @@ void DnsResolverImpl::PendingResolution::onAresHostCallback(int status, int time
 
   if (completed_) {
     if (!cancelled_) {
-      callback_(std::move(address_list));
+      try {
+        callback_(std::move(address_list));
+      } catch (const EnvoyException& e) {
+        ENVOY_LOG(critical, "EnvoyException in c-ares callback");
+        dispatcher_.post([s = std::string(e.what())] { throw EnvoyException(s); });
+      } catch (const std::exception& e) {
+        ENVOY_LOG(critical, "std::exception in c-ares callback");
+        dispatcher_.post([s = std::string(e.what())] { throw EnvoyException(s); });
+      } catch (...) {
+        ENVOY_LOG(critical, "Unknown exception in c-ares callback");
+        dispatcher_.post([] { throw EnvoyException("unknown"); });
+      }
     }
     if (owned_) {
       delete this;
@@ -136,7 +148,7 @@ void DnsResolverImpl::updateAresTimer() {
   if (timeout_result != nullptr) {
     const auto ms =
         std::chrono::milliseconds(timeout_result->tv_sec * 1000 + timeout_result->tv_usec / 1000);
-    ENVOY_LOG(debug, "Setting DNS resolution timer for {} milliseconds", ms.count());
+    ENVOY_LOG(trace, "Setting DNS resolution timer for {} milliseconds", ms.count());
     timer_->enableTimer(ms);
   } else {
     timer_->disableTimer();
@@ -174,10 +186,10 @@ void DnsResolverImpl::onAresSocketStateChange(int fd, int read, int write) {
 ActiveDnsQuery* DnsResolverImpl::resolve(const std::string& dns_name,
                                          DnsLookupFamily dns_lookup_family, ResolveCb callback) {
   // TODO(hennna): Add DNS caching which will allow testing the edge case of a
-  // failed intial call to getHostbyName followed by a synchronous IPv4
+  // failed initial call to getHostByName followed by a synchronous IPv4
   // resolution.
   std::unique_ptr<PendingResolution> pending_resolution(
-      new PendingResolution(callback, channel_, dns_name));
+      new PendingResolution(callback, dispatcher_, channel_, dns_name));
   if (dns_lookup_family == DnsLookupFamily::Auto) {
     pending_resolution->fallback_if_failed_ = true;
   }
@@ -204,12 +216,12 @@ ActiveDnsQuery* DnsResolverImpl::resolve(const std::string& dns_name,
 }
 
 void DnsResolverImpl::PendingResolution::getHostByName(int family) {
-  ares_gethostbyname(channel_, dns_name_.c_str(), family,
-                     [](void* arg, int status, int timeouts, hostent* hostent) {
-                       static_cast<PendingResolution*>(arg)->onAresHostCallback(status, timeouts,
-                                                                                hostent);
-                     },
-                     this);
+  ares_gethostbyname(
+      channel_, dns_name_.c_str(), family,
+      [](void* arg, int status, int timeouts, hostent* hostent) {
+        static_cast<PendingResolution*>(arg)->onAresHostCallback(status, timeouts, hostent);
+      },
+      this);
 }
 
 } // namespace Network

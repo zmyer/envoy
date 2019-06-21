@@ -28,22 +28,6 @@ namespace Router {
  */
 class ConfigUtility {
 public:
-  enum class HeaderMatchType { Value, Regex, Range };
-
-  // A HeaderData specifies one of exact value or regex or range element
-  // to match in a request's header, specified in the header_match_type_ member.
-  // It is the runtime equivalent of the HeaderMatchSpecifier proto in RDS API.
-  struct HeaderData {
-    HeaderData(const envoy::api::v2::route::HeaderMatcher& config);
-    HeaderData(const Json::Object& config);
-
-    const Http::LowerCaseString name_;
-    HeaderMatchType header_match_type_;
-    std::string value_;
-    std::regex regex_pattern_;
-    envoy::type::Int64Range range_;
-  };
-
   // A QueryParameterMatcher specifies one "name" or "name=value" element
   // to match in a request's query string. It is the optimized, runtime
   // equivalent of the QueryParameterMatcher proto in the RDS v2 API.
@@ -76,16 +60,6 @@ public:
   parsePriority(const envoy::api::v2::core::RoutingPriority& priority);
 
   /**
-   * See if the headers specified in the config are present in a request.
-   * @param request_headers supplies the headers from the request.
-   * @param config_headers supplies the list of configured header conditions on which to match.
-   * @return bool true if all the headers (and values) in the config_headers are found in the
-   *         request_headers
-   */
-  static bool matchHeaders(const Http::HeaderMap& request_headers,
-                           const std::vector<HeaderData>& config_headers);
-
-  /**
    * See if the query parameters specified in the config are present in a request.
    * @param query_params supplies the query parameters from the request's query string.
    * @param config_params supplies the list of configured query param conditions on which to match.
@@ -116,12 +90,14 @@ public:
   /**
    * Returns the content of the response body to send with direct responses from a route.
    * @param route supplies the Route configuration.
+   * @param api reference to the Api object
    * @return absl::optional<std::string> the response body provided inline in the route's
    *         direct_response if specified, or the contents of the file named in the
    *         route's direct_response if specified, or an empty string otherwise.
    * @throw EnvoyException if the route configuration contains an error.
    */
-  static std::string parseDirectResponseBody(const envoy::api::v2::route::Route& route);
+  static std::string parseDirectResponseBody(const envoy::api::v2::route::Route& route,
+                                             Api::Api& api);
 
   /**
    * Returns the HTTP Status Code enum parsed from proto.

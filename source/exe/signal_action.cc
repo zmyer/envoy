@@ -1,7 +1,8 @@
 #include "exe/signal_action.h"
 
-#include <signal.h>
 #include <sys/mman.h>
+
+#include <csignal>
 
 #include "common/common/assert.h"
 
@@ -9,28 +10,11 @@ namespace Envoy {
 constexpr int SignalAction::FATAL_SIGS[];
 
 void SignalAction::sigHandler(int sig, siginfo_t* info, void* context) {
-  void* error_pc = 0;
-
-  const ucontext_t* ucontext = reinterpret_cast<const ucontext_t*>(context);
-  if (ucontext != nullptr) {
-#ifdef REG_RIP
-    // x86_64
-    error_pc = reinterpret_cast<void*>(ucontext->uc_mcontext.gregs[REG_RIP]);
-#elif defined(__APPLE__) && defined(__x86_64__)
-    error_pc = reinterpret_cast<void*>(ucontext->uc_mcontext->__ss.__rip);
-#elif defined(__powerpc__)
-    error_pc = reinterpret_cast<void*>(ucontext->uc_mcontext.regs->nip);
-#else
-#warning "Please enable and test PC retrieval code for your arch in signal_action.cc"
-// x86 Classic: reinterpret_cast<void*>(ucontext->uc_mcontext.gregs[REG_EIP]);
-// ARM: reinterpret_cast<void*>(ucontext->uc_mcontext.arm_pc);
-#endif
-  }
-
   BackwardsTrace tracer;
+
   tracer.logFault(strsignal(sig), info->si_addr);
-  if (error_pc != 0) {
-    tracer.captureFrom(error_pc);
+  if (context != nullptr) {
+    tracer.captureFrom(context);
   } else {
     tracer.capture();
   }
@@ -46,7 +30,7 @@ void SignalAction::installSigHandlers() {
   stack.ss_size = altstack_size_;        // ... guard page at the other
   stack.ss_flags = 0;
 
-  RELEASE_ASSERT(sigaltstack(&stack, &previous_altstack_) == 0);
+  RELEASE_ASSERT(sigaltstack(&stack, &previous_altstack_) == 0, "");
 
   int hidx = 0;
   for (const auto& sig : FATAL_SIGS) {
@@ -56,7 +40,7 @@ void SignalAction::installSigHandlers() {
     saction.sa_flags = (SA_SIGINFO | SA_ONSTACK | SA_RESETHAND | SA_NODEFER);
     saction.sa_sigaction = sigHandler;
     auto* handler = &previous_handlers_[hidx++];
-    RELEASE_ASSERT(sigaction(sig, &saction, handler) == 0);
+    RELEASE_ASSERT(sigaction(sig, &saction, handler) == 0, "");
   }
 }
 
@@ -67,12 +51,12 @@ void SignalAction::removeSigHandlers() {
     previous_altstack_.ss_size = MINSIGSTKSZ;
   }
 #endif
-  RELEASE_ASSERT(sigaltstack(&previous_altstack_, nullptr) == 0);
+  RELEASE_ASSERT(sigaltstack(&previous_altstack_, nullptr) == 0, "");
 
   int hidx = 0;
   for (const auto& sig : FATAL_SIGS) {
     auto* handler = &previous_handlers_[hidx++];
-    RELEASE_ASSERT(sigaction(sig, handler, nullptr) == 0);
+    RELEASE_ASSERT(sigaction(sig, handler, nullptr) == 0, "");
   }
 }
 
@@ -85,9 +69,10 @@ void SignalAction::mapAndProtectStackMemory() {
   // library hint that might be used in the future.
   altstack_ = static_cast<char*>(mmap(nullptr, mapSizeWithGuards(), PROT_READ | PROT_WRITE,
                                       MAP_PRIVATE | MAP_ANONYMOUS | MAP_STACK, -1, 0));
-  RELEASE_ASSERT(altstack_);
-  RELEASE_ASSERT(mprotect(altstack_, guard_size_, PROT_NONE) == 0);
-  RELEASE_ASSERT(mprotect(altstack_ + guard_size_ + altstack_size_, guard_size_, PROT_NONE) == 0);
+  RELEASE_ASSERT(altstack_, "");
+  RELEASE_ASSERT(mprotect(altstack_, guard_size_, PROT_NONE) == 0, "");
+  RELEASE_ASSERT(mprotect(altstack_ + guard_size_ + altstack_size_, guard_size_, PROT_NONE) == 0,
+                 "");
 }
 
 void SignalAction::unmapStackMemory() { munmap(altstack_, mapSizeWithGuards()); }

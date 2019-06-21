@@ -17,7 +17,7 @@ namespace TlsInspector {
 class TlsInspectorConfigFactory : public Server::Configuration::NamedListenerFilterConfigFactory {
 public:
   // NamedListenerFilterConfigFactory
-  Server::Configuration::ListenerFilterFactoryCb
+  Network::ListenerFilterFactoryCb
   createFilterFactoryFromProto(const Protobuf::Message&,
                                Server::Configuration::ListenerFactoryContext& context) override {
     ConfigSharedPtr config(new Config(context.scope()));
@@ -30,15 +30,14 @@ public:
     return std::make_unique<Envoy::ProtobufWkt::Empty>();
   }
 
-  std::string name() override { return ListenerFilterNames::get().TLS_INSPECTOR; }
+  std::string name() override { return ListenerFilterNames::get().TlsInspector; }
 };
 
 /**
  * Static registration for the TLS inspector filter. @see RegisterFactory.
  */
-static Registry::RegisterFactory<TlsInspectorConfigFactory,
-                                 Server::Configuration::NamedListenerFilterConfigFactory>
-    registered_;
+REGISTER_FACTORY(TlsInspectorConfigFactory,
+                 Server::Configuration::NamedListenerFilterConfigFactory);
 
 } // namespace TlsInspector
 } // namespace ListenerFilters

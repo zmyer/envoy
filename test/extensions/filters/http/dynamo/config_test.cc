@@ -11,6 +11,7 @@ namespace Envoy {
 namespace Extensions {
 namespace HttpFilters {
 namespace Dynamo {
+namespace {
 
 TEST(DynamoFilterConfigTest, DynamoFilter) {
   std::string json_string = R"EOF(
@@ -21,13 +22,13 @@ TEST(DynamoFilterConfigTest, DynamoFilter) {
   Json::ObjectSharedPtr json_config = Json::Factory::loadFromString(json_string);
   NiceMock<Server::Configuration::MockFactoryContext> context;
   DynamoFilterConfig factory;
-  Server::Configuration::HttpFilterFactoryCb cb =
-      factory.createFilterFactory(*json_config, "stats", context);
+  Http::FilterFactoryCb cb = factory.createFilterFactory(*json_config, "stats", context);
   Http::MockFilterChainFactoryCallbacks filter_callback;
   EXPECT_CALL(filter_callback, addStreamFilter(_));
   cb(filter_callback);
 }
 
+} // namespace
 } // namespace Dynamo
 } // namespace HttpFilters
 } // namespace Extensions

@@ -14,30 +14,53 @@ namespace Envoy {
 namespace Server {
 
 /**
+ * Interface for an LDS API provider.
+ */
+class LdsApi {
+public:
+  virtual ~LdsApi() = default;
+
+  /**
+   * @return std::string the last received version by the xDS API for LDS.
+   */
+  virtual std::string versionInfo() const PURE;
+};
+
+using LdsApiPtr = std::unique_ptr<LdsApi>;
+
+/**
  * Factory for creating listener components.
  */
 class ListenerComponentFactory {
 public:
-  virtual ~ListenerComponentFactory() {}
+  virtual ~ListenerComponentFactory() = default;
+
+  /**
+   * @return an LDS API provider.
+   * @param lds_config supplies the management server configuration.
+   */
+  virtual LdsApiPtr createLdsApi(const envoy::api::v2::core::ConfigSource& lds_config) PURE;
 
   /**
    * Creates a socket.
    * @param address supplies the socket's address.
+   * @param socket_type the type of socket (stream or datagram) to create.
    * @param options to be set on the created socket just before calling 'bind()'.
    * @param bind_to_port supplies whether to actually bind the socket.
    * @return Network::SocketSharedPtr an initialized and potentially bound socket.
    */
   virtual Network::SocketSharedPtr
   createListenSocket(Network::Address::InstanceConstSharedPtr address,
+                     Network::Address::SocketType socket_type,
                      const Network::Socket::OptionsSharedPtr& options, bool bind_to_port) PURE;
 
   /**
    * Creates a list of filter factories.
    * @param filters supplies the proto configuration.
    * @param context supplies the factory creation context.
-   * @return std::vector<Configuration::NetworkFilterFactoryCb> the list of filter factories.
+   * @return std::vector<Network::FilterFactoryCb> the list of filter factories.
    */
-  virtual std::vector<Configuration::NetworkFilterFactoryCb> createNetworkFilterFactoryList(
+  virtual std::vector<Network::FilterFactoryCb> createNetworkFilterFactoryList(
       const Protobuf::RepeatedPtrField<envoy::api::v2::listener::Filter>& filters,
       Configuration::FactoryContext& context) PURE;
 
@@ -45,9 +68,19 @@ public:
    * Creates a list of listener filter factories.
    * @param filters supplies the JSON configuration.
    * @param context supplies the factory creation context.
-   * @return std::vector<Configuration::ListenerFilterFactoryCb> the list of filter factories.
+   * @return std::vector<Network::ListenerFilterFactoryCb> the list of filter factories.
    */
-  virtual std::vector<Configuration::ListenerFilterFactoryCb> createListenerFilterFactoryList(
+  virtual std::vector<Network::ListenerFilterFactoryCb> createListenerFilterFactoryList(
+      const Protobuf::RepeatedPtrField<envoy::api::v2::listener::ListenerFilter>& filters,
+      Configuration::ListenerFactoryContext& context) PURE;
+
+  /**
+   * Creates a list of UDP listener filter factories.
+   * @param filters supplies the configuration.
+   * @param context supplies the factory creation context.
+   * @return std::vector<Network::UdpListenerFilterFactoryCb> the list of filter factories.
+   */
+  virtual std::vector<Network::UdpListenerFilterFactoryCb> createUdpListenerFilterFactoryList(
       const Protobuf::RepeatedPtrField<envoy::api::v2::listener::ListenerFilter>& filters,
       Configuration::ListenerFactoryContext& context) PURE;
 
@@ -68,7 +101,7 @@ public:
  */
 class ListenerManager {
 public:
-  virtual ~ListenerManager() {}
+  virtual ~ListenerManager() = default;
 
   /**
    * Add or update a listener. Listeners are referenced by a unique name. If no name is provided,
@@ -78,6 +111,7 @@ public:
    * will be gracefully drained once the new listener is ready to take traffic (e.g. when RDS has
    * been initialized).
    * @param config supplies the configuration proto.
+   * @param version_info supplies the xDS version of the listener.
    * @param modifiable supplies whether the added listener can be updated or removed. If the
    *        listener is not modifiable, future calls to this function or removeListener() on behalf
    *        of this listener will return false.
@@ -85,7 +119,16 @@ public:
    *         a duplicate of the existing listener. This routine will throw an EnvoyException if
    *         there is a fundamental error preventing the listener from being added or updated.
    */
-  virtual bool addOrUpdateListener(const envoy::api::v2::Listener& config, bool modifiable) PURE;
+  virtual bool addOrUpdateListener(const envoy::api::v2::Listener& config,
+                                   const std::string& version_info, bool modifiable) PURE;
+
+  /**
+   * Instruct the listener manager to create an LDS API provider. This is a separate operation
+   * during server initialization because the listener manager is created prior to several core
+   * pieces of the server existing.
+   * @param lds_config supplies the management server configuration.
+   */
+  virtual void createLdsApi(const envoy::api::v2::core::ConfigSource& lds_config) PURE;
 
   /**
    * @return std::vector<std::reference_wrapper<Network::ListenerConfig>> a list of the currently

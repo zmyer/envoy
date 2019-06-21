@@ -15,14 +15,14 @@ namespace Echo {
 class EchoConfigFactory : public Server::Configuration::NamedNetworkFilterConfigFactory {
 public:
   // NamedNetworkFilterConfigFactory
-  Server::Configuration::NetworkFilterFactoryCb
-  createFilterFactory(const Json::Object&, Server::Configuration::FactoryContext&) override {
+  Network::FilterFactoryCb createFilterFactory(const Json::Object&,
+                                               Server::Configuration::FactoryContext&) override {
     return [](Network::FilterManager& filter_manager) -> void {
       filter_manager.addReadFilter(std::make_shared<EchoFilter>());
     };
   }
 
-  Server::Configuration::NetworkFilterFactoryCb
+  Network::FilterFactoryCb
   createFilterFactoryFromProto(const Protobuf::Message&,
                                Server::Configuration::FactoryContext&) override {
     return [](Network::FilterManager& filter_manager) -> void {
@@ -34,15 +34,13 @@ public:
     return ProtobufTypes::MessagePtr{new Envoy::ProtobufWkt::Empty()};
   }
 
-  std::string name() override { return NetworkFilterNames::get().ECHO; }
+  std::string name() override { return NetworkFilterNames::get().Echo; }
 };
 
 /**
  * Static registration for the echo filter. @see RegisterFactory.
  */
-static Registry::RegisterFactory<EchoConfigFactory,
-                                 Server::Configuration::NamedNetworkFilterConfigFactory>
-    registered_;
+REGISTER_FACTORY(EchoConfigFactory, Server::Configuration::NamedNetworkFilterConfigFactory);
 
 } // namespace Echo
 } // namespace NetworkFilters

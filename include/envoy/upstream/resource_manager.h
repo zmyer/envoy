@@ -20,7 +20,7 @@ const size_t NumResourcePriorities = 2;
  */
 class Resource {
 public:
-  virtual ~Resource() {}
+  virtual ~Resource() = default;
 
   /**
    * @return true if the resource can be created.
@@ -38,6 +38,11 @@ public:
   virtual void dec() PURE;
 
   /**
+   * Decrement the resource count by a specific amount.
+   */
+  virtual void decBy(uint64_t amount) PURE;
+
+  /**
    * @return the current maximum allowed number of this resource.
    */
   virtual uint64_t max() PURE;
@@ -50,7 +55,7 @@ public:
  */
 class ResourceManager {
 public:
-  virtual ~ResourceManager() {}
+  virtual ~ResourceManager() = default;
 
   /**
    * @return Resource& active TCP connections.
@@ -73,6 +78,11 @@ public:
    * @return Resource& active retries.
    */
   virtual Resource& retries() PURE;
+
+  /**
+   * @return Resource& active connection pools.
+   */
+  virtual Resource& connectionPools() PURE;
 };
 
 } // namespace Upstream

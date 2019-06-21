@@ -1,3 +1,5 @@
+#include "envoy/config/filter/http/fault/v2/fault.pb.validate.h"
+
 #include "extensions/filters/http/fault/config.h"
 
 #include "test/mocks/server/mocks.h"
@@ -5,13 +7,14 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
-using testing::Invoke;
 using testing::_;
+using testing::Invoke;
 
 namespace Envoy {
 namespace Extensions {
 namespace HttpFilters {
 namespace Fault {
+namespace {
 
 TEST(FaultFilterConfigTest, ValidateFail) {
   NiceMock<Server::Configuration::MockFactoryContext> context;
@@ -35,37 +38,38 @@ TEST(FaultFilterConfigTest, FaultFilterCorrectJson) {
   Json::ObjectSharedPtr json_config = Json::Factory::loadFromString(json_string);
   NiceMock<Server::Configuration::MockFactoryContext> context;
   FaultFilterFactory factory;
-  Server::Configuration::HttpFilterFactoryCb cb =
-      factory.createFilterFactory(*json_config, "stats", context);
+  Http::FilterFactoryCb cb = factory.createFilterFactory(*json_config, "stats", context);
   Http::MockFilterChainFactoryCallbacks filter_callback;
-  EXPECT_CALL(filter_callback, addStreamDecoderFilter(_));
+  EXPECT_CALL(filter_callback, addStreamFilter(_));
   cb(filter_callback);
 }
 
 TEST(FaultFilterConfigTest, FaultFilterCorrectProto) {
   envoy::config::filter::http::fault::v2::HTTPFault config{};
-  config.mutable_delay()->set_percent(100);
+  config.mutable_delay()->mutable_percentage()->set_numerator(100);
+  config.mutable_delay()->mutable_percentage()->set_denominator(
+      envoy::type::FractionalPercent::HUNDRED);
   config.mutable_delay()->mutable_fixed_delay()->set_seconds(5);
 
   NiceMock<Server::Configuration::MockFactoryContext> context;
   FaultFilterFactory factory;
-  Server::Configuration::HttpFilterFactoryCb cb =
-      factory.createFilterFactoryFromProto(config, "stats", context);
+  Http::FilterFactoryCb cb = factory.createFilterFactoryFromProto(config, "stats", context);
   Http::MockFilterChainFactoryCallbacks filter_callback;
-  EXPECT_CALL(filter_callback, addStreamDecoderFilter(_));
+  EXPECT_CALL(filter_callback, addStreamFilter(_));
   cb(filter_callback);
 }
 
 TEST(FaultFilterConfigTest, FaultFilterEmptyProto) {
   NiceMock<Server::Configuration::MockFactoryContext> context;
   FaultFilterFactory factory;
-  Server::Configuration::HttpFilterFactoryCb cb =
+  Http::FilterFactoryCb cb =
       factory.createFilterFactoryFromProto(*factory.createEmptyConfigProto(), "stats", context);
   Http::MockFilterChainFactoryCallbacks filter_callback;
-  EXPECT_CALL(filter_callback, addStreamDecoderFilter(_));
+  EXPECT_CALL(filter_callback, addStreamFilter(_));
   cb(filter_callback);
 }
 
+} // namespace
 } // namespace Fault
 } // namespace HttpFilters
 } // namespace Extensions

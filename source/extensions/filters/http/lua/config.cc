@@ -12,9 +12,9 @@ namespace Extensions {
 namespace HttpFilters {
 namespace Lua {
 
-Server::Configuration::HttpFilterFactoryCb
-LuaFilterConfig::createFilter(const envoy::config::filter::http::lua::v2::Lua& proto_config,
-                              const std::string&, Server::Configuration::FactoryContext& context) {
+Http::FilterFactoryCb LuaFilterConfig::createFilterFactoryFromProtoTyped(
+    const envoy::config::filter::http::lua::v2::Lua& proto_config, const std::string&,
+    Server::Configuration::FactoryContext& context) {
   FilterConfigConstSharedPtr filter_config(new FilterConfig{
       proto_config.inline_code(), context.threadLocal(), context.clusterManager()});
   return [filter_config](Http::FilterChainFactoryCallbacks& callbacks) -> void {
@@ -22,31 +22,19 @@ LuaFilterConfig::createFilter(const envoy::config::filter::http::lua::v2::Lua& p
   };
 }
 
-Server::Configuration::HttpFilterFactoryCb
+Http::FilterFactoryCb
 LuaFilterConfig::createFilterFactory(const Json::Object& json_config,
                                      const std::string& stat_prefix,
                                      Server::Configuration::FactoryContext& context) {
   envoy::config::filter::http::lua::v2::Lua proto_config;
   Config::FilterJson::translateLuaFilter(json_config, proto_config);
-  return createFilter(proto_config, stat_prefix, context);
-}
-
-Server::Configuration::HttpFilterFactoryCb
-LuaFilterConfig::createFilterFactoryFromProto(const Protobuf::Message& proto_config,
-                                              const std::string& stat_prefix,
-                                              Server::Configuration::FactoryContext& context) {
-  return createFilter(
-      MessageUtil::downcastAndValidate<const envoy::config::filter::http::lua::v2::Lua&>(
-          proto_config),
-      stat_prefix, context);
+  return createFilterFactoryFromProtoTyped(proto_config, stat_prefix, context);
 }
 
 /**
  * Static registration for the Lua filter. @see RegisterFactory.
  */
-static Registry::RegisterFactory<LuaFilterConfig,
-                                 Server::Configuration::NamedHttpFilterConfigFactory>
-    register_;
+REGISTER_FACTORY(LuaFilterConfig, Server::Configuration::NamedHttpFilterConfigFactory);
 
 } // namespace Lua
 } // namespace HttpFilters

@@ -1,4 +1,5 @@
 licenses(["notice"])  # Apache 2
+
 # Echo L4 network filter. This is primarily a simplistic example.
 # Public docs: docs/root/configuration/network_filters/echo_filter.rst
 
@@ -19,7 +20,7 @@ envoy_cc_library(
         "//include/envoy/network:connection_interface",
         "//include/envoy/network:filter_interface",
         "//source/common/common:assert_lib",
-        "//source/common/common:logger_lib",
+        "//source/common/common:minimal_logger_lib",
     ],
 )
 

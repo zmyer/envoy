@@ -28,7 +28,7 @@ are:
 ## [source/](source/)
 
 * [common/](source/common/): Core Envoy code (not specific to extensions) that is also not
-  specific to a standalone server implementation. I.e., this is code that could be used if Envoy
+  specific to a standalone server implementation. I.e., this is the code that could be used if Envoy
   were eventually embedded as a library.
 * [docs/](source/docs/): Miscellaneous developer/design documentation that is not relevant for
   the public user documentation.
@@ -81,6 +81,8 @@ currently implemented but that is the plan moving forward.)
     `Envoy::Extensions::ListenerFilters` namespace.
   * [filters/network/](/source/extensions/filters/network): L4 network filters which use the
     `Envoy::Extensions::NetworkFilters` namespace.
+  * [grpc_credentials/](/source/extensions/grpc_credentials): Custom gRPC credentials which use the
+    `Envoy::Extensions::GrpcCredentials` namespace.
   * [health_checker/](/source/extensions/health_checker): Custom health checkers which use the
     `Envoy::Extensions::HealthCheckers` namespace.
   * [resolvers/](/source/extensions/resolvers): Network address resolvers which use the

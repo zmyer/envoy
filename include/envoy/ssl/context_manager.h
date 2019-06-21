@@ -4,7 +4,7 @@
 
 #include "envoy/ssl/context.h"
 #include "envoy/ssl/context_config.h"
-#include "envoy/stats/stats.h"
+#include "envoy/stats/scope.h"
 
 namespace Envoy {
 namespace Ssl {
@@ -14,31 +14,20 @@ namespace Ssl {
  */
 class ContextManager {
 public:
-  virtual ~ContextManager() {}
+  virtual ~ContextManager() = default;
 
   /**
    * Builds a ClientContext from a ClientContextConfig.
    */
-  virtual ClientContextPtr createSslClientContext(Stats::Scope& scope,
-                                                  const ClientContextConfig& config) PURE;
+  virtual ClientContextSharedPtr createSslClientContext(Stats::Scope& scope,
+                                                        const ClientContextConfig& config) PURE;
 
   /**
    * Builds a ServerContext from a ServerContextConfig.
-   * The skip_context_update parameter is used for fast-path (avoiding lock & context lookup)
-   * on listeners with a single filter chain and no SNI restrictions.
    */
-  virtual ServerContextPtr createSslServerContext(const std::string& listener_name,
-                                                  const std::vector<std::string>& server_names,
-                                                  Stats::Scope& scope,
-                                                  const ServerContextConfig& config,
-                                                  bool skip_context_update) PURE;
-
-  /**
-   * Find ServerContext for a given listener and server_name.
-   * @return ServerContext or nullptr in case there is no match.
-   */
-  virtual ServerContext* findSslServerContext(const std::string& listener_name,
-                                              const std::string& server_name) const PURE;
+  virtual ServerContextSharedPtr
+  createSslServerContext(Stats::Scope& scope, const ServerContextConfig& config,
+                         const std::vector<std::string>& server_names) PURE;
 
   /**
    * @return the number of days until the next certificate being managed will expire.

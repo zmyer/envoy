@@ -13,34 +13,44 @@ namespace Router {
  */
 class RouteConfigProvider {
 public:
-  virtual ~RouteConfigProvider() {}
+  struct ConfigInfo {
+    // A reference to the currently loaded route configuration. Do not hold this reference beyond
+    // the caller of configInfo()'s scope.
+    const envoy::api::v2::RouteConfiguration& config_;
+
+    // The discovery version that supplied this route. This will be set to "" in the case of
+    // static clusters.
+    std::string version_;
+  };
+
+  virtual ~RouteConfigProvider() = default;
 
   /**
    * @return Router::ConfigConstSharedPtr a route configuration for use during a single request. The
-   * returned
-   *         config may be different on a subsequent call, so a new config should be acquired for
-   *         each request flow.
+   * returned config may be different on a subsequent call, so a new config should be acquired for
+   * each request flow.
    */
   virtual Router::ConfigConstSharedPtr config() PURE;
 
   /**
-   * @return envoy::api::v2::RouteConfiguration the underlying RouteConfiguration object associated
-   * with this provider.
+   * @return the configuration information for the currently loaded route configuration. Note that
+   * if the provider has not yet performed an initial configuration load, no information will be
+   * returned.
    */
-  virtual const envoy::api::v2::RouteConfiguration& configAsProto() const PURE;
+  virtual absl::optional<ConfigInfo> configInfo() const PURE;
 
   /**
-   * @return const std::string version info from last accepted config.
-   *
-   * TODO(dnoe): This would ideally return by reference, but this causes a
-   *             problem due to incompatible string implementations returned by
-   *             protobuf generated code. Revisit when string implementations
-   *             are converged.
+   * @return the last time this RouteConfigProvider was updated. Used for config dumps.
    */
-  virtual const std::string versionInfo() const PURE;
+  virtual SystemTime lastUpdated() const PURE;
+
+  /**
+   * Callback used to notify RouteConfigProvider about configuration changes.
+   */
+  virtual void onConfigUpdate() PURE;
 };
 
-typedef std::shared_ptr<RouteConfigProvider> RouteConfigProviderSharedPtr;
+using RouteConfigProviderPtr = std::unique_ptr<RouteConfigProvider>;
 
 } // namespace Router
 } // namespace Envoy

@@ -1,7 +1,6 @@
 #include "extensions/filters/http/router/config.h"
 
 #include "envoy/config/filter/http/router/v2/router.pb.validate.h"
-#include "envoy/registry/registry.h"
 
 #include "common/config/filter_json.h"
 #include "common/json/config_schemas.h"
@@ -13,7 +12,7 @@ namespace Extensions {
 namespace HttpFilters {
 namespace RouterFilter {
 
-Server::Configuration::HttpFilterFactoryCb RouterFilterConfig::createFilter(
+Http::FilterFactoryCb RouterFilterConfig::createFilterFactoryFromProtoTyped(
     const envoy::config::filter::http::router::v2::Router& proto_config,
     const std::string& stat_prefix, Server::Configuration::FactoryContext& context) {
   Router::FilterConfigSharedPtr filter_config(new Router::FilterConfig(
@@ -25,31 +24,19 @@ Server::Configuration::HttpFilterFactoryCb RouterFilterConfig::createFilter(
   };
 }
 
-Server::Configuration::HttpFilterFactoryCb
+Http::FilterFactoryCb
 RouterFilterConfig::createFilterFactory(const Json::Object& json_config,
                                         const std::string& stat_prefix,
                                         Server::Configuration::FactoryContext& context) {
   envoy::config::filter::http::router::v2::Router proto_config;
   Config::FilterJson::translateRouter(json_config, proto_config);
-  return createFilter(proto_config, stat_prefix, context);
-}
-
-Server::Configuration::HttpFilterFactoryCb
-RouterFilterConfig::createFilterFactoryFromProto(const Protobuf::Message& proto_config,
-                                                 const std::string& stat_prefix,
-                                                 Server::Configuration::FactoryContext& context) {
-  return createFilter(
-      MessageUtil::downcastAndValidate<const envoy::config::filter::http::router::v2::Router&>(
-          proto_config),
-      stat_prefix, context);
+  return createFilterFactoryFromProtoTyped(proto_config, stat_prefix, context);
 }
 
 /**
  * Static registration for the router filter. @see RegisterFactory.
  */
-static Registry::RegisterFactory<RouterFilterConfig,
-                                 Server::Configuration::NamedHttpFilterConfigFactory>
-    register_;
+REGISTER_FACTORY(RouterFilterConfig, Server::Configuration::NamedHttpFilterConfigFactory);
 
 } // namespace RouterFilter
 } // namespace HttpFilters

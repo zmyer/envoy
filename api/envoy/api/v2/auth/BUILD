@@ -1,4 +1,4 @@
-load("//bazel:api_build_system.bzl", "api_proto_library", "api_go_proto_library")
+load("@envoy_api//bazel:api_build_system.bzl", "api_go_proto_library", "api_proto_library_internal")
 
 licenses(["notice"])  # Apache 2
 
@@ -15,24 +15,7 @@ package_group(
     ],
 )
 
-api_proto_library(
-    name = "auth",
-    srcs = ["auth.proto"],
-    visibility = [":friends"],
-    deps = [
-        ":cert",
-    ],
-)
-
-api_go_proto_library(
-    name = "auth",
-    proto = ":auth",
-    deps = [
-        ":cert_go_proto",
-    ],
-)
-
-api_proto_library(
+api_proto_library_internal(
     name = "cert",
     srcs = ["cert.proto"],
     visibility = [":friends"],

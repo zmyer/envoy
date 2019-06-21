@@ -5,8 +5,8 @@ load(
     "envoy_cc_test",
     "envoy_cc_test_library",
     "envoy_package",
-    "envoy_sh_test",
     "envoy_select_hot_restart",
+    "envoy_sh_test",
 )
 
 envoy_package()
@@ -22,12 +22,17 @@ envoy_cc_test_library(
     deps = [
         "//source/common/config:resources_lib",
         "//source/common/network:address_lib",
+        "//source/common/protobuf",
         "//source/common/protobuf:utility_lib",
+        "//test/config/integration/certs:hashes",
         "//test/integration:server_stats_interface",
         "//test/test_common:environment_lib",
         "//test/test_common:network_utility_lib",
         "//test/test_common:utility_lib",
         "@envoy_api//envoy/api/v2:eds_cc",
+        "@envoy_api//envoy/config/accesslog/v2:file_cc",
         "@envoy_api//envoy/config/bootstrap/v2:bootstrap_cc",
+        "@envoy_api//envoy/config/filter/network/http_connection_manager/v2:http_connection_manager_cc",
+        "@envoy_api//envoy/config/transport_socket/tap/v2alpha:tap_cc",
     ],
 )
