@@ -1,15 +1,11 @@
 #include "common/network/connection_impl.h"
 
-#include <netinet/tcp.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
-
 #include <atomic>
 #include <cstdint>
 #include <memory>
 
 #include "envoy/common/exception.h"
+#include "envoy/common/platform.h"
 #include "envoy/event/timer.h"
 #include "envoy/network/filter.h"
 
@@ -46,12 +42,15 @@ std::atomic<uint64_t> ConnectionImpl::next_global_id_;
 
 ConnectionImpl::ConnectionImpl(Event::Dispatcher& dispatcher, ConnectionSocketPtr&& socket,
                                TransportSocketPtr&& transport_socket, bool connected)
-    : transport_socket_(std::move(transport_socket)), socket_(std::move(socket)),
+    : ConnectionImplBase(dispatcher, next_global_id_++),
+      transport_socket_(std::move(transport_socket)), socket_(std::move(socket)),
       filter_manager_(*this), stream_info_(dispatcher.timeSource()),
       write_buffer_(
           dispatcher.getWatermarkFactory().create([this]() -> void { this->onLowWatermark(); },
                                                   [this]() -> void { this->onHighWatermark(); })),
-      dispatcher_(dispatcher), id_(next_global_id_++) {
+      read_enabled_(true), above_high_watermark_(false), detect_early_close_(true),
+      enable_half_close_(false), read_end_stream_raised_(false), read_end_stream_(false),
+      write_end_stream_(false), current_write_end_stream_(false), dispatch_buffered_data_(false) {
   // Treat the lack of a valid fd (which in practice only happens if we run out of FDs) as an OOM
   // condition and just crash.
   RELEASE_ASSERT(ioHandle().fd() != -1, "");
@@ -99,7 +98,7 @@ void ConnectionImpl::close(ConnectionCloseType type) {
 
   uint64_t data_to_write = write_buffer_->length();
   ENVOY_CONN_LOG(debug, "closing data_to_write={} type={}", *this, data_to_write, enumToInt(type));
-  const bool delayed_close_timeout_set = delayedCloseTimeout().count() > 0;
+  const bool delayed_close_timeout_set = delayed_close_timeout_.count() > 0;
   if (data_to_write == 0 || type == ConnectionCloseType::NoFlush ||
       !transport_socket_->canFlushClose()) {
     if (data_to_write > 0) {
@@ -118,9 +117,11 @@ void ConnectionImpl::close(ConnectionCloseType type) {
       if (!inDelayedClose()) {
         initializeDelayedCloseTimer();
         delayed_close_state_ = DelayedCloseState::CloseAfterFlushAndWait;
+        // Monitor for the peer closing the connection.
+        file_event_->setEnabled(enable_half_close_ ? 0 : Event::FileReadyType::Closed);
       }
     } else {
-      closeSocket(ConnectionEvent::LocalClose);
+      closeConnectionImmediately();
     }
   } else {
     ASSERT(type == ConnectionCloseType::FlushWrite ||
@@ -174,6 +175,8 @@ Connection::State ConnectionImpl::state() const {
   }
 }
 
+void ConnectionImpl::closeConnectionImmediately() { closeSocket(ConnectionEvent::LocalClose); }
+
 void ConnectionImpl::closeSocket(ConnectionEvent close_type) {
   if (!ioHandle().isOpen()) {
     return;
@@ -198,8 +201,6 @@ void ConnectionImpl::closeSocket(ConnectionEvent close_type) {
 
   raiseEvent(close_type);
 }
-
-Event::Dispatcher& ConnectionImpl::dispatcher() { return dispatcher_; }
 
 void ConnectionImpl::noDelay(bool enable) {
   // There are cases where a connection to localhost can immediately fail (e.g., if the other end
@@ -236,8 +237,6 @@ void ConnectionImpl::noDelay(bool enable) {
 
   RELEASE_ASSERT(0 == rc, "");
 }
-
-uint64_t ConnectionImpl::id() const { return id_; }
 
 void ConnectionImpl::onRead(uint64_t read_buffer_size) {
   if (!read_enabled_ || inDelayedClose()) {
@@ -321,19 +320,16 @@ void ConnectionImpl::readDisable(bool disable) {
     file_event_->setEnabled(Event::FileReadyType::Read | Event::FileReadyType::Write);
     // If the connection has data buffered there's no guarantee there's also data in the kernel
     // which will kick off the filter chain. Instead fake an event to make sure the buffered data
-    // gets processed regardless.
+    // gets processed regardless and ensure that we dispatch it via onRead.
     if (read_buffer_.length() > 0) {
+      dispatch_buffered_data_ = true;
       file_event_->activate(Event::FileReadyType::Read);
     }
   }
 }
 
 void ConnectionImpl::raiseEvent(ConnectionEvent event) {
-  for (ConnectionCallbacks* callback : callbacks_) {
-    // TODO(mattklein123): If we close while raising a connected event we should not raise further
-    // connected events.
-    callback->onEvent(event);
-  }
+  ConnectionImplBase::raiseConnectionEvent(event);
   // We may have pending data in the write buffer on transport handshake
   // completion, which may also have completed in the context of onReadReady(),
   // where no check of the write buffer is made. Provide an opportunity to flush
@@ -346,8 +342,6 @@ void ConnectionImpl::raiseEvent(ConnectionEvent event) {
 }
 
 bool ConnectionImpl::readEnabled() const { return read_enabled_; }
-
-void ConnectionImpl::addConnectionCallbacks(ConnectionCallbacks& cb) { callbacks_.push_back(&cb); }
 
 void ConnectionImpl::addBytesSentCallback(BytesSentCb cb) {
   bytes_sent_callbacks_.emplace_back(cb);
@@ -507,11 +501,14 @@ void ConnectionImpl::onReadReady() {
   }
 
   read_end_stream_ |= result.end_stream_read_;
-  if (result.bytes_processed_ != 0 || result.end_stream_read_) {
-    // Skip onRead if no bytes were processed. For instance, if the connection was closed without
-    // producing more data.
+  if (result.bytes_processed_ != 0 || result.end_stream_read_ ||
+      (dispatch_buffered_data_ && read_buffer_.length() > 0)) {
+    // Skip onRead if no bytes were processed unless we explicitly want to force onRead for
+    // buffered data. For instance, skip onRead if the connection was closed without producing
+    // more data.
     onRead(new_buffer_size);
   }
+  dispatch_buffered_data_ = false;
 
   // The read callback may have already closed the connection.
   if (result.action_ == PostIoAction::Close || bothSidesHalfClosed()) {
@@ -580,15 +577,15 @@ void ConnectionImpl::onWriteReady() {
     ENVOY_CONN_LOG(debug, "write flush complete", *this);
     if (delayed_close_state_ == DelayedCloseState::CloseAfterFlushAndWait) {
       ASSERT(delayed_close_timer_ != nullptr);
-      delayed_close_timer_->enableTimer(delayedCloseTimeout());
+      delayed_close_timer_->enableTimer(delayed_close_timeout_);
     } else {
       ASSERT(bothSidesHalfClosed() || delayed_close_state_ == DelayedCloseState::CloseAfterFlush);
-      closeSocket(ConnectionEvent::LocalClose);
+      closeConnectionImmediately();
     }
   } else {
     ASSERT(result.action_ == PostIoAction::KeepOpen);
     if (delayed_close_timer_ != nullptr) {
-      delayed_close_timer_->enableTimer(delayedCloseTimeout());
+      delayed_close_timer_->enableTimer(delayed_close_timeout_);
     }
     if (result.bytes_processed_ > 0) {
       for (BytesSentCb& cb : bytes_sent_callbacks_) {
@@ -601,13 +598,6 @@ void ConnectionImpl::onWriteReady() {
       }
     }
   }
-}
-
-void ConnectionImpl::setConnectionStats(const ConnectionStats& stats) {
-  ASSERT(!connection_stats_,
-         "Two network filters are attempting to set connection stats. This indicates an issue "
-         "with the configured filter chain.");
-  connection_stats_ = std::make_unique<ConnectionStats>(stats);
 }
 
 void ConnectionImpl::updateReadBufferStats(uint64_t num_read, uint64_t new_size) {
@@ -635,23 +625,6 @@ bool ConnectionImpl::bothSidesHalfClosed() {
   return read_end_stream_ && write_end_stream_ && write_buffer_->length() == 0;
 }
 
-void ConnectionImpl::onDelayedCloseTimeout() {
-  delayed_close_timer_.reset();
-  ENVOY_CONN_LOG(debug, "triggered delayed close", *this);
-  if (connection_stats_ != nullptr && connection_stats_->delayed_close_timeouts_ != nullptr) {
-    connection_stats_->delayed_close_timeouts_->inc();
-  }
-  closeSocket(ConnectionEvent::LocalClose);
-}
-
-void ConnectionImpl::initializeDelayedCloseTimer() {
-  const auto timeout = delayedCloseTimeout().count();
-  ASSERT(delayed_close_timer_ == nullptr && timeout > 0);
-  delayed_close_timer_ = dispatcher_.createTimer([this]() -> void { onDelayedCloseTimeout(); });
-  ENVOY_CONN_LOG(debug, "setting delayed close timer with timeout {} ms", *this, timeout);
-  delayed_close_timer_->enableTimer(delayedCloseTimeout());
-}
-
 absl::string_view ConnectionImpl::transportFailureReason() const {
   return transport_socket_->failureReason();
 }
@@ -661,7 +634,7 @@ ClientConnectionImpl::ClientConnectionImpl(
     const Network::Address::InstanceConstSharedPtr& source_address,
     Network::TransportSocketPtr&& transport_socket,
     const Network::ConnectionSocket::OptionsSharedPtr& options)
-    : ConnectionImpl(dispatcher, std::make_unique<ClientSocketImpl>(remote_address),
+    : ConnectionImpl(dispatcher, std::make_unique<ClientSocketImpl>(remote_address, options),
                      std::move(transport_socket), false) {
   // There are no meaningful socket options or source address semantics for
   // non-IP sockets, so skip.
@@ -725,6 +698,5 @@ void ClientConnectionImpl::connect() {
     socket_->setLocalAddress(Address::addressFromFd(ioHandle().fd()));
   }
 }
-
 } // namespace Network
 } // namespace Envoy

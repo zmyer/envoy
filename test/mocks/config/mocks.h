@@ -4,7 +4,6 @@
 #include "envoy/config/config_provider_manager.h"
 #include "envoy/config/grpc_mux.h"
 #include "envoy/config/subscription.h"
-#include "envoy/config/xds_grpc_context.h"
 
 #include "common/config/config_provider_impl.h"
 #include "common/config/resources.h"
@@ -25,7 +24,7 @@ public:
           return resourceName_(TestUtility::anyConvert<ResourceType>(resource));
         }));
   }
-  ~MockSubscriptionCallbacks() override {}
+  ~MockSubscriptionCallbacks() override = default;
   static std::string resourceName_(const envoy::api::v2::ClusterLoadAssignment& resource) {
     return resource.cluster_name();
   }
@@ -37,14 +36,15 @@ public:
                  void(const Protobuf::RepeatedPtrField<envoy::api::v2::Resource>& added_resources,
                       const Protobuf::RepeatedPtrField<std::string>& removed_resources,
                       const std::string& system_version_info));
-  MOCK_METHOD1_T(onConfigUpdateFailed, void(const EnvoyException* e));
+  MOCK_METHOD2_T(onConfigUpdateFailed,
+                 void(Envoy::Config::ConfigUpdateFailureReason reason, const EnvoyException* e));
   MOCK_METHOD1_T(resourceName, std::string(const ProtobufWkt::Any& resource));
 };
 
 class MockSubscription : public Subscription {
 public:
   MOCK_METHOD1(start, void(const std::set<std::string>& resources));
-  MOCK_METHOD1(updateResources, void(const std::set<std::string>& update_to_these_names));
+  MOCK_METHOD1(updateResourceInterest, void(const std::set<std::string>& update_to_these_names));
 };
 
 class MockSubscriptionFactory : public SubscriptionFactory {
@@ -84,6 +84,19 @@ public:
   MOCK_METHOD1(pause, void(const std::string& type_url));
   MOCK_METHOD1(resume, void(const std::string& type_url));
   MOCK_CONST_METHOD1(paused, bool(const std::string& type_url));
+
+  MOCK_METHOD5(addSubscription,
+               void(const std::set<std::string>& resources, const std::string& type_url,
+                    SubscriptionCallbacks& callbacks, SubscriptionStats& stats,
+                    std::chrono::milliseconds init_fetch_timeout));
+  MOCK_METHOD2(updateResourceInterest,
+               void(const std::set<std::string>& resources, const std::string& type_url));
+
+  MOCK_METHOD5(addOrUpdateWatch,
+               Watch*(const std::string& type_url, Watch* watch,
+                      const std::set<std::string>& resources, SubscriptionCallbacks& callbacks,
+                      std::chrono::milliseconds init_fetch_timeout));
+  MOCK_METHOD2(removeWatch, void(const std::string& type_url, Watch* watch));
 };
 
 class MockGrpcMuxCallbacks : public GrpcMuxCallbacks {
@@ -93,7 +106,8 @@ public:
 
   MOCK_METHOD2(onConfigUpdate, void(const Protobuf::RepeatedPtrField<ProtobufWkt::Any>& resources,
                                     const std::string& version_info));
-  MOCK_METHOD1(onConfigUpdateFailed, void(const EnvoyException* e));
+  MOCK_METHOD2(onConfigUpdateFailed,
+               void(Envoy::Config::ConfigUpdateFailureReason reason, const EnvoyException* e));
   MOCK_METHOD1(resourceName, std::string(const ProtobufWkt::Any& resource));
 };
 
@@ -107,20 +121,6 @@ public:
   MOCK_METHOD1(onDiscoveryResponse,
                void(std::unique_ptr<envoy::api::v2::DiscoveryResponse>&& message));
   MOCK_METHOD0(onWriteable, void());
-};
-
-class MockMutableConfigProviderBase : public MutableConfigProviderBase {
-public:
-  MockMutableConfigProviderBase(std::shared_ptr<ConfigSubscriptionInstance>&& subscription,
-                                ConfigProvider::ConfigConstSharedPtr initial_config,
-                                Server::Configuration::FactoryContext& factory_context);
-
-  MOCK_CONST_METHOD0(getConfig, ConfigConstSharedPtr());
-  MOCK_METHOD1(onConfigProtoUpdate, ConfigConstSharedPtr(const Protobuf::Message& config_proto));
-  MOCK_METHOD1(initialize, void(const ConfigConstSharedPtr& initial_config));
-  MOCK_METHOD1(onConfigUpdate, void(const ConfigConstSharedPtr& config));
-
-  ConfigSubscriptionCommonBase& subscription() { return *subscription_.get(); }
 };
 
 class MockConfigProviderManager : public ConfigProviderManager {

@@ -27,15 +27,22 @@ public:
   // Http::FilterHeadersStatus::StopAllIterationAndWatermark for headers. Triggers a timer to
   // continue iteration after 5s.
   Http::FilterHeadersStatus encodeHeaders(Http::HeaderMap& header_map, bool) override {
-    Http::HeaderEntry* entry_content = header_map.get(Envoy::Http::LowerCaseString("content_size"));
-    Http::HeaderEntry* entry_added = header_map.get(Envoy::Http::LowerCaseString("added_size"));
+    const Http::HeaderEntry* entry_content =
+        header_map.get(Envoy::Http::LowerCaseString("content_size"));
+    const Http::HeaderEntry* entry_added =
+        header_map.get(Envoy::Http::LowerCaseString("added_size"));
     ASSERT(entry_content != nullptr && entry_added != nullptr);
     content_size_ = std::stoul(std::string(entry_content->value().getStringView()));
     added_size_ = std::stoul(std::string(entry_added->value().getStringView()));
 
     createTimerForContinue();
 
-    Http::HeaderEntry* entry_buffer = header_map.get(Envoy::Http::LowerCaseString("buffer_limit"));
+    Http::MetadataMap metadata_map = {{"headers", "headers"}};
+    Http::MetadataMapPtr metadata_map_ptr = std::make_unique<Http::MetadataMap>(metadata_map);
+    encoder_callbacks_->addEncodedMetadata(std::move(metadata_map_ptr));
+
+    const Http::HeaderEntry* entry_buffer =
+        header_map.get(Envoy::Http::LowerCaseString("buffer_limit"));
     if (entry_buffer == nullptr) {
       return Http::FilterHeadersStatus::StopAllIterationAndBuffer;
     } else {
@@ -56,6 +63,10 @@ public:
       // encodeData will only be called once after iteration resumes.
       EXPECT_EQ(data.length(), content_size_);
     }
+    Http::MetadataMap metadata_map = {{"data", "data"}};
+    Http::MetadataMapPtr metadata_map_ptr = std::make_unique<Http::MetadataMap>(metadata_map);
+    encoder_callbacks_->addEncodedMetadata(std::move(metadata_map_ptr));
+
     Buffer::OwnedImpl added_data(std::string(added_size_, 'a'));
     encoder_callbacks_->addEncodedData(added_data, false);
     return Http::FilterDataStatus::Continue;
@@ -63,6 +74,10 @@ public:
 
   Http::FilterTrailersStatus encodeTrailers(Http::HeaderMap&) override {
     ASSERT(timer_triggered_);
+    Http::MetadataMap metadata_map = {{"trailers", "trailers"}};
+    Http::MetadataMapPtr metadata_map_ptr = std::make_unique<Http::MetadataMap>(metadata_map);
+    encoder_callbacks_->addEncodedMetadata(std::move(metadata_map_ptr));
+
     Buffer::OwnedImpl data(std::string(added_size_, 'a'));
     encoder_callbacks_->addEncodedData(data, false);
     return Http::FilterTrailersStatus::Continue;

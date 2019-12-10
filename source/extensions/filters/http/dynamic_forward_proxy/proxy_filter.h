@@ -29,9 +29,23 @@ private:
 
 using ProxyFilterConfigSharedPtr = std::shared_ptr<ProxyFilterConfig>;
 
-class ProxyFilter : public Http::PassThroughDecoderFilter,
-                    public Extensions::Common::DynamicForwardProxy::DnsCache::LoadDnsCacheCallbacks,
-                    Logger::Loggable<Logger::Id::forward_proxy> {
+class ProxyPerRouteConfig : public ::Envoy::Router::RouteSpecificFilterConfig {
+public:
+  ProxyPerRouteConfig(
+      const envoy::config::filter::http::dynamic_forward_proxy::v2alpha::PerRouteConfig& config);
+
+  const std::string& hostRewrite() const { return host_rewrite_; }
+  const Http::LowerCaseString& hostRewriteHeader() const { return host_rewrite_header_; }
+
+private:
+  const std::string host_rewrite_;
+  const Http::LowerCaseString host_rewrite_header_;
+};
+
+class ProxyFilter
+    : public Http::PassThroughDecoderFilter,
+      public Extensions::Common::DynamicForwardProxy::DnsCache::LoadDnsCacheEntryCallbacks,
+      Logger::Loggable<Logger::Id::forward_proxy> {
 public:
   ProxyFilter(const ProxyFilterConfigSharedPtr& config) : config_(config) {}
 
@@ -39,12 +53,14 @@ public:
   Http::FilterHeadersStatus decodeHeaders(Http::HeaderMap& headers, bool end_stream) override;
   void onDestroy() override;
 
-  // Extensions::Common::DynamicForwardProxy::DnsCache::LoadDnsCacheCallbacks
+  // Extensions::Common::DynamicForwardProxy::DnsCache::LoadDnsCacheEntryCallbacks
   void onLoadDnsCacheComplete() override;
 
 private:
   const ProxyFilterConfigSharedPtr config_;
-  Extensions::Common::DynamicForwardProxy::DnsCache::LoadDnsCacheHandlePtr cache_load_handle_;
+  Upstream::ClusterInfoConstSharedPtr cluster_info_;
+  Upstream::ResourceAutoIncDecPtr circuit_breaker_;
+  Extensions::Common::DynamicForwardProxy::DnsCache::LoadDnsCacheEntryHandlePtr cache_load_handle_;
 };
 
 } // namespace DynamicForwardProxy

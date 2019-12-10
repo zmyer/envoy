@@ -1,12 +1,12 @@
 #include "common/protobuf/utility.h"
 
+#include <limits>
 #include <numeric>
 
 #include "envoy/protobuf/message_validator.h"
 
 #include "common/common/assert.h"
 #include "common/common/fmt.h"
-#include "common/json/json_loader.h"
 #include "common/protobuf/message_validator_impl.h"
 #include "common/protobuf/protobuf.h"
 
@@ -37,6 +37,75 @@ void blockFormat(YAML::Node node) {
       blockFormat(it.second);
     }
   }
+}
+
+ProtobufWkt::Value parseYamlNode(const YAML::Node& node) {
+  ProtobufWkt::Value value;
+  switch (node.Type()) {
+  case YAML::NodeType::Null:
+    value.set_null_value(ProtobufWkt::NULL_VALUE);
+    break;
+  case YAML::NodeType::Scalar: {
+    if (node.Tag() == "!") {
+      value.set_string_value(node.as<std::string>());
+      break;
+    }
+    bool bool_value;
+    if (YAML::convert<bool>::decode(node, bool_value)) {
+      value.set_bool_value(bool_value);
+      break;
+    }
+    int64_t int_value;
+    if (YAML::convert<int64_t>::decode(node, int_value)) {
+      if (std::numeric_limits<int32_t>::min() <= int_value &&
+          std::numeric_limits<int32_t>::max() >= int_value) {
+        // We could convert all integer values to string but it will break some stuff relying on
+        // ProtobufWkt::Struct itself, only convert small numbers into number_value here.
+        value.set_number_value(int_value);
+      } else {
+        // Proto3 JSON mapping allows use string for integer, this still has to be converted from
+        // int_value to support hexadecimal and octal literals.
+        value.set_string_value(std::to_string(int_value));
+      }
+      break;
+    }
+    // Fall back on string, including float/double case. When protobuf parse the JSON into a message
+    // it will convert based on the type in the message definition.
+    value.set_string_value(node.as<std::string>());
+    break;
+  }
+  case YAML::NodeType::Sequence: {
+    auto& list_values = *value.mutable_list_value()->mutable_values();
+    for (const auto& it : node) {
+      *list_values.Add() = parseYamlNode(it);
+    }
+    break;
+  }
+  case YAML::NodeType::Map: {
+    auto& struct_fields = *value.mutable_struct_value()->mutable_fields();
+    for (const auto& it : node) {
+      struct_fields[it.first.as<std::string>()] = parseYamlNode(it.second);
+    }
+    break;
+  }
+  case YAML::NodeType::Undefined:
+    throw EnvoyException("Undefined YAML value");
+  }
+  return value;
+}
+
+void jsonConvertInternal(const Protobuf::Message& source,
+                         ProtobufMessage::ValidationVisitor& validation_visitor,
+                         Protobuf::Message& dest) {
+  Protobuf::util::JsonPrintOptions json_options;
+  json_options.preserve_proto_field_names = true;
+  std::string json;
+  const auto status = Protobuf::util::MessageToJsonString(source, &json, json_options);
+  if (!status.ok()) {
+    throw EnvoyException(fmt::format("Unable to convert protobuf message to JSON string: {} {}",
+                                     status.ToString(), source.DebugString()));
+  }
+  MessageUtil::loadFromJson(json, dest, validation_visitor);
 }
 
 } // namespace
@@ -88,6 +157,20 @@ ProtoValidationException::ProtoValidationException(const std::string& validation
   ENVOY_LOG_MISC(debug, "Proto validation error; throwing {}", what());
 }
 
+size_t MessageUtil::hash(const Protobuf::Message& message) {
+  std::string text_format;
+
+  {
+    Protobuf::TextFormat::Printer printer;
+    printer.SetExpandAny(true);
+    printer.SetUseFieldNumber(true);
+    printer.SetSingleLineMode(true);
+    printer.PrintToString(message, &text_format);
+  }
+
+  return HashUtil::xxHash64(text_format);
+}
+
 void MessageUtil::loadFromJson(const std::string& json, Protobuf::Message& message,
                                ProtobufMessage::ValidationVisitor& validation_visitor) {
   Protobuf::util::JsonParseOptions options;
@@ -126,14 +209,19 @@ void MessageUtil::loadFromJson(const std::string& json, ProtobufWkt::Struct& mes
 
 void MessageUtil::loadFromYaml(const std::string& yaml, Protobuf::Message& message,
                                ProtobufMessage::ValidationVisitor& validation_visitor) {
-  const auto loaded_object = Json::Factory::loadFromYamlString(yaml);
-  // Load the message if the loaded object has type Object or Array.
-  if (loaded_object->isObject() || loaded_object->isArray()) {
-    const std::string json = loaded_object->asJsonString();
-    loadFromJson(json, message, validation_visitor);
+  ProtobufWkt::Value value = ValueUtil::loadFromYaml(yaml);
+  if (value.kind_case() == ProtobufWkt::Value::kStructValue ||
+      value.kind_case() == ProtobufWkt::Value::kListValue) {
+    jsonConvertInternal(value, validation_visitor, message);
     return;
   }
   throw EnvoyException("Unable to convert YAML as JSON: " + yaml);
+}
+
+void MessageUtil::loadFromYaml(const std::string& yaml, ProtobufWkt::Struct& message) {
+  // No need to validate if converting to a Struct, since there are no unknown
+  // fields possible.
+  return loadFromYaml(yaml, message, ProtobufMessage::getNullValidationVisitor());
 }
 
 void MessageUtil::loadFromFile(const std::string& path, Protobuf::Message& message,
@@ -144,7 +232,7 @@ void MessageUtil::loadFromFile(const std::string& path, Protobuf::Message& messa
   if (absl::EndsWith(path, FileExtensions::get().ProtoBinary)) {
     // Attempt to parse the binary format.
     if (message.ParseFromString(contents)) {
-      MessageUtil::checkUnknownFields(message, validation_visitor);
+      MessageUtil::checkForUnexpectedFields(message, validation_visitor);
       return;
     }
     throw EnvoyException("Unable to parse file \"" + path + "\" as a binary protobuf (type " +
@@ -165,11 +253,77 @@ void MessageUtil::loadFromFile(const std::string& path, Protobuf::Message& messa
   }
 }
 
-void MessageUtil::checkForDeprecation(const Protobuf::Message& message, Runtime::Loader* runtime) {
+void checkForDeprecatedNonRepeatedEnumValue(const Protobuf::Message& message,
+                                            absl::string_view filename,
+                                            const Protobuf::FieldDescriptor* field,
+                                            const Protobuf::Reflection* reflection,
+                                            Runtime::Loader* runtime) {
+  // Repeated fields will be handled by recursion in checkForUnexpectedFields.
+  if (field->is_repeated() || field->cpp_type() != Protobuf::FieldDescriptor::CPPTYPE_ENUM) {
+    return;
+  }
+
+  bool default_value = !reflection->HasField(message, field);
+
+  const Protobuf::EnumValueDescriptor* enum_value_descriptor = reflection->GetEnum(message, field);
+  if (!enum_value_descriptor->options().deprecated()) {
+    return;
+  }
+  std::string err = fmt::format(
+      "Using {}deprecated value {} for enum '{}' from file {}. This enum value will be removed "
+      "from Envoy soon{}. Please see https://www.envoyproxy.io/docs/envoy/latest/intro/deprecated "
+      "for details.",
+      (default_value ? "the default now-" : ""), enum_value_descriptor->name(), field->full_name(),
+      filename, (default_value ? " so a non-default value must now be explicitly set" : ""));
+#ifdef ENVOY_DISABLE_DEPRECATED_FEATURES
+  bool warn_only = false;
+#else
+  bool warn_only = true;
+#endif
+
+  if (runtime && !runtime->snapshot().deprecatedFeatureEnabled(absl::StrCat(
+                     "envoy.deprecated_features.", filename, ":", enum_value_descriptor->name()))) {
+    warn_only = false;
+  }
+
+  if (warn_only) {
+    ENVOY_LOG_MISC(warn, "{}", err);
+  } else {
+    const char fatal_error[] =
+        " If continued use of this field is absolutely necessary, see "
+        "https://www.envoyproxy.io/docs/envoy/latest/configuration/operations/runtime"
+        "#using-runtime-overrides-for-deprecated-features for how to apply a temporary and "
+        "highly discouraged override.";
+    throw ProtoValidationException(err + fatal_error, message);
+  }
+}
+
+void MessageUtil::checkForUnexpectedFields(const Protobuf::Message& message,
+                                           ProtobufMessage::ValidationVisitor& validation_visitor,
+                                           Runtime::Loader* runtime) {
+  // Reject unknown fields.
+  const auto& unknown_fields = message.GetReflection()->GetUnknownFields(message);
+  if (!unknown_fields.empty()) {
+    std::string error_msg;
+    for (int n = 0; n < unknown_fields.field_count(); ++n) {
+      error_msg += absl::StrCat(n > 0 ? ", " : "", unknown_fields.field(n).number());
+    }
+    // We use the validation visitor but have hard coded behavior below for deprecated fields.
+    // TODO(htuch): Unify the deprecated and unknown visitor handling behind the validation
+    // visitor pattern. https://github.com/envoyproxy/envoy/issues/8092.
+    validation_visitor.onUnknownField("type " + message.GetTypeName() +
+                                      " with unknown field set {" + error_msg + "}");
+  }
+
   const Protobuf::Descriptor* descriptor = message.GetDescriptor();
   const Protobuf::Reflection* reflection = message.GetReflection();
   for (int i = 0; i < descriptor->field_count(); ++i) {
-    const auto* field = descriptor->field(i);
+    const Protobuf::FieldDescriptor* field = descriptor->field(i);
+    absl::string_view filename = filenameFromPath(field->file()->name());
+
+    // Before we check to see if the field is in use, see if there's a
+    // deprecated default enum value.
+    checkForDeprecatedNonRepeatedEnumValue(message, filename, field, reflection, runtime);
 
     // If this field is not in use, continue.
     if ((field->is_repeated() && reflection->FieldSize(message, field) == 0) ||
@@ -177,8 +331,11 @@ void MessageUtil::checkForDeprecation(const Protobuf::Message& message, Runtime:
       continue;
     }
 
+#ifdef ENVOY_DISABLE_DEPRECATED_FEATURES
+    bool warn_only = false;
+#else
     bool warn_only = true;
-    absl::string_view filename = filenameFromPath(field->file()->name());
+#endif
     // Allow runtime to be null both to not crash if this is called before server initialization,
     // and so proto validation works in context where runtime singleton is not set up (e.g.
     // standalone config validation utilities)
@@ -200,8 +357,8 @@ void MessageUtil::checkForDeprecation(const Protobuf::Message& message, Runtime:
       } else {
         const char fatal_error[] =
             " If continued use of this field is absolutely necessary, see "
-            "https://www.envoyproxy.io/docs/envoy/latest/configuration/runtime"
-            "#using-runtime-overrides-for-deprecated-features for how to apply a temporary and"
+            "https://www.envoyproxy.io/docs/envoy/latest/configuration/operations/runtime"
+            "#using-runtime-overrides-for-deprecated-features for how to apply a temporary and "
             "highly discouraged override.";
         throw ProtoValidationException(err + fatal_error, message);
       }
@@ -212,10 +369,12 @@ void MessageUtil::checkForDeprecation(const Protobuf::Message& message, Runtime:
       if (field->is_repeated()) {
         const int size = reflection->FieldSize(message, field);
         for (int j = 0; j < size; ++j) {
-          checkForDeprecation(reflection->GetRepeatedMessage(message, field, j), runtime);
+          checkForUnexpectedFields(reflection->GetRepeatedMessage(message, field, j),
+                                   validation_visitor, runtime);
         }
       } else {
-        checkForDeprecation(reflection->GetMessage(message, field), runtime);
+        checkForUnexpectedFields(reflection->GetMessage(message, field), validation_visitor,
+                                 runtime);
       }
     }
   }
@@ -225,7 +384,20 @@ std::string MessageUtil::getYamlStringFromMessage(const Protobuf::Message& messa
                                                   const bool block_print,
                                                   const bool always_print_primitive_fields) {
   std::string json = getJsonStringFromMessage(message, false, always_print_primitive_fields);
-  auto node = YAML::Load(json);
+  YAML::Node node;
+  try {
+    node = YAML::Load(json);
+  } catch (YAML::ParserException& e) {
+    throw EnvoyException(e.what());
+  } catch (YAML::BadConversion& e) {
+    throw EnvoyException(e.what());
+  } catch (std::exception& e) {
+    // There is a potentially wide space of exceptions thrown by the YAML parser,
+    // and enumerating them all may be difficult. Envoy doesn't work well with
+    // unhandled exceptions, so we capture them and record the exception name in
+    // the Envoy Exception text.
+    throw EnvoyException(fmt::format("Unexpected YAML exception: {}", +e.what()));
+  }
   if (block_print) {
     blockFormat(node);
   }
@@ -257,23 +429,13 @@ std::string MessageUtil::getJsonStringFromMessage(const Protobuf::Message& messa
   return json;
 }
 
-namespace {
-
-void jsonConvertInternal(const Protobuf::Message& source,
-                         ProtobufMessage::ValidationVisitor& validation_visitor,
-                         Protobuf::Message& dest) {
-  Protobuf::util::JsonPrintOptions json_options;
-  json_options.preserve_proto_field_names = true;
-  std::string json;
-  const auto status = Protobuf::util::MessageToJsonString(source, &json, json_options);
-  if (!status.ok()) {
-    throw EnvoyException(fmt::format("Unable to convert protobuf message to JSON string: {} {}",
-                                     status.ToString(), source.DebugString()));
+void MessageUtil::unpackTo(const ProtobufWkt::Any& any_message, Protobuf::Message& message) {
+  if (!any_message.UnpackTo(&message)) {
+    throw EnvoyException(fmt::format("Unable to unpack as {}: {}",
+                                     message.GetDescriptor()->full_name(),
+                                     any_message.DebugString()));
   }
-  MessageUtil::loadFromJson(json, dest, validation_visitor);
 }
-
-} // namespace
 
 void MessageUtil::jsonConvert(const Protobuf::Message& source, ProtobufWkt::Struct& dest) {
   // Any proto3 message can be transformed to Struct, so there is no need to check for unknown
@@ -286,6 +448,10 @@ void MessageUtil::jsonConvert(const ProtobufWkt::Struct& source,
                               ProtobufMessage::ValidationVisitor& validation_visitor,
                               Protobuf::Message& dest) {
   jsonConvertInternal(source, validation_visitor, dest);
+}
+
+void MessageUtil::jsonConvertValue(const Protobuf::Message& source, ProtobufWkt::Value& dest) {
+  jsonConvertInternal(source, ProtobufMessage::getNullValidationVisitor(), dest);
 }
 
 ProtobufWkt::Struct MessageUtil::keyValueStruct(const std::string& key, const std::string& value) {
@@ -336,6 +502,22 @@ std::string MessageUtil::CodeEnumToString(ProtobufUtil::error::Code code) {
     return "DATA_LOSS";
   default:
     return "";
+  }
+}
+
+ProtobufWkt::Value ValueUtil::loadFromYaml(const std::string& yaml) {
+  try {
+    return parseYamlNode(YAML::Load(yaml));
+  } catch (YAML::ParserException& e) {
+    throw EnvoyException(e.what());
+  } catch (YAML::BadConversion& e) {
+    throw EnvoyException(e.what());
+  } catch (std::exception& e) {
+    // There is a potentially wide space of exceptions thrown by the YAML parser,
+    // and enumerating them all may be difficult. Envoy doesn't work well with
+    // unhandled exceptions, so we capture them and record the exception name in
+    // the Envoy Exception text.
+    throw EnvoyException(fmt::format("Unexpected YAML exception: {}", +e.what()));
   }
 }
 
@@ -433,6 +615,14 @@ void TimestampUtil::systemClockToTimestamp(const SystemTime system_clock_time,
       std::chrono::time_point_cast<std::chrono::milliseconds>(system_clock_time)
           .time_since_epoch()
           .count()));
+}
+
+absl::string_view TypeUtil::typeUrlToDescriptorFullName(absl::string_view type_url) {
+  const size_t pos = type_url.rfind('/');
+  if (pos != absl::string_view::npos) {
+    type_url = type_url.substr(pos + 1);
+  }
+  return type_url;
 }
 
 } // namespace Envoy

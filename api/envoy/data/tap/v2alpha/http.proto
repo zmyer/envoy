@@ -2,9 +2,9 @@ syntax = "proto3";
 
 package envoy.data.tap.v2alpha;
 
+option java_package = "io.envoyproxy.envoy.data.tap.v2alpha";
 option java_outer_classname = "HttpProto";
 option java_multiple_files = true;
-option java_package = "io.envoyproxy.envoy.data.tap.v2alpha";
 
 import "envoy/api/v2/core/base.proto";
 import "envoy/data/tap/v2alpha/common.proto";
@@ -33,6 +33,7 @@ message HttpBufferedTrace {
 }
 
 // A streamed HTTP trace segment. Multiple segments make up a full trace.
+// [#next-free-field: 8]
 message HttpStreamedTraceSegment {
   // Trace ID unique to the originating Envoy only. Trace IDs can repeat and should not be used
   // for long term stable uniqueness.

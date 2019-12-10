@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <limits>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -30,10 +31,30 @@ class RandomGenerator {
 public:
   virtual ~RandomGenerator() = default;
 
+  using result_type = uint64_t; // NOLINT(readability-identifier-naming)
+
   /**
    * @return uint64_t a new random number.
    */
-  virtual uint64_t random() PURE;
+  virtual result_type random() PURE;
+
+  /*
+   * @return the smallest value that `operator()` may return. The value is
+   * strictly less than `max()`.
+   */
+  constexpr static result_type min() noexcept { return std::numeric_limits<result_type>::min(); };
+
+  /*
+   * @return the largest value that `operator()` may return. The value is
+   * strictly greater than `min()`.
+   */
+  constexpr static result_type max() noexcept { return std::numeric_limits<result_type>::max(); };
+
+  /*
+   * @return a value in the closed interval `[min(), max()]`. Has amortized
+   * constant complexity.
+   */
+  result_type operator()() { return result_type(random()); };
 
   /**
    * @return std::string containing uuid4 of 36 char length.
@@ -54,6 +75,7 @@ public:
   struct Entry {
     std::string raw_string_value_;
     absl::optional<uint64_t> uint_value_;
+    absl::optional<double> double_value_;
     absl::optional<envoy::type::FractionalPercent> fractional_percent_value_;
     absl::optional<bool> bool_value_;
   };
@@ -186,13 +208,32 @@ public:
   virtual const std::string& get(const std::string& key) const PURE;
 
   /**
-   * Fetch an integer runtime key.
+   * Fetch an integer runtime key. Runtime keys larger than ~2^53 may not be accurately converted
+   * into integers and will return default_value.
    * @param key supplies the key to fetch.
    * @param default_value supplies the value to return if the key does not exist or it does not
    *        contain an integer.
    * @return uint64_t the runtime value or the default value.
    */
   virtual uint64_t getInteger(const std::string& key, uint64_t default_value) const PURE;
+
+  /**
+   * Fetch a double runtime key.
+   * @param key supplies the key to fetch.
+   * @param default_value supplies the value to return if the key does not exist or it does not
+   *        contain a double.
+   * @return double the runtime value or the default value.
+   */
+  virtual double getDouble(const std::string& key, double default_value) const PURE;
+
+  /**
+   * Fetch a boolean runtime key.
+   * @param key supplies the key to fetch.
+   * @param default_value supplies the value to return if the key does not exist or it does not
+   *        contain a boolean.
+   * @return bool the runtime value or the default value.
+   */
+  virtual bool getBoolean(absl::string_view key, bool default_value) const PURE;
 
   /**
    * Fetch the OverrideLayers that provide values in this snapshot. Layers are ordered from bottom
@@ -220,11 +261,17 @@ public:
   virtual void initialize(Upstream::ClusterManager& cm) PURE;
 
   /**
-   * @return Snapshot& the current snapshot. This reference is safe to use for the duration of
+   * @return const Snapshot& the current snapshot. This reference is safe to use for the duration of
    *         the calling routine, but may be overwritten on a future event loop cycle so should be
-   *         fetched again when needed.
+   *         fetched again when needed. This may only be called from worker threads.
    */
-  virtual Snapshot& snapshot() PURE;
+  virtual const Snapshot& snapshot() PURE;
+
+  /**
+   * @return shared_ptr<const Snapshot> the current snapshot. This function may safely be called
+   *         from non-worker threads.
+   */
+  virtual std::shared_ptr<const Snapshot> threadsafeSnapshot() PURE;
 
   /**
    * Merge the given map of key-value pairs into the runtime's state. To remove a previous merge for

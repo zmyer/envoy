@@ -46,7 +46,9 @@ static inline bool validHeaderString(absl::string_view s) {
  */
 class LowerCaseString {
 public:
-  LowerCaseString(LowerCaseString&& rhs) : string_(std::move(rhs.string_)) { ASSERT(valid()); }
+  LowerCaseString(LowerCaseString&& rhs) noexcept : string_(std::move(rhs.string_)) {
+    ASSERT(valid());
+  }
   LowerCaseString(const LowerCaseString& rhs) : string_(rhs.string_) { ASSERT(valid()); }
   explicit LowerCaseString(const std::string& new_string) : string_(new_string) {
     ASSERT(valid());
@@ -111,9 +113,9 @@ public:
    * @param ref_value MUST point to data that will live beyond the lifetime of any request/response
    *        using the string (since a codec may optimize for zero copy).
    */
-  explicit HeaderString(const std::string& ref_value);
+  explicit HeaderString(absl::string_view ref_value);
 
-  HeaderString(HeaderString&& move_value);
+  HeaderString(HeaderString&& move_value) noexcept;
   ~HeaderString();
 
   /**
@@ -167,7 +169,7 @@ public:
    * @param ref_value MUST point to data that will live beyond the lifetime of any request/response
    *        using the string (since a codec may optimize for zero copy).
    */
-  void setReference(const std::string& ref_value);
+  void setReference(absl::string_view ref_value);
 
   /**
    * @return the size of the string, not including the null terminator.
@@ -179,9 +181,13 @@ public:
    */
   Type type() const { return type_; }
 
-  bool operator==(const char* rhs) const { return getStringView() == absl::string_view(rhs); }
+  bool operator==(const char* rhs) const {
+    return getStringView() == absl::NullSafeStringView(rhs);
+  }
   bool operator==(absl::string_view rhs) const { return getStringView() == rhs; }
-  bool operator!=(const char* rhs) const { return getStringView() != absl::string_view(rhs); }
+  bool operator!=(const char* rhs) const {
+    return getStringView() != absl::NullSafeStringView(rhs);
+  }
   bool operator!=(absl::string_view rhs) const { return getStringView() != rhs; }
 
 private:
@@ -217,13 +223,6 @@ public:
    * @return the header key.
    */
   virtual const HeaderString& key() const PURE;
-
-  /**
-   * Set the header value by copying data into it (deprecated, use absl::string_view variant
-   * instead).
-   * TODO(htuch): Cleanup deprecated call sites.
-   */
-  virtual void value(const char* value, uint32_t size) PURE;
 
   /**
    * Set the header value by copying data into it.
@@ -298,6 +297,7 @@ private:
   HEADER_FUNC(EnvoyRetryOn)                                                                        \
   HEADER_FUNC(EnvoyRetryGrpcOn)                                                                    \
   HEADER_FUNC(EnvoyRetriableStatusCodes)                                                           \
+  HEADER_FUNC(EnvoyRetriableHeaderNames)                                                           \
   HEADER_FUNC(EnvoyUpstreamAltStatName)                                                            \
   HEADER_FUNC(EnvoyUpstreamCanary)                                                                 \
   HEADER_FUNC(EnvoyUpstreamHealthCheckedCluster)                                                   \
@@ -338,17 +338,26 @@ private:
   HEADER_FUNC(Via)
 
 /**
- * The following functions are defined for each inline header above. E.g., for ContentLength we
- * have:
+ * The following functions are defined for each inline header above.
+
+ * E.g., for path we have:
+ * Path() -> returns the header entry if it exists or nullptr.
+ * appendPath(path, "/") -> appends the string path with delimiter "/" to the header value.
+ * setReferencePath(PATH) -> sets header value to reference string PATH.
+ * setPath(path_string) -> sets the header value to the string path_string by copying the data.
+ * removePath() -> removes the header if it exists.
  *
- * ContentLength() -> returns the header entry if it exists or nullptr.
- * insertContentLength() -> inserts the header if it does not exist, and returns a reference to it.
- * removeContentLength() -> removes the header if it exists.
+ * For inline headers that use integers, we have:
+ * setContentLength(5) -> sets the header value to the integer 5.
+ *
+ * TODO(asraa): Remove the integer set for inline headers that do not take integer values.
  */
 #define DEFINE_INLINE_HEADER(name)                                                                 \
   virtual const HeaderEntry* name() const PURE;                                                    \
-  virtual HeaderEntry* name() PURE;                                                                \
-  virtual HeaderEntry& insert##name() PURE;                                                        \
+  virtual void append##name(absl::string_view data, absl::string_view delimiter) PURE;             \
+  virtual void setReference##name(absl::string_view value) PURE;                                   \
+  virtual void set##name(absl::string_view value) PURE;                                            \
+  virtual void set##name(uint64_t value) PURE;                                                     \
   virtual void remove##name() PURE;
 
 /**
@@ -373,7 +382,7 @@ public:
    * @param key specifies the name of the header to add; it WILL NOT be copied.
    * @param value specifies the value of the header to add; it WILL NOT be copied.
    */
-  virtual void addReference(const LowerCaseString& key, const std::string& value) PURE;
+  virtual void addReference(const LowerCaseString& key, absl::string_view value) PURE;
 
   /**
    * Add a header with a reference key to the map. The key MUST point to data that will live beyond
@@ -401,7 +410,7 @@ public:
    * @param key specifies the name of the header to add; it WILL NOT be copied.
    * @param value specifies the value of the header to add; it WILL be copied.
    */
-  virtual void addReferenceKey(const LowerCaseString& key, const std::string& value) PURE;
+  virtual void addReferenceKey(const LowerCaseString& key, absl::string_view value) PURE;
 
   /**
    * Add a header by copying both the header key and the value.
@@ -425,7 +434,20 @@ public:
    * @param key specifies the name of the header to add; it WILL be copied.
    * @param value specifies the value of the header to add; it WILL be copied.
    */
-  virtual void addCopy(const LowerCaseString& key, const std::string& value) PURE;
+  virtual void addCopy(const LowerCaseString& key, absl::string_view value) PURE;
+
+  /**
+   * Appends data to header. If header already has a value, the string "," is added between the
+   * existing value and data.
+   *
+   * @param key specifies the name of the header to append; it WILL be copied.
+   * @param value specifies the value of the header to add; it WILL be copied.
+   *
+   * Caution: This iterates over the HeaderMap to find the header to append. This will modify only
+   * the first occurrence of the header.
+   * TODO(asraa): Investigate whether necessary to append to all headers with the key.
+   */
+  virtual void appendCopy(const LowerCaseString& key, absl::string_view value) PURE;
 
   /**
    * Set a reference header in the map. Both key and value MUST point to data that will live beyond
@@ -438,7 +460,7 @@ public:
    * @param key specifies the name of the header to set; it WILL NOT be copied.
    * @param value specifies the value of the header to set; it WILL NOT be copied.
    */
-  virtual void setReference(const LowerCaseString& key, const std::string& value) PURE;
+  virtual void setReference(const LowerCaseString& key, absl::string_view value) PURE;
 
   /**
    * Set a header with a reference key in the map. The key MUST point to point to data that will
@@ -451,10 +473,26 @@ public:
    * @param key specifies the name of the header to set; it WILL NOT be copied.
    * @param value specifies the value of the header to set; it WILL be copied.
    */
-  virtual void setReferenceKey(const LowerCaseString& key, const std::string& value) PURE;
+  virtual void setReferenceKey(const LowerCaseString& key, absl::string_view value) PURE;
 
   /**
-   * @return uint64_t the approximate size of the header map in bytes.
+   * Replaces a header value by copying the value. Copies the key if the key does not exist.
+   *
+   * Calling setCopy multiple times for the same header will result in only the last header
+   * being present in the HeaderMap.
+   *
+   * @param key specifies the name of the header to set; it WILL be copied.
+   * @param value specifies the value of the header to set; it WILL be copied.
+   *
+   * Caution: This iterates over the HeaderMap to find the header to set. This will modify only the
+   * first occurrence of the header.
+   * TODO(asraa): Investigate whether necessary to set all headers with the key.
+   */
+  virtual void setCopy(const LowerCaseString& key, absl::string_view value) PURE;
+
+  /**
+   * @return uint64_t the size of the header map in bytes. This is the sum of the header keys and
+   * values and does not account for data structure overhead.
    */
   virtual uint64_t byteSize() const PURE;
 
@@ -464,7 +502,6 @@ public:
    * @return the header entry if it exists otherwise nullptr.
    */
   virtual const HeaderEntry* get(const LowerCaseString& key) const PURE;
-  virtual HeaderEntry* get(const LowerCaseString& key) PURE;
 
   // aliases to make iterate() and iterateReverse() callbacks easier to read
   enum class Iterate { Continue, Break };
@@ -504,6 +541,11 @@ public:
   virtual Lookup lookup(const LowerCaseString& key, const HeaderEntry** entry) const PURE;
 
   /**
+   * Clears the headers in the map.
+   */
+  virtual void clear() PURE;
+
+  /**
    * Remove all instances of a header by key.
    * @param key supplies the header key to remove.
    */
@@ -526,18 +568,22 @@ public:
   virtual bool empty() const PURE;
 
   /**
+   * Dump the header map to the ostream specified
+   *
+   * @param os the stream to dump state to
+   * @param indent_level the depth, for pretty-printing.
+   *
+   * This function is called on Envoy fatal errors so should avoid memory allocation where possible.
+   */
+  virtual void dumpState(std::ostream& os, int indent_level = 0) const PURE;
+
+  /**
    * Allow easy pretty-printing of the key/value pairs in HeaderMap
    * @param os supplies the ostream to print to.
    * @param headers the headers to print.
    */
   friend std::ostream& operator<<(std::ostream& os, const HeaderMap& headers) {
-    headers.iterate(
-        [](const HeaderEntry& header, void* context) -> HeaderMap::Iterate {
-          *static_cast<std::ostream*>(context) << "'" << header.key().getStringView() << "', '"
-                                               << header.value().getStringView() << "'\n";
-          return HeaderMap::Iterate::Continue;
-        },
-        &os);
+    headers.dumpState(os);
     return os;
   }
 };
@@ -548,6 +594,21 @@ using HeaderMapPtr = std::unique_ptr<HeaderMap>;
  * Convenient container type for storing Http::LowerCaseString and std::string key/value pairs.
  */
 using HeaderVector = std::vector<std::pair<LowerCaseString, std::string>>;
+
+/**
+ * An interface to be implemented by header matchers.
+ */
+class HeaderMatcher {
+public:
+  virtual ~HeaderMatcher() = default;
+
+  /*
+   * Check whether header matcher matches any headers in a given HeaderMap.
+   */
+  virtual bool matchesHeaders(const HeaderMap& headers) const PURE;
+};
+
+using HeaderMatcherSharedPtr = std::shared_ptr<HeaderMatcher>;
 
 } // namespace Http
 } // namespace Envoy

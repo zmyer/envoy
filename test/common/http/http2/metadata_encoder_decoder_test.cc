@@ -10,7 +10,9 @@
 
 // A global variable in nghttp2 to disable preface and initial settings for tests.
 // TODO(soya3129): Remove after issue https://github.com/nghttp2/nghttp2/issues/1246 is fixed.
+extern "C" {
 extern int nghttp2_enable_strict_preface;
+}
 
 namespace Envoy {
 namespace Http {
@@ -20,18 +22,18 @@ namespace {
 static const uint64_t STREAM_ID = 1;
 
 // The buffer stores data sent by encoder and received by decoder.
-typedef struct {
+struct TestBuffer {
   uint8_t buf[1024 * 1024] = {0};
   size_t length = 0;
-} TestBuffer;
+};
 
 // The application data structure passes to nghttp2 session.
-typedef struct {
+struct UserData {
   MetadataEncoder* encoder;
   MetadataDecoder* decoder;
   // Stores data sent by encoder and received by the decoder.
   TestBuffer* output_buffer;
-} UserData;
+};
 
 // Nghttp2 callback function for sending extension frame.
 static ssize_t pack_extension_callback(nghttp2_session* session, uint8_t* buf, size_t len,
@@ -202,7 +204,7 @@ TEST_F(MetadataEncoderDecoderTest, VerifyEncoderDecoderMultipleMetadataReachSize
   MetadataCallback cb = [](std::unique_ptr<MetadataMap>) -> void {};
   initialize(cb);
 
-  int result = 0;
+  ssize_t result = 0;
 
   for (int i = 0; i < 100; i++) {
     // Cleans up the output buffer.

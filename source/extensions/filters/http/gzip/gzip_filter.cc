@@ -103,7 +103,7 @@ uint64_t GzipFilterConfig::windowBitsUint(Protobuf::uint32 window_bits) {
 }
 
 GzipFilter::GzipFilter(const GzipFilterConfigSharedPtr& config)
-    : skip_compression_{true}, compressed_data_(), compressor_(), config_(config) {}
+    : skip_compression_{true}, config_(config) {}
 
 Http::FilterHeadersStatus GzipFilter::decodeHeaders(Http::HeaderMap& headers, bool) {
   if (config_->runtime().snapshot().featureEnabled("gzip.filter_enabled", 100) &&
@@ -126,7 +126,7 @@ Http::FilterHeadersStatus GzipFilter::encodeHeaders(Http::HeaderMap& headers, bo
     sanitizeEtagHeader(headers);
     insertVaryHeader(headers);
     headers.removeContentLength();
-    headers.insertContentEncoding().value(Http::Headers::get().ContentEncodingValues.Gzip);
+    headers.setReferenceContentEncoding(Http::Headers::get().ContentEncodingValues.Gzip);
     compressor_.init(config_->compressionLevel(), config_->compressionStrategy(),
                      config_->windowBits(), config_->memoryLevel());
     config_->stats().compressed_.inc();
@@ -284,10 +284,10 @@ void GzipFilter::insertVaryHeader(Http::HeaderMap& headers) {
       std::string new_header;
       absl::StrAppend(&new_header, vary->value().getStringView(), ", ",
                       Http::Headers::get().VaryValues.AcceptEncoding);
-      headers.insertVary().value(new_header);
+      headers.setVary(new_header);
     }
   } else {
-    headers.insertVary().value(Http::Headers::get().VaryValues.AcceptEncoding);
+    headers.setReferenceVary(Http::Headers::get().VaryValues.AcceptEncoding);
   }
 }
 

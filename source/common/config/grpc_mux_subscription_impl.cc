@@ -9,7 +9,7 @@
 namespace Envoy {
 namespace Config {
 
-GrpcMuxSubscriptionImpl::GrpcMuxSubscriptionImpl(GrpcMux& grpc_mux,
+GrpcMuxSubscriptionImpl::GrpcMuxSubscriptionImpl(GrpcMuxSharedPtr grpc_mux,
                                                  SubscriptionCallbacks& callbacks,
                                                  SubscriptionStats stats,
                                                  absl::string_view type_url,
@@ -22,25 +22,26 @@ GrpcMuxSubscriptionImpl::GrpcMuxSubscriptionImpl(GrpcMux& grpc_mux,
 void GrpcMuxSubscriptionImpl::start(const std::set<std::string>& resources) {
   if (init_fetch_timeout_.count() > 0) {
     init_fetch_timeout_timer_ = dispatcher_.createTimer([this]() -> void {
-      ENVOY_LOG(warn, "gRPC config: initial fetch timed out for {}", type_url_);
-      callbacks_.onConfigUpdateFailed(nullptr);
+      callbacks_.onConfigUpdateFailed(Envoy::Config::ConfigUpdateFailureReason::FetchTimedout,
+                                      nullptr);
     });
     init_fetch_timeout_timer_->enableTimer(init_fetch_timeout_);
   }
 
-  watch_ = grpc_mux_.subscribe(type_url_, resources, *this);
+  watch_ = grpc_mux_->subscribe(type_url_, resources, *this);
   // The attempt stat here is maintained for the purposes of having consistency between ADS and
   // gRPC/filesystem/REST Subscriptions. Since ADS is push based and muxed, the notion of an
   // "attempt" for a given xDS API combined by ADS is not really that meaningful.
   stats_.update_attempt_.inc();
 }
 
-void GrpcMuxSubscriptionImpl::updateResources(const std::set<std::string>& update_to_these_names) {
+void GrpcMuxSubscriptionImpl::updateResourceInterest(
+    const std::set<std::string>& update_to_these_names) {
   // First destroy the watch, so that this subscribe doesn't send a request for both the
   // previously watched resources and the new ones (we may have lost interest in some of the
   // previously watched ones).
   watch_.reset();
-  watch_ = grpc_mux_.subscribe(type_url_, update_to_these_names, *this);
+  watch_ = grpc_mux_->subscribe(type_url_, update_to_these_names, *this);
   stats_.update_attempt_.inc();
 }
 
@@ -61,18 +62,35 @@ void GrpcMuxSubscriptionImpl::onConfigUpdate(
             resources.size(), version_info);
 }
 
-void GrpcMuxSubscriptionImpl::onConfigUpdateFailed(const EnvoyException* e) {
-  disableInitFetchTimeoutTimer();
-  // TODO(htuch): Less fragile signal that this is failure vs. reject.
-  if (e == nullptr) {
+void GrpcMuxSubscriptionImpl::onConfigUpdateFailed(ConfigUpdateFailureReason reason,
+                                                   const EnvoyException* e) {
+  switch (reason) {
+  case Envoy::Config::ConfigUpdateFailureReason::ConnectionFailure:
     stats_.update_failure_.inc();
     ENVOY_LOG(debug, "gRPC update for {} failed", type_url_);
-  } else {
+    break;
+  case Envoy::Config::ConfigUpdateFailureReason::FetchTimedout:
+    stats_.init_fetch_timeout_.inc();
+    disableInitFetchTimeoutTimer();
+    ENVOY_LOG(warn, "gRPC config: initial fetch timed out for {}", type_url_);
+    break;
+  case Envoy::Config::ConfigUpdateFailureReason::UpdateRejected:
+    // We expect Envoy exception to be thrown when update is rejected.
+    ASSERT(e != nullptr);
+    disableInitFetchTimeoutTimer();
     stats_.update_rejected_.inc();
     ENVOY_LOG(warn, "gRPC config for {} rejected: {}", type_url_, e->what());
+    break;
   }
+
   stats_.update_attempt_.inc();
-  callbacks_.onConfigUpdateFailed(e);
+  if (reason == Envoy::Config::ConfigUpdateFailureReason::ConnectionFailure) {
+    // New gRPC stream will be established and send requests again.
+    // If init_fetch_timeout is non-zero, server will continue startup after it timeout
+    return;
+  }
+
+  callbacks_.onConfigUpdateFailed(reason, e);
 }
 
 std::string GrpcMuxSubscriptionImpl::resourceName(const ProtobufWkt::Any& resource) {

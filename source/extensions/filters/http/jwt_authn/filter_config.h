@@ -42,12 +42,10 @@ private:
 /**
  * All stats for the Jwt Authn filter. @see stats_macros.h
  */
-
-// clang-format off
 #define ALL_JWT_AUTHN_FILTER_STATS(COUNTER)                                                        \
   COUNTER(allowed)                                                                                 \
+  COUNTER(cors_preflight_bypassed)                                                                 \
   COUNTER(denied)
-// clang-format on
 
 /**
  * Wrapper struct for jwt_authn filter stats. @see stats_macros.h
@@ -59,7 +57,7 @@ struct JwtAuthnFilterStats {
 /**
  * The filter config object to hold config and relevant objects.
  */
-class FilterConfig : public Logger::Loggable<Logger::Id::config>, public AuthFactory {
+class FilterConfig : public Logger::Loggable<Logger::Id::jwt>, public AuthFactory {
 public:
   ~FilterConfig() override = default;
 
@@ -92,12 +90,6 @@ public:
   }
 
   JwtAuthnFilterStats& stats() { return stats_; }
-
-  // Get the Config.
-  const ::envoy::config::filter::http::jwt_authn::v2alpha::JwtAuthentication&
-  getProtoConfig() const {
-    return proto_config_;
-  }
 
   // Get per-thread cache object.
   ThreadLocalCache& getCache() const { return tls_->getTyped<ThreadLocalCache>(); }
@@ -135,6 +127,8 @@ public:
     return Authenticator::create(check_audience, provider, allow_failed, getCache().getJwksCache(),
                                  cm(), Common::JwksFetcher::create, timeSource());
   }
+
+  bool bypassCorsPreflightRequest() { return proto_config_.bypass_cors_preflight(); }
 
 private:
   JwtAuthnFilterStats generateStats(const std::string& prefix, Stats::Scope& scope) {

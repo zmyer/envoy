@@ -9,8 +9,6 @@
 
 #include "gtest/gtest.h"
 
-using testing::_;
-
 namespace Envoy {
 namespace Extensions {
 namespace NetworkFilters {
@@ -22,7 +20,7 @@ envoy::config::filter::network::thrift_proxy::v2alpha1::RouteConfiguration
 parseRouteConfigurationFromV2Yaml(const std::string& yaml) {
   envoy::config::filter::network::thrift_proxy::v2alpha1::RouteConfiguration route_config;
   TestUtility::loadFromYaml(yaml, route_config);
-  MessageUtil::validate(route_config);
+  TestUtility::validate(route_config);
   return route_config;
 }
 
@@ -339,7 +337,9 @@ routes:
       method_name: "method1"
       headers:
       - name: "x-version"
-        regex_match: "0.[5-9]"
+        safe_regex_match:
+          google_re2: {}
+          regex: "0.[5-9]"
     route:
       cluster: "cluster1"
 )EOF";
@@ -514,6 +514,44 @@ routes:
   metadata.headers().remove(Http::LowerCaseString("x-header-1"));
 
   metadata.headers().addCopy(Http::LowerCaseString("x-header-1"), "value:asdf");
+  route = matcher.route(metadata, 0);
+  EXPECT_NE(nullptr, route);
+  EXPECT_EQ("cluster1", route->routeEntry()->clusterName());
+}
+
+TEST(ThriftRouteMatcherTest, RouteByClusterHeader) {
+  const std::string yaml = R"EOF(
+name: config
+routes:
+  - match:
+      method_name: ""
+    route:
+      cluster_header: "x-cluster"
+)EOF";
+
+  envoy::config::filter::network::thrift_proxy::v2alpha1::RouteConfiguration config =
+      parseRouteConfigurationFromV2Yaml(yaml);
+
+  RouteMatcher matcher(config);
+  MessageMetadata metadata;
+  RouteConstSharedPtr route;
+
+  // No method nor header.
+  route = matcher.route(metadata, 0);
+  EXPECT_EQ(nullptr, route);
+
+  // Method, but no header.
+  metadata.setMethodName("method1");
+  route = matcher.route(metadata, 0);
+  EXPECT_EQ(nullptr, route);
+
+  // The wrong header is present.
+  metadata.headers().addCopy(Http::LowerCaseString("x-something"), "cluster1");
+  route = matcher.route(metadata, 0);
+  EXPECT_EQ(nullptr, route);
+
+  // Header is present.
+  metadata.headers().addCopy(Http::LowerCaseString("x-cluster"), "cluster1");
   route = matcher.route(metadata, 0);
   EXPECT_NE(nullptr, route);
   EXPECT_EQ("cluster1", route->routeEntry()->clusterName());

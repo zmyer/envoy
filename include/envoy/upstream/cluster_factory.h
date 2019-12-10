@@ -98,8 +98,6 @@ public:
   virtual Ssl::ContextManager& sslContextManager() PURE;
 
   /**
-   * TODO(hyang): Remove this and only expose the scope, this would require refactoring
-   * TransportSocketFactoryContext
    * @return the server-wide stats store.
    */
   virtual Stats::Store& stats() PURE;
@@ -144,6 +142,13 @@ public:
    * @return std::string the identifying name for a particular implementation of a cluster factory.
    */
   virtual std::string name() PURE;
+
+  /**
+   * @return std::string the identifying category name for objects
+   * created by this factory. Used for automatic registration with
+   * FactoryCategoryRegistry.
+   */
+  static std::string category() { return "clusters"; }
 };
 
 } // namespace Upstream

@@ -27,7 +27,7 @@ namespace {
 class LoadBalancerTestBase : public testing::TestWithParam<bool> {
 protected:
   // Run all tests against both priority 0 and priority 1 host sets, to ensure
-  // all the load balancers have equivalent functonality for failover host sets.
+  // all the load balancers have equivalent functionality for failover host sets.
   MockHostSet& hostSet() { return GetParam() ? host_set_ : failover_host_set_; }
 
   LoadBalancerTestBase() : stats_(ClusterInfoImpl::generateStats(stats_store_)) {
@@ -539,6 +539,39 @@ TEST_P(FailoverTest, PriorityUpdatesWithLocalHostSet) {
   EXPECT_EQ(tertiary_host_set_.hosts_[0], lb_->chooseHost(nullptr));
 }
 
+// Test that extending the priority set with an existing LB causes the correct updates when the
+// cluster is configured to disable on panic.
+TEST_P(FailoverTest, PriorityUpdatesWithLocalHostSetDisableOnPanic) {
+  host_set_.hosts_ = {makeTestHost(info_, "tcp://127.0.0.1:80")};
+  failover_host_set_.hosts_ = {makeTestHost(info_, "tcp://127.0.0.1:81")};
+  common_config_.mutable_zone_aware_lb_config()->set_fail_traffic_on_panic(true);
+
+  init(false);
+  // With both the primary and failover hosts unhealthy, we should select no host.
+  EXPECT_EQ(nullptr, lb_->chooseHost(nullptr));
+
+  // Update the priority set with a new priority level P=2 and ensure the host
+  // is chosen
+  MockHostSet& tertiary_host_set_ = *priority_set_.getMockHostSet(2);
+  HostVectorSharedPtr hosts(new HostVector({makeTestHost(info_, "tcp://127.0.0.1:82")}));
+  tertiary_host_set_.hosts_ = *hosts;
+  tertiary_host_set_.healthy_hosts_ = tertiary_host_set_.hosts_;
+  HostVector add_hosts;
+  add_hosts.push_back(tertiary_host_set_.hosts_[0]);
+  tertiary_host_set_.runCallbacks(add_hosts, {});
+  EXPECT_EQ(tertiary_host_set_.hosts_[0], lb_->chooseHost(nullptr));
+
+  // Now add a healthy host in P=0 and make sure it is immediately selected.
+  host_set_.healthy_hosts_ = host_set_.hosts_;
+  host_set_.runCallbacks(add_hosts, {});
+  EXPECT_EQ(host_set_.hosts_[0], lb_->chooseHost(nullptr));
+
+  // Remove the healthy host and ensure we fail back over to tertiary_host_set_
+  host_set_.healthy_hosts_ = {};
+  host_set_.runCallbacks({}, {});
+  EXPECT_EQ(tertiary_host_set_.hosts_[0], lb_->chooseHost(nullptr));
+}
+
 // Test extending the priority set.
 TEST_P(FailoverTest, ExtendPrioritiesUpdatingPrioritySet) {
   host_set_.hosts_ = {makeTestHost(info_, "tcp://127.0.0.1:80")};
@@ -827,6 +860,46 @@ TEST_P(RoundRobinLoadBalancerTest, MaxUnhealthyPanic) {
   EXPECT_EQ(hostSet().healthy_hosts_[1], lb_->chooseHost(nullptr));
 
   EXPECT_EQ(3UL, stats_.lb_healthy_panic_.value());
+}
+
+// Test that no hosts are selected when fail_traffic_on_panic is enabled.
+TEST_P(RoundRobinLoadBalancerTest, MaxUnhealthyPanicDisableOnPanic) {
+  hostSet().healthy_hosts_ = {makeTestHost(info_, "tcp://127.0.0.1:80"),
+                              makeTestHost(info_, "tcp://127.0.0.1:81")};
+  hostSet().hosts_ = {
+      makeTestHost(info_, "tcp://127.0.0.1:80"), makeTestHost(info_, "tcp://127.0.0.1:81"),
+      makeTestHost(info_, "tcp://127.0.0.1:82"), makeTestHost(info_, "tcp://127.0.0.1:83"),
+      makeTestHost(info_, "tcp://127.0.0.1:84"), makeTestHost(info_, "tcp://127.0.0.1:85")};
+
+  common_config_.mutable_zone_aware_lb_config()->set_fail_traffic_on_panic(true);
+
+  init(false);
+  EXPECT_EQ(nullptr, lb_->chooseHost(nullptr));
+
+  // Take the threshold back above the panic threshold.
+  hostSet().healthy_hosts_ = {
+      makeTestHost(info_, "tcp://127.0.0.1:80"), makeTestHost(info_, "tcp://127.0.0.1:81"),
+      makeTestHost(info_, "tcp://127.0.0.1:82"), makeTestHost(info_, "tcp://127.0.0.1:83")};
+  hostSet().runCallbacks({}, {});
+
+  EXPECT_EQ(hostSet().healthy_hosts_[0], lb_->chooseHost(nullptr));
+  EXPECT_EQ(hostSet().healthy_hosts_[1], lb_->chooseHost(nullptr));
+
+  EXPECT_EQ(1UL, stats_.lb_healthy_panic_.value());
+}
+
+// Ensure if the panic threshold is 0%, panic mode is disabled.
+TEST_P(RoundRobinLoadBalancerTest, DisablePanicMode) {
+  hostSet().healthy_hosts_ = {};
+  hostSet().hosts_ = {makeTestHost(info_, "tcp://127.0.0.1:80")};
+
+  common_config_.mutable_healthy_panic_threshold()->set_value(0);
+
+  init(false);
+  EXPECT_CALL(runtime_.snapshot_, getInteger("upstream.healthy_panic_threshold", 50))
+      .WillRepeatedly(Return(0));
+  EXPECT_EQ(nullptr, lb_->chooseHost(nullptr));
+  EXPECT_EQ(0UL, stats_.lb_healthy_panic_.value());
 }
 
 // Test of host set selection with host filter
@@ -1144,6 +1217,7 @@ TEST_P(RoundRobinLoadBalancerTest, NoZoneAwareRoutingLocalEmpty) {
   HostsPerLocalitySharedPtr local_hosts_per_locality = makeHostsPerLocality({{}, {}});
 
   EXPECT_CALL(runtime_.snapshot_, getInteger("upstream.healthy_panic_threshold", 50))
+      .WillOnce(Return(50))
       .WillOnce(Return(50));
   EXPECT_CALL(runtime_.snapshot_, featureEnabled("upstream.zone_routing.enabled", 100))
       .WillOnce(Return(true));
@@ -1162,6 +1236,41 @@ TEST_P(RoundRobinLoadBalancerTest, NoZoneAwareRoutingLocalEmpty) {
   EXPECT_EQ(1U, stats_.lb_local_cluster_not_ok_.value());
 }
 
+TEST_P(RoundRobinLoadBalancerTest, NoZoneAwareRoutingLocalEmptyFailTrafficOnPanic) {
+  common_config_.mutable_zone_aware_lb_config()->set_fail_traffic_on_panic(true);
+
+  if (&hostSet() == &failover_host_set_) { // P = 1 does not support zone-aware routing.
+    return;
+  }
+  HostVectorSharedPtr upstream_hosts(new HostVector(
+      {makeTestHost(info_, "tcp://127.0.0.1:80"), makeTestHost(info_, "tcp://127.0.0.1:81")}));
+  HostVectorSharedPtr local_hosts(new HostVector({}, {}));
+
+  HostsPerLocalitySharedPtr upstream_hosts_per_locality = makeHostsPerLocality(
+      {{makeTestHost(info_, "tcp://127.0.0.1:80")}, {makeTestHost(info_, "tcp://127.0.0.1:81")}});
+  HostsPerLocalitySharedPtr local_hosts_per_locality = makeHostsPerLocality({{}, {}});
+
+  EXPECT_CALL(runtime_.snapshot_, getInteger("upstream.healthy_panic_threshold", 50))
+      .WillOnce(Return(50))
+      .WillOnce(Return(50));
+  EXPECT_CALL(runtime_.snapshot_, featureEnabled("upstream.zone_routing.enabled", 100))
+      .WillOnce(Return(true));
+  EXPECT_CALL(runtime_.snapshot_, getInteger("upstream.zone_routing.min_cluster_size", 6))
+      .WillOnce(Return(1));
+
+  hostSet().healthy_hosts_ = *upstream_hosts;
+  hostSet().hosts_ = *upstream_hosts;
+  hostSet().healthy_hosts_per_locality_ = upstream_hosts_per_locality;
+  init(true);
+  updateHosts(local_hosts, local_hosts_per_locality);
+
+  // Local cluster is not OK, we'll do regular routing (and select no host, since we're in global
+  // panic).
+  EXPECT_EQ(nullptr, lb_->chooseHost(nullptr));
+  EXPECT_EQ(0U, stats_.lb_healthy_panic_.value());
+  EXPECT_EQ(1U, stats_.lb_local_cluster_not_ok_.value());
+}
+
 // Validate that if we have healthy host lists >= 2, but there is no local
 // locality included, that we skip zone aware routing and fallback.
 TEST_P(RoundRobinLoadBalancerTest, NoZoneAwareRoutingNoLocalLocality) {
@@ -1175,7 +1284,7 @@ TEST_P(RoundRobinLoadBalancerTest, NoZoneAwareRoutingNoLocalLocality) {
   HostsPerLocalitySharedPtr upstream_hosts_per_locality = makeHostsPerLocality(
       {{makeTestHost(info_, "tcp://127.0.0.1:80")}, {makeTestHost(info_, "tcp://127.0.0.1:81")}},
       true);
-  HostsPerLocalitySharedPtr local_hosts_per_locality = upstream_hosts_per_locality;
+  const HostsPerLocalitySharedPtr& local_hosts_per_locality = upstream_hosts_per_locality;
 
   hostSet().healthy_hosts_ = *upstream_hosts;
   hostSet().hosts_ = *upstream_hosts;
@@ -1214,7 +1323,7 @@ TEST_P(LeastRequestLoadBalancerTest, SingleHost) {
 
   // Host weight is 100.
   {
-    EXPECT_CALL(random_, random()).WillOnce(Return(0));
+    EXPECT_CALL(random_, random()).WillOnce(Return(0)).WillOnce(Return(2)).WillOnce(Return(3));
     stats_.max_host_weight_.set(100UL);
     EXPECT_EQ(hostSet().healthy_hosts_[0], lb_.chooseHost(nullptr));
   }
@@ -1222,7 +1331,7 @@ TEST_P(LeastRequestLoadBalancerTest, SingleHost) {
   HostVector empty;
   {
     hostSet().runCallbacks(empty, empty);
-    EXPECT_CALL(random_, random()).WillOnce(Return(0));
+    EXPECT_CALL(random_, random()).WillOnce(Return(0)).WillOnce(Return(2)).WillOnce(Return(3));
     EXPECT_EQ(hostSet().healthy_hosts_[0], lb_.chooseHost(nullptr));
   }
 
@@ -1373,20 +1482,40 @@ INSTANTIATE_TEST_SUITE_P(PrimaryOrFailover, LeastRequestLoadBalancerTest,
 
 class RandomLoadBalancerTest : public LoadBalancerTestBase {
 public:
-  RandomLoadBalancer lb_{priority_set_, nullptr, stats_, runtime_, random_, common_config_};
+  void init() {
+    lb_.reset(
+        new RandomLoadBalancer(priority_set_, nullptr, stats_, runtime_, random_, common_config_));
+  }
+  std::shared_ptr<LoadBalancer> lb_;
 };
 
-TEST_P(RandomLoadBalancerTest, NoHosts) { EXPECT_EQ(nullptr, lb_.chooseHost(nullptr)); }
+TEST_P(RandomLoadBalancerTest, NoHosts) {
+  init();
+  EXPECT_EQ(nullptr, lb_->chooseHost(nullptr));
+}
 
 TEST_P(RandomLoadBalancerTest, Normal) {
+  init();
+
   hostSet().healthy_hosts_ = {makeTestHost(info_, "tcp://127.0.0.1:80"),
                               makeTestHost(info_, "tcp://127.0.0.1:81")};
   hostSet().hosts_ = hostSet().healthy_hosts_;
   hostSet().runCallbacks({}, {}); // Trigger callbacks. The added/removed lists are not relevant.
   EXPECT_CALL(random_, random()).WillOnce(Return(0)).WillOnce(Return(2));
-  EXPECT_EQ(hostSet().healthy_hosts_[0], lb_.chooseHost(nullptr));
+  EXPECT_EQ(hostSet().healthy_hosts_[0], lb_->chooseHost(nullptr));
   EXPECT_CALL(random_, random()).WillOnce(Return(0)).WillOnce(Return(3));
-  EXPECT_EQ(hostSet().healthy_hosts_[1], lb_.chooseHost(nullptr));
+  EXPECT_EQ(hostSet().healthy_hosts_[1], lb_->chooseHost(nullptr));
+}
+
+TEST_P(RandomLoadBalancerTest, FailClusterOnPanic) {
+  common_config_.mutable_zone_aware_lb_config()->set_fail_traffic_on_panic(true);
+  init();
+
+  hostSet().healthy_hosts_ = {};
+  hostSet().hosts_ = {makeTestHost(info_, "tcp://127.0.0.1:80"),
+                      makeTestHost(info_, "tcp://127.0.0.1:81")};
+  hostSet().runCallbacks({}, {}); // Trigger callbacks. The added/removed lists are not relevant.
+  EXPECT_EQ(nullptr, lb_->chooseHost(nullptr));
 }
 
 INSTANTIATE_TEST_SUITE_P(PrimaryOrFailover, RandomLoadBalancerTest, ::testing::Values(true, false));
@@ -1424,14 +1553,106 @@ TEST(LoadBalancerSubsetInfoImplTest, SubsetConfig) {
   EXPECT_EQ(subset_info.defaultSubset().fields().at("key").string_value(),
             std::string("the value"));
   EXPECT_EQ(subset_info.subsetSelectors().size(), 2);
-  EXPECT_EQ(subset_info.subsetSelectors()[0]->selector_keys_,
+  EXPECT_EQ(subset_info.subsetSelectors()[0]->selectorKeys(),
             std::set<std::string>({"selector_key1"}));
-  EXPECT_EQ(subset_info.subsetSelectors()[0]->fallback_policy_,
+  EXPECT_EQ(subset_info.subsetSelectors()[0]->fallbackPolicy(),
             envoy::api::v2::Cluster::LbSubsetConfig::LbSubsetSelector::NOT_DEFINED);
-  EXPECT_EQ(subset_info.subsetSelectors()[1]->selector_keys_,
+  EXPECT_EQ(subset_info.subsetSelectors()[1]->selectorKeys(),
             std::set<std::string>({"selector_key2"}));
-  EXPECT_EQ(subset_info.subsetSelectors()[1]->fallback_policy_,
+  EXPECT_EQ(subset_info.subsetSelectors()[1]->fallbackPolicy(),
             envoy::api::v2::Cluster::LbSubsetConfig::LbSubsetSelector::ANY_ENDPOINT);
+}
+
+TEST(LoadBalancerSubsetInfoImplTest, KeysSubsetFallbackValid) {
+  auto subset_config = envoy::api::v2::Cluster::LbSubsetConfig::default_instance();
+  auto selector1 = subset_config.mutable_subset_selectors()->Add();
+  selector1->add_keys("key1");
+  selector1->add_keys("key2");
+  selector1->add_keys("key3");
+  selector1->set_fallback_policy(
+      envoy::api::v2::Cluster::LbSubsetConfig::LbSubsetSelector::KEYS_SUBSET);
+  selector1->add_fallback_keys_subset("key1");
+  selector1->add_fallback_keys_subset("key3");
+
+  auto selector2 = subset_config.mutable_subset_selectors()->Add();
+  selector2->add_keys("key1");
+  selector2->add_keys("key3");
+  selector2->add_keys("key4");
+  selector2->set_fallback_policy(
+      envoy::api::v2::Cluster::LbSubsetConfig::LbSubsetSelector::KEYS_SUBSET);
+  selector2->add_fallback_keys_subset("key4");
+
+  auto subset_info = LoadBalancerSubsetInfoImpl(subset_config);
+
+  EXPECT_EQ(subset_info.subsetSelectors()[0]->fallbackPolicy(),
+            envoy::api::v2::Cluster::LbSubsetConfig::LbSubsetSelector::KEYS_SUBSET);
+  EXPECT_EQ(subset_info.subsetSelectors()[0]->selectorKeys(),
+            std::set<std::string>({"key1", "key2", "key3"}));
+  EXPECT_EQ(subset_info.subsetSelectors()[0]->fallbackKeysSubset(),
+            std::set<std::string>({"key1", "key3"}));
+
+  EXPECT_EQ(subset_info.subsetSelectors()[1]->fallbackPolicy(),
+            envoy::api::v2::Cluster::LbSubsetConfig::LbSubsetSelector::KEYS_SUBSET);
+  EXPECT_EQ(subset_info.subsetSelectors()[1]->selectorKeys(),
+            std::set<std::string>({"key1", "key3", "key4"}));
+  EXPECT_EQ(subset_info.subsetSelectors()[1]->fallbackKeysSubset(),
+            std::set<std::string>({"key4"}));
+}
+
+TEST(LoadBalancerSubsetInfoImplTest, KeysSubsetForOtherPolicyInvalid) {
+  auto subset_config = envoy::api::v2::Cluster::LbSubsetConfig::default_instance();
+  auto selector = subset_config.mutable_subset_selectors()->Add();
+
+  selector->add_keys("key1");
+  selector->add_keys("key2");
+  selector->set_fallback_policy(
+      envoy::api::v2::Cluster::LbSubsetConfig::LbSubsetSelector::ANY_ENDPOINT);
+  selector->add_fallback_keys_subset("key1");
+
+  EXPECT_THROW_WITH_MESSAGE(LoadBalancerSubsetInfoImpl{subset_config}, EnvoyException,
+                            "fallback_keys_subset can be set only for KEYS_SUBSET fallback_policy");
+}
+
+TEST(LoadBalancerSubsetInfoImplTest, KeysSubsetNotASubsetInvalid) {
+  auto subset_config = envoy::api::v2::Cluster::LbSubsetConfig::default_instance();
+  auto selector = subset_config.mutable_subset_selectors()->Add();
+
+  selector->add_keys("key1");
+  selector->add_keys("key2");
+  selector->set_fallback_policy(
+      envoy::api::v2::Cluster::LbSubsetConfig::LbSubsetSelector::KEYS_SUBSET);
+  selector->add_fallback_keys_subset("key3");
+
+  EXPECT_THROW_WITH_MESSAGE(LoadBalancerSubsetInfoImpl{subset_config}, EnvoyException,
+                            "fallback_keys_subset must be a subset of selector keys");
+}
+
+TEST(LoadBalancerSubsetInfoImplTest, KeysSubsetEmptyInvalid) {
+  auto subset_config = envoy::api::v2::Cluster::LbSubsetConfig::default_instance();
+  auto selector = subset_config.mutable_subset_selectors()->Add();
+
+  selector->add_keys("key1");
+  selector->add_keys("key2");
+  selector->set_fallback_policy(
+      envoy::api::v2::Cluster::LbSubsetConfig::LbSubsetSelector::KEYS_SUBSET);
+
+  EXPECT_THROW_WITH_MESSAGE(LoadBalancerSubsetInfoImpl{subset_config}, EnvoyException,
+                            "fallback_keys_subset cannot be empty");
+}
+
+TEST(LoadBalancerSubsetInfoImplTest, KeysSubsetEqualKeysInvalid) {
+  auto subset_config = envoy::api::v2::Cluster::LbSubsetConfig::default_instance();
+  auto selector = subset_config.mutable_subset_selectors()->Add();
+
+  selector->add_keys("key1");
+  selector->add_keys("key2");
+  selector->set_fallback_policy(
+      envoy::api::v2::Cluster::LbSubsetConfig::LbSubsetSelector::KEYS_SUBSET);
+  selector->add_fallback_keys_subset("key2");
+  selector->add_fallback_keys_subset("key1");
+
+  EXPECT_THROW_WITH_MESSAGE(LoadBalancerSubsetInfoImpl{subset_config}, EnvoyException,
+                            "fallback_keys_subset cannot be equal to keys");
 }
 
 } // namespace

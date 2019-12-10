@@ -2,9 +2,9 @@ syntax = "proto3";
 
 package envoy.admin.v2alpha;
 
+option java_package = "io.envoyproxy.envoy.admin.v2alpha";
 option java_outer_classname = "CertsProto";
 option java_multiple_files = true;
-option java_package = "io.envoyproxy.envoy.admin.v2alpha";
 
 import "google/protobuf/timestamp.proto";
 
@@ -19,7 +19,6 @@ message Certificates {
 }
 
 message Certificate {
-
   // Details of CA certificate.
   repeated CertificateDetails ca_cert = 1;
 
@@ -27,6 +26,7 @@ message Certificate {
   repeated CertificateDetails cert_chain = 2;
 }
 
+// [#next-free-field: 7]
 message CertificateDetails {
   // Path of the certificate.
   string path = 1;
@@ -48,10 +48,10 @@ message CertificateDetails {
 }
 
 message SubjectAlternateName {
-
   // Subject Alternate Name.
   oneof name {
     string dns = 1;
+
     string uri = 2;
   }
 }

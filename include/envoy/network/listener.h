@@ -7,13 +7,49 @@
 #include "envoy/api/io_error.h"
 #include "envoy/common/exception.h"
 #include "envoy/network/connection.h"
+#include "envoy/network/connection_balancer.h"
 #include "envoy/network/listen_socket.h"
 #include "envoy/stats/scope.h"
 
 namespace Envoy {
 namespace Network {
 
-class UdpListenerFilterManager;
+class ActiveUdpListenerFactory;
+
+/**
+ * ListenSocketFactory is a member of ListenConfig to provide listen socket.
+ * Listeners created from the same ListenConfig instance have listening sockets
+ * provided by the same ListenSocketFactory instance.
+ */
+class ListenSocketFactory {
+public:
+  virtual ~ListenSocketFactory() = default;
+
+  /**
+   * Called during actual listener creation.
+   * @return the socket to be used for a certain listener, which might be shared
+   * with other listeners of the same config on other worker threads.
+   */
+  virtual SocketSharedPtr getListenSocket() PURE;
+
+  /**
+   * @return the type of the socket getListenSocket() returns.
+   */
+  virtual Address::SocketType socketType() const PURE;
+
+  /**
+   * @return the listening address of the socket getListenSocket() returns. Before getListenSocket()
+   * is called, the return value might has 0 as port number if the config doesn't specify it.
+   */
+  virtual const Address::InstanceConstSharedPtr& localAddress() const PURE;
+
+  /**
+   * @return the socket shared by worker threads if any; otherwise return null.
+   */
+  virtual absl::optional<std::reference_wrapper<Socket>> sharedSocket() const PURE;
+};
+
+using ListenSocketFactorySharedPtr = std::shared_ptr<ListenSocketFactory>;
 
 /**
  * A configuration for an individual listener.
@@ -35,11 +71,9 @@ public:
   virtual FilterChainFactory& filterChainFactory() PURE;
 
   /**
-   * @return Socket& the actual listen socket. The address of this socket may be
-   *         different from configured if for example the configured address binds to port zero.
+   * @return ListenSocketFactory& the factory to create listen socket.
    */
-  virtual Socket& socket() PURE;
-  virtual const Socket& socket() const PURE;
+  virtual ListenSocketFactory& listenSocketFactory() PURE;
 
   /**
    * @return bool specifies whether the listener should actually listen on the port.
@@ -57,17 +91,24 @@ public:
   virtual bool handOffRestoredDestinationConnections() const PURE;
 
   /**
-   * @return uint32_t providing a soft limit on size of the listener's new connection read and write
-   *         buffers.
+   * @return uint32_t providing a soft limit on size of the listener's new connection read and
+   * write buffers.
    */
   virtual uint32_t perConnectionBufferLimitBytes() const PURE;
 
   /**
    * @return std::chrono::milliseconds the time to wait for all listener filters to complete
    *         operation. If the timeout is reached, the accepted socket is closed without a
-   *         connection being created. 0 specifies a disabled timeout.
+   *         connection being created unless continueOnListenerFiltersTimeout() returns true.
+   *         0 specifies a disabled timeout.
    */
   virtual std::chrono::milliseconds listenerFiltersTimeout() const PURE;
+
+  /**
+   * @return bool whether the listener should try to create a connection when listener filters
+   *         time out.
+   */
+  virtual bool continueOnListenerFiltersTimeout() const PURE;
 
   /**
    * @return Stats::Scope& the stats scope to use for all listener specific stats.
@@ -83,6 +124,23 @@ public:
    * @return const std::string& the listener's name.
    */
   virtual const std::string& name() const PURE;
+
+  /**
+   * @return factory pointer if listening on UDP socket, otherwise return
+   * nullptr.
+   */
+  virtual const ActiveUdpListenerFactory* udpListenerFactory() PURE;
+
+  /**
+   * @return traffic direction of the listener.
+   */
+  virtual envoy::api::v2::core::TrafficDirection direction() const PURE;
+
+  /**
+   * @return the connection balancer for this listener. All listeners have a connection balancer,
+   *         though the implementation may be a NOP balancer.
+   */
+  virtual ConnectionBalancer& connectionBalancer() PURE;
 };
 
 /**
@@ -95,45 +153,43 @@ public:
   /**
    * Called when a new connection is accepted.
    * @param socket supplies the socket that is moved into the callee.
-   * @param hand_off_restored_destination_connections is true when the socket was first accepted by
-   * another listener and is redirected to a new listener. The recipient should not redirect the
-   * socket any further.
    */
-  virtual void onAccept(ConnectionSocketPtr&& socket,
-                        bool hand_off_restored_destination_connections = true) PURE;
-
-  /**
-   * Called when a new connection is accepted.
-   * @param new_connection supplies the new connection that is moved into the callee.
-   */
-  virtual void onNewConnection(ConnectionPtr&& new_connection) PURE;
+  virtual void onAccept(ConnectionSocketPtr&& socket) PURE;
 };
 
 /**
- * Utility struct that encapsulates the information from a udp socket's
- * recvfrom/recvmmsg call.
- *
- * TODO(conqerAtapple): Maybe this belongs inside the UdpListenerCallbacks
- * class.
+ * Utility struct that encapsulates the information from a udp socket's recvmmsg call.
  */
 struct UdpRecvData {
-  Address::InstanceConstSharedPtr local_address_;
-  Address::InstanceConstSharedPtr peer_address_; // TODO(conquerAtapple): Fix ownership semantics.
-  Buffer::InstancePtr buffer_;
+  struct LocalPeerAddresses {
+    bool operator==(const LocalPeerAddresses& rhs) const {
+      // TODO(mattklein123): Implement a hash directly on Address that does not use strings.
+      return local_->asStringView() == rhs.local_->asStringView() &&
+             peer_->asStringView() == rhs.peer_->asStringView();
+    }
 
-  // TODO(conquerAtapple):
-  // Add UdpReader here so that the callback handler can
-  // then use the reader to do multiple reads(recvmmsg) once the OS notifies it
-  // has data. We could also just return a `ReaderFactory` that returns either a
-  // `recvfrom` reader (with peer information) or a `read/recvmmsg` reader. This
-  // is still being flushed out (Jan, 2019).
+    template <typename H> friend H AbslHashValue(H h, const LocalPeerAddresses& addresses) {
+      // TODO(mattklein123): Implement a hash directly on Address that does not use strings.
+      return H::combine(std::move(h), addresses.local_->asStringView(),
+                        addresses.peer_->asStringView());
+    }
+
+    Address::InstanceConstSharedPtr local_;
+    Address::InstanceConstSharedPtr peer_;
+  };
+
+  LocalPeerAddresses addresses_;
+  Buffer::InstancePtr buffer_;
+  MonotonicTime receive_time_;
 };
 
 /**
  * Encapsulates the information needed to send a udp packet to a target
  */
 struct UdpSendData {
-  Address::InstanceConstSharedPtr send_address_;
+  const Address::Ip* local_ip_;
+  const Address::Instance& peer_address_;
+
   // The buffer is a reference so that it can be reused by the sender to send different
   // messages
   Buffer::Instance& buffer_;
@@ -144,8 +200,6 @@ struct UdpSendData {
  */
 class UdpListenerCallbacks {
 public:
-  enum class ErrorCode { SyscallError, UnknownError };
-
   virtual ~UdpListenerCallbacks() = default;
 
   /**
@@ -168,10 +222,9 @@ public:
    * Called when there is an error event in the receive data path.
    * The send side error is a return type on the send method.
    *
-   * @param error_code ErrorCode for the error event.
-   * @param error_number System error number.
+   * @param error_code supplies the received error on the listener.
    */
-  virtual void onReceiveError(const ErrorCode& error_code, int error_number) PURE;
+  virtual void onReceiveError(Api::IoError::IoErrorCode error_code) PURE;
 };
 
 /**
@@ -224,6 +277,8 @@ public:
    */
   virtual Api::IoCallUint64Result send(const UdpSendData& data) PURE;
 };
+
+using UdpListenerPtr = std::unique_ptr<UdpListener>;
 
 /**
  * Thrown when there is a runtime error creating/binding a listener.

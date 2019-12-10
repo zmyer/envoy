@@ -24,7 +24,7 @@ public:
     Command mysql_cmd_decode{};
     uint8_t seq = 0u;
     uint32_t len = 0u;
-    mysql_cmd_encode.setCmd(Command::Cmd::COM_QUERY);
+    mysql_cmd_encode.setCmd(Command::Cmd::Query);
     mysql_cmd_encode.setData(query);
     std::string data = mysql_cmd_encode.encode();
     std::string mysql_msg = BufferHelper::encodeHdr(data, 0);
@@ -71,7 +71,7 @@ public:
   std::string buildCreate(enum TestResource res, std::string option, bool if_not_exists,
                           std::string res_name, std::string value) {
     std::string command("CREATE ");
-    if (option != "") {
+    if (!option.empty()) {
       command.append(option);
       command.append(SPACE);
     }
@@ -159,7 +159,7 @@ public:
   //"INSERT INTO <table> ...
   std::string buildInsert(std::string option, bool into, std::string table, std::string values) {
     std::string command("INSERT ");
-    if (option != "") {
+    if (!option.empty()) {
       command.append(option);
       command.append(SPACE);
     }

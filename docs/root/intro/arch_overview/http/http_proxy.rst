@@ -5,8 +5,7 @@ HTTP dynamic forward proxy
 
 .. attention::
 
-  HTTP dynamic forward proxy support should be considered alpha and not production ready. Stats
-  as well as circuit breakers are missing and will be added soon.
+  HTTP dynamic forward proxy support should be considered alpha and not production ready.
 
 Through the combination of both an :ref:`HTTP filter <config_http_filters_dynamic_forward_proxy>` and
 :ref:`custom cluster <envoy_api_msg_config.cluster.dynamic_forward_proxy.v2alpha.ClusterConfig>`,
@@ -28,6 +27,8 @@ follows:
 * A special load balancer will select the right host to use based on the HTTP host/authority header
   during forwarding.
 * Hosts that have not been used for a period of time are subject to a TTL that will purge them.
+* When the upstream cluster has been configured with a TLS context, Envoy will automatically perform
+  SAN verification for the resolved host name as well as specify the host name via SNI.
 
 The above implementation details mean that at steady state Envoy can forward a large volume of
 HTTP proxy traffic while all DNS resolution happens asynchronously in the background. Additionally,
@@ -40,11 +41,6 @@ For further configuration information see the :ref:`HTTP filter configuration do
 Memory usage details
 --------------------
 
-.. attention::
-
-  HTTP dynamic forward proxy support currently can use unbounded memory and is not ready for
-  production use. Circuit breakers and other limits will be added soon.
-
 Memory usage detail's for Envoy's dynamic forward proxy support are as follows:
 
 * Each resolved host/port pair uses a fixed amount of memory global to the server and shared
@@ -52,3 +48,16 @@ Memory usage detail's for Envoy's dynamic forward proxy support are as follows:
 * Address changes are performed inline using read/write locks and require no host reallocations.
 * Hosts removed via TTL are purged once all active connections stop referring to them and all used
   memory is regained.
+* The :ref:`max_hosts
+  <envoy_api_field_config.common.dynamic_forward_proxy.v2alpha.DnsCacheConfig.max_hosts>` field can
+  be used to limit the number of hosts that the DNS cache will store at any given time.
+* The cluster's :ref:`max_pending_requests
+  <envoy_api_field_cluster.CircuitBreakers.Thresholds.max_pending_requests>` circuit breaker can
+  be used to limit the number of requests that are pending waiting for the DNS cache to load
+  a host.
+* Long lived upstream connections can have the underlying logical host expire via TTL while the
+  connection is still open. Upstream requests and connections are still bound by other cluster
+  circuit breakers such as :ref:`max_requests
+  <envoy_api_field_cluster.CircuitBreakers.Thresholds.max_requests>`. The current assumption is that
+  host data shared between connections uses a marginal amount of memory compared to the connections
+  and requests themselves, making it not worth controlling independently.

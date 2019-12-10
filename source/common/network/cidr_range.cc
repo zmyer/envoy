@@ -1,15 +1,12 @@
 #include "common/network/cidr_range.h"
 
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-
 #include <array>
 #include <cstdint>
 #include <string>
 #include <vector>
 
 #include "envoy/common/exception.h"
+#include "envoy/common/platform.h"
 
 #include "common/common/assert.h"
 #include "common/common/fmt.h"
@@ -34,13 +31,9 @@ CidrRange::CidrRange(InstanceConstSharedPtr address, int length)
   }
 }
 
-CidrRange::CidrRange(const CidrRange& other) : address_(other.address_), length_(other.length_) {}
+CidrRange::CidrRange(const CidrRange& other) = default;
 
-CidrRange& CidrRange::operator=(const CidrRange& other) {
-  address_ = other.address_;
-  length_ = other.length_;
-  return *this;
-}
+CidrRange& CidrRange::operator=(const CidrRange& other) = default;
 
 bool CidrRange::operator==(const CidrRange& other) const {
   // Lengths must be the same, and must be valid (i.e. not -1).
@@ -118,6 +111,10 @@ CidrRange CidrRange::create(const std::string& address, int length) {
 }
 
 CidrRange CidrRange::create(const envoy::api::v2::core::CidrRange& cidr) {
+  return create(Utility::parseInternetAddress(cidr.address_prefix()), cidr.prefix_len().value());
+}
+
+CidrRange CidrRange::create(const envoy::api::v3alpha::core::CidrRange& cidr) {
   return create(Utility::parseInternetAddress(cidr.address_prefix()), cidr.prefix_len().value());
 }
 

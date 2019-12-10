@@ -9,6 +9,8 @@
 #include "extensions/filters/network/dubbo_proxy/filters/well_known_names.h"
 #include "extensions/filters/network/dubbo_proxy/stats.h"
 
+#include "absl/container/flat_hash_map.h"
+
 namespace Envoy {
 namespace Extensions {
 namespace NetworkFilters {
@@ -66,7 +68,27 @@ private:
   static const SerializationTypeMap& serializationTypeMap() {
     CONSTRUCT_ON_FIRST_USE(SerializationTypeMap,
                            {
-                               {ConfigSerializationType::Hessian2, SerializationType::Hessian},
+                               {ConfigSerializationType::Hessian2, SerializationType::Hessian2},
+                           });
+  }
+};
+
+class RouteMatcherTypeMapper {
+public:
+  using ConfigProtocolType = envoy::config::filter::network::dubbo_proxy::v2alpha1::ProtocolType;
+  using RouteMatcherTypeMap = absl::flat_hash_map<ConfigProtocolType, Router::RouteMatcherType>;
+
+  static Router::RouteMatcherType lookupRouteMatcherType(ConfigProtocolType type) {
+    const auto& iter = routeMatcherTypeMap().find(type);
+    ASSERT(iter != routeMatcherTypeMap().end());
+    return iter->second;
+  }
+
+private:
+  static const RouteMatcherTypeMap& routeMatcherTypeMap() {
+    CONSTRUCT_ON_FIRST_USE(RouteMatcherTypeMap,
+                           {
+                               {ConfigProtocolType::Dubbo, Router::RouteMatcherType::Default},
                            });
   }
 };
@@ -78,8 +100,10 @@ ConfigImpl::ConfigImpl(const DubboProxyConfig& config,
       stats_(DubboFilterStats::generateStats(stats_prefix_, context_.scope())),
       serialization_type_(
           SerializationTypeMapper::lookupSerializationType(config.serialization_type())),
-      protocol_type_(ProtocolTypeMapper::lookupProtocolType(config.protocol_type())),
-      route_matcher_(std::make_unique<Router::MultiRouteMatcher>(config.route_config())) {
+      protocol_type_(ProtocolTypeMapper::lookupProtocolType(config.protocol_type())) {
+  auto type = RouteMatcherTypeMapper::lookupRouteMatcherType(config.protocol_type());
+  route_matcher_ = Router::NamedRouteMatcherConfigFactory::getFactory(type).createRouteMatcher(
+      config.route_config(), context);
   if (config.dubbo_filters().empty()) {
     ENVOY_LOG(debug, "using default router filter");
 
@@ -105,11 +129,7 @@ Router::RouteConstSharedPtr ConfigImpl::route(const MessageMetadata& metadata,
 }
 
 ProtocolPtr ConfigImpl::createProtocol() {
-  return NamedProtocolConfigFactory::getFactory(protocol_type_).createProtocol();
-}
-
-DeserializerPtr ConfigImpl::createDeserializer() {
-  return NamedDeserializerConfigFactory::getFactory(serialization_type_).createDeserializer();
+  return NamedProtocolConfigFactory::getFactory(protocol_type_).createProtocol(serialization_type_);
 }
 
 void ConfigImpl::registerFilter(const DubboFilterConfig& proto_config) {
@@ -117,16 +137,14 @@ void ConfigImpl::registerFilter(const DubboFilterConfig& proto_config) {
 
   ENVOY_LOG(debug, "    dubbo filter #{}", filter_factories_.size());
   ENVOY_LOG(debug, "      name: {}", string_name);
-
-  const Json::ObjectSharedPtr filter_config =
-      MessageUtil::getJsonObjectFromMessage(proto_config.config());
-  ENVOY_LOG(debug, "      config: {}", filter_config->asJsonString());
+  ENVOY_LOG(debug, "    config: {}",
+            MessageUtil::getJsonStringFromMessage(proto_config.config(), true));
 
   auto& factory =
       Envoy::Config::Utility::getAndCheckFactory<DubboFilters::NamedDubboFilterConfigFactory>(
           string_name);
   ProtobufTypes::MessagePtr message = factory.createEmptyConfigProto();
-  Envoy::Config::Utility::translateOpaqueConfig(proto_config.config(),
+  Envoy::Config::Utility::translateOpaqueConfig(string_name, proto_config.config(),
                                                 ProtobufWkt::Struct::default_instance(),
                                                 context_.messageValidationVisitor(), *message);
   DubboFilters::FilterFactoryCb callback =

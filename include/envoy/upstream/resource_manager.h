@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 
 #include "envoy/common/pure.h"
 
@@ -49,6 +50,20 @@ public:
 };
 
 /**
+ * RAII wrapper that increments a resource on construction and decrements it on destruction.
+ */
+class ResourceAutoIncDec {
+public:
+  ResourceAutoIncDec(Resource& resource) : resource_(resource) { resource_.inc(); }
+  ~ResourceAutoIncDec() { resource_.dec(); }
+
+private:
+  Resource& resource_;
+};
+
+using ResourceAutoIncDecPtr = std::unique_ptr<ResourceAutoIncDec>;
+
+/**
  * Global resource manager that loosely synchronizes maximum connections, pending requests, etc.
  * NOTE: Currently this is used on a per cluster basis. In the future we may consider also chaining
  *       this with a global resource manager.
@@ -58,7 +73,7 @@ public:
   virtual ~ResourceManager() = default;
 
   /**
-   * @return Resource& active TCP connections.
+   * @return Resource& active TCP connections and UDP sessions.
    */
   virtual Resource& connections() PURE;
 

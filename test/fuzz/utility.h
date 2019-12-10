@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/common/empty_string.h"
+#include "common/network/resolver_impl.h"
 #include "common/network/utility.h"
 
 #include "test/common/stream_info/test_util.h"
@@ -8,6 +9,10 @@
 #include "test/mocks/ssl/mocks.h"
 #include "test/mocks/upstream/host.h"
 #include "test/test_common/utility.h"
+
+// Strong assertion that applies across all compilation modes and doesn't rely
+// on gtest, which only provides soft fails that don't trip oss-fuzz failures.
+#define FUZZ_ASSERT(x) RELEASE_ASSERT(x, "")
 
 namespace Envoy {
 namespace Fuzz {
@@ -52,6 +57,23 @@ inline Protobuf::RepeatedPtrField<envoy::api::v2::core::HeaderValueOption> repla
   return processed;
 }
 
+inline envoy::api::v2::core::Metadata
+replaceInvalidStringValues(const envoy::api::v2::core::Metadata& upstream_metadata) {
+  envoy::api::v2::core::Metadata processed = upstream_metadata;
+  for (auto& metadata_struct : *processed.mutable_filter_metadata()) {
+    // Metadata fields consist of keyed Structs, which is a map of dynamically typed values. These
+    // values can be null, a number, a string, a boolean, a list of values, or a recursive struct.
+    // This clears any invalid characters in string values. It may not be likely a coverage-driven
+    // fuzzer will explore recursive structs, so this case is not handled here.
+    for (auto& field : *metadata_struct.second.mutable_fields()) {
+      if (field.second.kind_case() == ProtobufWkt::Value::kStringValue) {
+        field.second.set_string_value(replaceInvalidCharacters(field.second.string_value()));
+      }
+    }
+  }
+  return processed;
+}
+
 // Convert from test proto Headers to TestHeaderMapImpl.
 inline Http::TestHeaderMapImpl fromHeaders(
     const test::fuzz::Headers& headers,
@@ -65,7 +87,7 @@ inline Http::TestHeaderMapImpl fromHeaders(
     // not supposed to do this.
     const std::string key =
         header.key().empty() ? "not-empty" : replaceInvalidCharacters(header.key());
-    if (ignore_headers.find(StringUtil::toLower(key)) != ignore_headers.end()) {
+    if (ignore_headers.find(StringUtil::toLower(key)) == ignore_headers.end()) {
       header_map.addCopy(key, replaceInvalidCharacters(header.value()));
     }
   }
@@ -86,9 +108,12 @@ inline test::fuzz::Headers toHeaders(const Http::HeaderMap& headers) {
   return fuzz_headers;
 }
 
-inline TestStreamInfo fromStreamInfo(const test::fuzz::StreamInfo& stream_info,
-                                     const Ssl::MockConnectionInfo* connection_info) {
+const std::string TestSubjectPeer =
+    "CN=Test Server,OU=Lyft Engineering,O=Lyft,L=San Francisco,ST=California,C=US";
+
+inline TestStreamInfo fromStreamInfo(const test::fuzz::StreamInfo& stream_info) {
   // Set mocks' default string return value to be an empty string.
+  // TODO(asraa): Speed up this function, which is slowed because of the use of mocks.
   testing::DefaultValue<const std::string&>::Set(EMPTY_STRING);
   TestStreamInfo test_stream_info;
   test_stream_info.metadata_ = stream_info.dynamic_metadata();
@@ -102,20 +127,23 @@ inline TestStreamInfo fromStreamInfo(const test::fuzz::StreamInfo& stream_info,
   if (stream_info.has_response_code()) {
     test_stream_info.response_code_ = stream_info.response_code().value();
   }
+  test_stream_info.setRequestedServerName(stream_info.requested_server_name());
   auto upstream_host = std::make_shared<NiceMock<Upstream::MockHostDescription>>();
-  auto upstream_metadata =
-      std::make_shared<envoy::api::v2::core::Metadata>(stream_info.upstream_metadata());
+  auto upstream_metadata = std::make_shared<envoy::api::v2::core::Metadata>(
+      replaceInvalidStringValues(stream_info.upstream_metadata()));
   ON_CALL(*upstream_host, metadata()).WillByDefault(testing::Return(upstream_metadata));
   test_stream_info.upstream_host_ = upstream_host;
-  auto address = Network::Utility::resolveUrl("tcp://10.0.0.1:443");
+  auto address = stream_info.has_address()
+                     ? Envoy::Network::Address::resolveProtoAddress(stream_info.address())
+                     : Network::Utility::resolveUrl("tcp://10.0.0.1:443");
   test_stream_info.upstream_local_address_ = address;
   test_stream_info.downstream_local_address_ = address;
   test_stream_info.downstream_direct_remote_address_ = address;
   test_stream_info.downstream_remote_address_ = address;
-  test_stream_info.setDownstreamSslConnection(connection_info);
+  auto connection_info = std::make_shared<NiceMock<Ssl::MockConnectionInfo>>();
   ON_CALL(*connection_info, subjectPeerCertificate())
-      .WillByDefault(testing::Return(
-          "CN=Test Server,OU=Lyft Engineering,O=Lyft,L=San Francisco,ST=California,C=US"));
+      .WillByDefault(testing::ReturnRef(TestSubjectPeer));
+  test_stream_info.setDownstreamSslConnection(connection_info);
   return test_stream_info;
 }
 

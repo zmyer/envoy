@@ -24,17 +24,19 @@
 
 #include "test/test_common/file_system_for_test.h"
 #include "test/test_common/printers.h"
+#include "test/test_common/test_time_system.h"
 #include "test/test_common/thread_factory_for_test.h"
 
+#include "absl/strings/string_view.h"
 #include "absl/time/time.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
-using testing::_;
+using testing::_; // NOLINT(misc-unused-using-decls)
 using testing::AssertionFailure;
 using testing::AssertionResult;
 using testing::AssertionSuccess;
-using testing::Invoke;
+using testing::Invoke; //  NOLINT(misc-unused-using-decls)
 
 namespace Envoy {
 
@@ -103,6 +105,19 @@ namespace Envoy {
       return status;                                                                               \
     }                                                                                              \
   } while (false)
+
+// A convenience macro for testing Envoy deprecated features. This will disable the test when
+// tests are built with --define deprecated_features=disabled to avoid the hard-failure mode for
+// deprecated features. Sample usage is:
+//
+// TEST_F(FixtureName, DEPRECATED_FEATURE_TEST(TestName)) {
+// ...
+// }
+#ifndef ENVOY_DISABLE_DEPRECATED_FEATURES
+#define DEPRECATED_FEATURE_TEST(X) X
+#else
+#define DEPRECATED_FEATURE_TEST(X) DISABLED_##X
+#endif
 
 // Random number generator which logs its seed to stderr. To repeat a test run with a non-zero seed
 // one can run the test with --test_arg=--gtest_random_seed=[seed]
@@ -179,11 +194,52 @@ public:
   static Stats::GaugeSharedPtr findGauge(Stats::Store& store, const std::string& name);
 
   /**
+   * Wait till Counter value is equal to the passed ion value.
+   * @param store supplies the stats store.
+   * @param name supplies the name of the counter to wait for.
+   * @param value supplies the value of the counter.
+   * @param time_system the time system to use for waiting.
+   */
+  static void waitForCounterEq(Stats::Store& store, const std::string& name, uint64_t value,
+                               Event::TestTimeSystem& time_system);
+
+  /**
+   * Wait for a counter to >= a given value.
+   * @param store supplies the stats store.
+   * @param name counter name.
+   * @param value target value.
+   * @param time_system the time system to use for waiting.
+   */
+  static void waitForCounterGe(Stats::Store& store, const std::string& name, uint64_t value,
+                               Event::TestTimeSystem& time_system);
+
+  /**
+   * Wait for a gauge to >= a given value.
+   * @param store supplies the stats store.
+   * @param name gauge name.
+   * @param value target value.
+   * @param time_system the time system to use for waiting.
+   */
+  static void waitForGaugeGe(Stats::Store& store, const std::string& name, uint64_t value,
+                             Event::TestTimeSystem& time_system);
+
+  /**
+   * Wait for a gauge to == a given value.
+   * @param store supplies the stats store.
+   * @param name gauge name.
+   * @param value target value.
+   * @param time_system the time system to use for waiting.
+   */
+  static void waitForGaugeEq(Stats::Store& store, const std::string& name, uint64_t value,
+                             Event::TestTimeSystem& time_system);
+
+  /**
    * Convert a string list of IP addresses into a list of network addresses usable for DNS
    * response testing.
    */
-  static std::list<Network::Address::InstanceConstSharedPtr>
-  makeDnsResponse(const std::list<std::string>& addresses);
+  static std::list<Network::DnsResponse>
+  makeDnsResponse(const std::list<std::string>& addresses,
+                  std::chrono::seconds = std::chrono::seconds(0));
 
   /**
    * List files in a given directory path
@@ -286,7 +342,7 @@ public:
 
       return true;
     }
-    typedef std::list<std::unique_ptr<const Protobuf::Message>> ProtoList;
+    using ProtoList = std::list<std::unique_ptr<const Protobuf::Message>>;
     // Iterate through using protoEqual as ignore_ordering is true, and fields
     // in the sub-protos may also be out of order.
     ProtoList lhs_list =
@@ -436,6 +492,8 @@ public:
    * @return bool indicating that passed gauges not matching the omitted regex have a value of 0.
    */
   static bool gaugesZeroed(const std::vector<Stats::GaugeSharedPtr>& gauges);
+  static bool gaugesZeroed(
+      const std::vector<std::pair<absl::string_view, Stats::PrimitiveGaugeReference>>& gauges);
 
   // Strict variants of Protobuf::MessageUtil
   static void loadFromJson(const std::string& json, Protobuf::Message& message) {
@@ -457,8 +515,7 @@ public:
 
   template <class MessageType>
   static inline MessageType anyConvert(const ProtobufWkt::Any& message) {
-    return MessageUtil::anyConvert<MessageType>(message,
-                                                ProtobufMessage::getStrictValidationVisitor());
+    return MessageUtil::anyConvert<MessageType>(message);
   }
 
   template <class MessageType>
@@ -471,6 +528,16 @@ public:
   static void loadFromYamlAndValidate(const std::string& yaml, MessageType& message) {
     return MessageUtil::loadFromYamlAndValidate(yaml, message,
                                                 ProtobufMessage::getStrictValidationVisitor());
+  }
+
+  template <class MessageType> static void validate(const MessageType& message) {
+    return MessageUtil::validate(message, ProtobufMessage::getStrictValidationVisitor());
+  }
+
+  template <class MessageType>
+  static const MessageType& downcastAndValidate(const Protobuf::Message& config) {
+    return MessageUtil::downcastAndValidate<MessageType>(
+        config, ProtobufMessage::getStrictValidationVisitor());
   }
 
   static void jsonConvert(const Protobuf::Message& source, Protobuf::Message& dest) {
@@ -573,10 +640,12 @@ public:
   using HeaderMapImpl::remove;
   void addCopy(const std::string& key, const std::string& value);
   void remove(const std::string& key);
-  std::string get_(const std::string& key);
-  std::string get_(const LowerCaseString& key);
-  bool has(const std::string& key);
-  bool has(const LowerCaseString& key);
+  std::string get_(const std::string& key) const;
+  std::string get_(const LowerCaseString& key) const;
+  bool has(const std::string& key) const;
+  bool has(const LowerCaseString& key) const;
+
+  void verifyByteSize() override { ASSERT(cached_byte_size_ == byteSizeInternal()); }
 };
 
 // Helper method to create a header map from an initializer list. Useful due to make_unique's
