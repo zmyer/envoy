@@ -26,7 +26,7 @@ public:
   NiceMock<Server::MockInstance> server_;
   NiceMock<ThreadLocal::MockInstance> tls_;
   NiceMock<Tracing::MockConfig> tracing_config_;
-  Http::TestHeaderMapImpl request_headers_{
+  Http::TestRequestHeaderMapImpl request_headers_{
       {":authority", "api.amazon.com"}, {":path", "/"}, {":method", "GET"}};
 };
 
@@ -40,7 +40,9 @@ TEST_F(XRayDriverTest, XRayTraceHeaderNotSampled) {
   Envoy::SystemTime start_time;
   auto span = driver.startSpan(tracing_config_, request_headers_, operation_name_, start_time,
                                tracing_decision);
-  ASSERT_EQ(span, nullptr);
+  ASSERT_NE(span, nullptr);
+  auto* xray_span = static_cast<XRay::Span*>(span.get());
+  ASSERT_FALSE(xray_span->sampled());
 }
 
 TEST_F(XRayDriverTest, XRayTraceHeaderSampled) {
@@ -66,6 +68,10 @@ TEST_F(XRayDriverTest, XRayTraceHeaderSamplingUnknown) {
   Envoy::SystemTime start_time;
   auto span = driver.startSpan(tracing_config_, request_headers_, operation_name_, start_time,
                                tracing_decision);
+  // sampling should fall back to the default manifest since:
+  // a) there is sampling decision in the X-Ray header
+  // b) there are no sampling rules passed, so the default rules apply (1 req/sec and 5% after that
+  // within that second)
   ASSERT_NE(span, nullptr);
 }
 
@@ -79,7 +85,7 @@ TEST_F(XRayDriverTest, NoXRayTracerHeader) {
                                tracing_decision);
   // sampling should fall back to the default manifest since:
   // a) there is no X-Ray header to determine the sampling decision
-  // b) there are sampling rules passed, so the default rules apply (1 req/sec and 5% after that
+  // b) there are no sampling rules passed, so the default rules apply (1 req/sec and 5% after that
   // within that second)
   ASSERT_NE(span, nullptr);
 }

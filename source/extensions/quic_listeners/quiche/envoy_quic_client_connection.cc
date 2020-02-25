@@ -1,5 +1,9 @@
 #include "extensions/quic_listeners/quiche/envoy_quic_client_connection.h"
 
+#include <memory>
+
+#include "envoy/config/core/v3/base.pb.h"
+
 #include "common/network/listen_socket_impl.h"
 #include "common/network/socket_option_factory.h"
 
@@ -79,7 +83,7 @@ void EnvoyQuicClientConnection::setUpConnectionSocket() {
         Event::FileReadyType::Read | Event::FileReadyType::Write);
 
     if (!Network::Socket::applyOptions(connectionSocket()->options(), *connectionSocket(),
-                                       envoy::api::v2::core::SocketOption::STATE_LISTENING)) {
+                                       envoy::config::core::v3::SocketOption::STATE_LISTENING)) {
       ENVOY_CONN_LOG(error, "Fail to apply listening options", *this);
       connectionSocket()->close();
     }
@@ -88,6 +92,14 @@ void EnvoyQuicClientConnection::setUpConnectionSocket() {
     CloseConnection(quic::QUIC_CONNECTION_CANCELLED, "Fail to set up connection socket.",
                     quic::ConnectionCloseBehavior::SILENT_CLOSE);
   }
+}
+
+void EnvoyQuicClientConnection::switchConnectionSocket(
+    Network::ConnectionSocketPtr&& connection_socket) {
+  auto writer = std::make_unique<EnvoyQuicPacketWriter>(*connection_socket);
+  setConnectionSocket(std::move(connection_socket));
+  setUpConnectionSocket();
+  SetQuicPacketWriter(writer.release(), true);
 }
 
 void EnvoyQuicClientConnection::onFileEvent(uint32_t events) {

@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <string>
 
+#include "envoy/type/v3/percent.pb.h"
+
 #include "common/access_log/access_log_formatter.h"
 #include "common/common/empty_string.h"
 #include "common/common/utility.h"
@@ -244,9 +246,11 @@ void ConnectionManagerUtility::mutateTracingRequestHeader(HeaderMap& request_hea
     return;
   }
 
-  const envoy::type::FractionalPercent* client_sampling = &config.tracingConfig()->client_sampling_;
-  const envoy::type::FractionalPercent* random_sampling = &config.tracingConfig()->random_sampling_;
-  const envoy::type::FractionalPercent* overall_sampling =
+  const envoy::type::v3::FractionalPercent* client_sampling =
+      &config.tracingConfig()->client_sampling_;
+  const envoy::type::v3::FractionalPercent* random_sampling =
+      &config.tracingConfig()->random_sampling_;
+  const envoy::type::v3::FractionalPercent* overall_sampling =
       &config.tracingConfig()->overall_sampling_;
 
   if (route && route->tracingConfig()) {

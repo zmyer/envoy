@@ -7,12 +7,13 @@
 # generation to support automation of Envoy API version translation.
 #
 # See https://github.com/google/protobuf/blob/master/src/google/protobuf/descriptor.proto
-# for the underlying protos mentioned in this file. See
+# for the underlying protos mentioned in this file.
 
 from collections import deque
 import functools
 import io
 import os
+import pathlib
 import re
 import subprocess
 
@@ -33,15 +34,48 @@ from google.protobuf import text_format
 # this also serves as whitelist of extended options.
 from google.api import annotations_pb2 as _
 from validate import validate_pb2 as _
-
-CLANG_FORMAT_STYLE = ('{ColumnLimit: 100, SpacesInContainerLiterals: false, '
-                      'AllowShortFunctionsOnASingleLine: false}')
+from envoy.annotations import deprecation_pb2 as _
+from envoy.annotations import resource_pb2
+from udpa.annotations import migrate_pb2
+from udpa.annotations import sensitive_pb2 as _
+from udpa.annotations import status_pb2
 
 NEXT_FREE_FIELD_MIN = 5
 
 
 class ProtoXformError(Exception):
   """Base error class for the protoxform module."""
+
+
+def ExtractClangProtoStyle(clang_format_text):
+  """Extract a key:value dictionary for proto formatting.
+
+  Args:
+    clang_format_text: text from a .clang-format file.
+
+  Returns:
+    key:value dictionary suitable for passing to clang-format --style.
+  """
+  lang = None
+  format_dict = {}
+  for line in clang_format_text.split('\n'):
+    if lang is None or lang != 'Proto':
+      match = re.match('Language:\s+(\w+)', line)
+      if match:
+        lang = match.group(1)
+      continue
+    match = re.match('(\w+):\s+(\w+)', line)
+    if match:
+      key, value = match.groups()
+      format_dict[key] = value
+    else:
+      break
+  return str(format_dict)
+
+
+# Ensure we are using the canonical clang-format proto style.
+CLANG_FORMAT_STYLE = ExtractClangProtoStyle(
+    pathlib.Path(os.getenv('RUNFILES_DIR'), 'envoy/.clang-format').read_text())
 
 
 def ClangFormat(contents):
@@ -124,7 +158,8 @@ def FormatTypeContextComments(type_context, annotation_xforms=None):
 
   Args:
     type_context: contextual information for message/enum/field.
-    annotation_xforms: a dict of transformers for annotations in leading comment.
+    annotation_xforms: a dict of transformers for annotations in leading
+      comment.
 
   Returns:
     Tuple of formatted leading and trailing comment blocks.
@@ -171,7 +206,7 @@ def FormatHeaderFromFile(source_code_info, file_proto):
   options = descriptor_pb2.FileOptions()
   options.java_outer_classname = CamelCase(os.path.basename(file_proto.name))
   options.java_multiple_files = True
-  options.java_package = "io.envoyproxy." + file_proto.package
+  options.java_package = 'io.envoyproxy.' + file_proto.package
 
   # This is a workaround for C#/Ruby namespace conflicts between packages and
   # objects, see https://github.com/envoyproxy/envoy/pull/3854.
@@ -184,6 +219,16 @@ def FormatHeaderFromFile(source_code_info, file_proto):
 
   if file_proto.service:
     options.java_generic_services = True
+
+  if file_proto.options.HasExtension(migrate_pb2.file_migrate):
+    options.Extensions[migrate_pb2.file_migrate].CopyFrom(
+        file_proto.options.Extensions[migrate_pb2.file_migrate])
+
+  if file_proto.options.HasExtension(
+      status_pb2.file_status) and file_proto.package.endswith('alpha'):
+    options.Extensions[status_pb2.file_status].CopyFrom(
+        file_proto.options.Extensions[status_pb2.file_status])
+
   options_block = FormatOptions(options)
 
   requires_versioning_import = any(
@@ -193,9 +238,19 @@ def FormatHeaderFromFile(source_code_info, file_proto):
   google_imports = []
   infra_imports = []
   misc_imports = []
+  public_imports = []
 
-  for d in file_proto.dependency:
-    if d.startswith('envoy/'):
+  for idx, d in enumerate(file_proto.dependency):
+    if idx in file_proto.public_dependency:
+      public_imports.append(d)
+      continue
+    elif d in [
+        'envoy/annotations/resource.proto',
+        'envoy/annotations/deprecation.proto',
+        'udpa/annotations/migrate.proto',
+    ]:
+      infra_imports.append(d)
+    elif d.startswith('envoy/'):
       # We ignore existing envoy/ imports, since these are computed explicitly
       # from type_dependencies.
       pass
@@ -203,11 +258,14 @@ def FormatHeaderFromFile(source_code_info, file_proto):
       google_imports.append(d)
     elif d.startswith('validate/'):
       infra_imports.append(d)
-    elif d in ['udpa/annotations/versioning.proto']:
-      # Skip, we decide to add this based on requires_versioning_import
+    elif d in ['udpa/annotations/versioning.proto', 'udpa/annotations/status.proto']:
+      # Skip, we decide to add this based on requires_versioning_import and options.
       pass
     else:
       misc_imports.append(d)
+
+  if options.HasExtension(status_pb2.file_status):
+    misc_imports.append('udpa/annotations/status.proto')
 
   if requires_versioning_import:
     misc_imports.append('udpa/annotations/versioning.proto')
@@ -217,11 +275,17 @@ def FormatHeaderFromFile(source_code_info, file_proto):
       return ''
     return FormatBlock('\n'.join(sorted('import "%s";' % x for x in xs)))
 
+  def FormatPublicImportBlock(xs):
+    if not xs:
+      return ''
+    return FormatBlock('\n'.join(sorted('import public "%s";' % x for x in xs)))
+
   import_block = '\n'.join(
       map(FormatImportBlock, [envoy_imports, google_imports, misc_imports, infra_imports]))
+  import_block += '\n' + FormatPublicImportBlock(public_imports)
   comment_block = FormatComments(source_code_info.file_level_comments)
 
-  return ''.join(map(FormatBlock, [file_block, options_block, import_block, comment_block]))
+  return ''.join(map(FormatBlock, [file_block, import_block, options_block, comment_block]))
 
 
 def NormalizeFieldTypeName(type_context, field_fqn):
@@ -268,6 +332,11 @@ def NormalizeFieldTypeName(type_context, field_fqn):
       return False
 
     while remaining_field_fqn_splits and not EquivalentInTypeContext(normalized_splits):
+      normalized_splits.appendleft(remaining_field_fqn_splits.pop())
+
+    # `extensions` is a keyword in proto2, and protoc will throw error if a type name
+    # starts with `extensions.`.
+    if normalized_splits[0] == 'extensions':
       normalized_splits.appendleft(remaining_field_fqn_splits.pop())
 
     return '.'.join(normalized_splits)
@@ -397,7 +466,9 @@ def TextFormatValue(field, value):
 
 
 def FormatOptions(options):
-  """Format *Options (e.g. MessageOptions, FieldOptions) message.
+  """Format *Options (e.g.
+
+  MessageOptions, FieldOptions) message.
 
   Args:
     options: A *Options (e.g. MessageOptions, FieldOptions) message.
@@ -408,15 +479,15 @@ def FormatOptions(options):
 
   formatted_options = []
   for option_descriptor, option_value in sorted(options.ListFields(), key=lambda x: x[0].number):
-    option_name = "({})".format(
+    option_name = '({})'.format(
         option_descriptor.full_name) if option_descriptor.is_extension else option_descriptor.name
     if option_descriptor.message_type and option_descriptor.label != option_descriptor.LABEL_REPEATED:
       formatted_options.extend([
-          "{}.{} = {}".format(option_name, subfield.name, TextFormatValue(subfield, value))
+          '{}.{} = {}'.format(option_name, subfield.name, TextFormatValue(subfield, value))
           for subfield, value in option_value.ListFields()
       ])
     else:
-      formatted_options.append("{} = {}".format(option_name,
+      formatted_options.append('{} = {}'.format(option_name,
                                                 TextFormatValue(option_descriptor, option_value)))
 
   if formatted_options:
@@ -424,7 +495,7 @@ def FormatOptions(options):
       return '[{}]'.format(','.join(formatted_options))
     else:
       return FormatBlock(''.join(
-          "option {};\n".format(formatted_option) for formatted_option in formatted_options))
+          'option {};\n'.format(formatted_option) for formatted_option in formatted_options))
   return ''
 
 
@@ -457,8 +528,9 @@ class ProtoFormatVisitor(visitor.Visitor):
     methods = '\n'.join(
         FormatServiceMethod(type_context.ExtendMethod(index, m.name), m)
         for index, m in enumerate(service_proto.method))
-    return '%sservice %s {\n%s%s\n}\n' % (leading_comment, service_proto.name, trailing_comment,
-                                          methods)
+    options = FormatBlock(FormatOptions(service_proto.options))
+    return '%sservice %s {\n%s%s%s\n}\n' % (leading_comment, service_proto.name, options,
+                                            trailing_comment, methods)
 
   def VisitEnum(self, enum_proto, type_context):
     leading_comment, trailing_comment = FormatTypeContextComments(type_context)
@@ -521,14 +593,17 @@ class ProtoFormatVisitor(visitor.Visitor):
 
 def ParameterCallback(parameter):
   params = dict(param.split('=') for param in parameter.split(','))
-  if params["type_db_path"]:
-    utils.LoadTypeDb(params["type_db_path"])
+  if params['type_db_path']:
+    utils.LoadTypeDb(params['type_db_path'])
 
 
 def Main():
   plugin.Plugin([
       plugin.DirectOutputDescriptor('.v2.proto', ProtoFormatVisitor),
-      plugin.OutputDescriptor('.v3alpha.proto', ProtoFormatVisitor, migrate.V3MigrationXform)
+      plugin.OutputDescriptor('.v3.proto', ProtoFormatVisitor,
+                              functools.partial(migrate.V3MigrationXform, False)),
+      plugin.OutputDescriptor('.v3.envoy_internal.proto', ProtoFormatVisitor,
+                              functools.partial(migrate.V3MigrationXform, True))
   ], ParameterCallback)
 
 

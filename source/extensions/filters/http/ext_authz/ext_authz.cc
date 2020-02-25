@@ -1,5 +1,7 @@
 #include "extensions/filters/http/ext_authz/ext_authz.h"
 
+#include "envoy/config/core/v3/base.pb.h"
+
 #include "common/common/assert.h"
 #include "common/common/enum_to_int.h"
 #include "common/http/utility.h"
@@ -64,7 +66,7 @@ void Filter::initiateCall(const Http::HeaderMap& headers) {
   }
 
   // If metadata_context_namespaces is specified, pass matching metadata to the ext_authz service
-  envoy::api::v2::core::Metadata metadata_context;
+  envoy::config::core::v3::Metadata metadata_context;
   const auto& request_metadata = callbacks_->streamInfo().dynamicMetadata().filter_metadata();
   for (const auto& context_key : config_->metadataContextNamespaces()) {
     const auto& metadata_it = request_metadata.find(context_key);
@@ -86,7 +88,7 @@ void Filter::initiateCall(const Http::HeaderMap& headers) {
   initiating_call_ = false;
 }
 
-Http::FilterHeadersStatus Filter::decodeHeaders(Http::HeaderMap& headers, bool end_stream) {
+Http::FilterHeadersStatus Filter::decodeHeaders(Http::RequestHeaderMap& headers, bool end_stream) {
   if (!config_->filterEnabled()) {
     return Http::FilterHeadersStatus::Continue;
   }
@@ -131,7 +133,7 @@ Http::FilterDataStatus Filter::decodeData(Buffer::Instance& data, bool end_strea
   return Http::FilterDataStatus::Continue;
 }
 
-Http::FilterTrailersStatus Filter::decodeTrailers(Http::HeaderMap&) {
+Http::FilterTrailersStatus Filter::decodeTrailers(Http::RequestTrailerMap&) {
   if (buffer_data_) {
     if (filter_return_ != FilterReturn::StopDecoding) {
       ENVOY_STREAM_LOG(debug, "ext_authz filter finished buffering the request", *callbacks_);

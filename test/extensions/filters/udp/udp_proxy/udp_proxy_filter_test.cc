@@ -1,3 +1,4 @@
+#include "envoy/config/filter/udp/udp_proxy/v2alpha/udp_proxy.pb.h"
 #include "envoy/config/filter/udp/udp_proxy/v2alpha/udp_proxy.pb.validate.h"
 
 #include "extensions/filters/udp/udp_proxy/udp_proxy_filter.h"
@@ -25,7 +26,7 @@ class TestUdpProxyFilter : public UdpProxyFilter {
 public:
   using UdpProxyFilter::UdpProxyFilter;
 
-  MOCK_METHOD1(createIoHandle, Network::IoHandlePtr(const Upstream::HostConstSharedPtr& host));
+  MOCK_METHOD(Network::IoHandlePtr, createIoHandle, (const Upstream::HostConstSharedPtr& host));
 };
 
 Api::IoCallUint64Result makeNoError(uint64_t rc) {

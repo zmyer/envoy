@@ -53,9 +53,10 @@ public:
   void OnConnectionClosed(const quic::QuicConnectionCloseFrame& frame,
                           quic::ConnectionCloseSource source) override;
   void Initialize() override;
+  void OnCanWrite() override;
   void OnGoAway(const quic::QuicGoAwayFrame& frame) override;
   // quic::QuicSpdyClientSessionBase
-  void OnCryptoHandshakeEvent(CryptoHandshakeEvent event) override;
+  void SetDefaultEncryptionLevel(quic::EncryptionLevel level) override;
 
   using quic::QuicSpdyClientSession::stream_map;
 
@@ -65,6 +66,9 @@ protected:
   // quic::QuicSpdySession
   quic::QuicSpdyStream* CreateIncomingStream(quic::QuicStreamId id) override;
   quic::QuicSpdyStream* CreateIncomingStream(quic::PendingStream* pending) override;
+
+  // QuicFilterManagerConnectionImpl
+  bool hasDataToWrite() override;
 
 private:
   // These callbacks are owned by network filters and quic session should outlive
