@@ -16,7 +16,6 @@ envoy_proto_library(
 py_binary(
     name = "type_whisperer",
     srcs = ["type_whisperer.py"],
-    python_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [
         ":types_py_proto",
@@ -29,7 +28,6 @@ py_binary(
 py_binary(
     name = "typedb_gen",
     srcs = ["typedb_gen.py"],
-    python_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [
         ":api_type_db_proto_py_proto",
@@ -57,8 +55,7 @@ py_binary(
 
 label_flag(
     name = "api_type_db_target",
-    # TODO(htuch): break dependence of API type DB on docs target.
-    build_setting_default = "@envoy_api_canonical//docs:protos",
+    build_setting_default = "@envoy_api_canonical//versioning:active_protos",
     visibility = ["//visibility:public"],
 )
 
@@ -70,6 +67,12 @@ type_database(
 
 file_descriptor_set_text(
     name = "all_protos_pb_text",
+    deps = ["@envoy_api_canonical//:all_protos"],
+)
+
+file_descriptor_set_text(
+    name = "all_protos_with_ext_pb_text",
+    with_external_deps = True,
     deps = ["@envoy_api_canonical//:all_protos"],
 )
 

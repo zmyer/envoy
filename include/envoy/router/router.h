@@ -11,11 +11,13 @@
 #include "envoy/access_log/access_log.h"
 #include "envoy/common/matchers.h"
 #include "envoy/config/core/v3/base.pb.h"
+#include "envoy/config/route/v3/route_components.pb.h"
 #include "envoy/config/typed_metadata.h"
 #include "envoy/http/codec.h"
 #include "envoy/http/codes.h"
 #include "envoy/http/hash_policy.h"
 #include "envoy/http/header_map.h"
+#include "envoy/router/internal_redirect.h"
 #include "envoy/tracing/http_tracer.h"
 #include "envoy/type/v3/percent.pb.h"
 #include "envoy/upstream/resource_manager.h"
@@ -236,9 +238,42 @@ public:
 enum class RetryStatus { No, NoOverflow, NoRetryLimitExceeded, Yes };
 
 /**
- * InternalRedirectAction from the route configuration.
+ * InternalRedirectPolicy from the route configuration.
  */
-enum class InternalRedirectAction { PassThrough, Handle };
+class InternalRedirectPolicy {
+public:
+  virtual ~InternalRedirectPolicy() = default;
+
+  /**
+   * @return whether internal redirect is enabled on this route.
+   */
+  virtual bool enabled() const PURE;
+
+  /**
+   * @param response_code the response code from the upstream.
+   * @return whether the given response_code should trigger an internal redirect on this route.
+   */
+  virtual bool shouldRedirectForResponseCode(const Http::Code& response_code) const PURE;
+
+  /**
+   * Creates the target route predicates. This should really be called only once for each upstream
+   * redirect response. Creating the predicates lazily to avoid wasting CPU cycles on non-redirect
+   * responses, which should be the most common case.
+   * @return a vector of newly constructed InternalRedirectPredicate instances.
+   */
+  virtual std::vector<InternalRedirectPredicateSharedPtr> predicates() const PURE;
+
+  /**
+   * @return the maximum number of allowed internal redirects on this route.
+   */
+  virtual uint32_t maxInternalRedirects() const PURE;
+
+  /**
+   * @return if it is allowed to follow the redirect with a different scheme in
+   *         the target URI than the downstream request.
+   */
+  virtual bool isCrossSchemeRedirectAllowed() const PURE;
+};
 
 /**
  * Wraps retry state for an active routed request.
@@ -322,11 +357,13 @@ public:
    * Returns a reference to the PriorityLoad that should be used for the next retry.
    * @param priority_set current priority set.
    * @param original_priority_load original priority load.
+   * @param priority_mapping_func see @Upstream::RetryPriority::PriorityMappingFunc.
    * @return HealthyAndDegradedLoad that should be used to select a priority for the next retry.
    */
-  virtual const Upstream::HealthyAndDegradedLoad&
-  priorityLoadForRetry(const Upstream::PrioritySet& priority_set,
-                       const Upstream::HealthyAndDegradedLoad& original_priority_load) PURE;
+  virtual const Upstream::HealthyAndDegradedLoad& priorityLoadForRetry(
+      const Upstream::PrioritySet& priority_set,
+      const Upstream::HealthyAndDegradedLoad& original_priority_load,
+      const Upstream::RetryPriority::PriorityMappingFunc& priority_mapping_func) PURE;
   /**
    * return how many times host selection should be reattempted during host selection.
    */
@@ -371,6 +408,24 @@ public:
 using ShadowPolicyPtr = std::unique_ptr<ShadowPolicy>;
 
 /**
+ * All virtual cluster stats. @see stats_macro.h
+ */
+#define ALL_VIRTUAL_CLUSTER_STATS(COUNTER)                                                         \
+  COUNTER(upstream_rq_retry)                                                                       \
+  COUNTER(upstream_rq_retry_limit_exceeded)                                                        \
+  COUNTER(upstream_rq_retry_overflow)                                                              \
+  COUNTER(upstream_rq_retry_success)                                                               \
+  COUNTER(upstream_rq_timeout)                                                                     \
+  COUNTER(upstream_rq_total)
+
+/**
+ * Struct definition for all virtual cluster stats. @see stats_macro.h
+ */
+struct VirtualClusterStats {
+  ALL_VIRTUAL_CLUSTER_STATS(GENERATE_COUNTER_STRUCT)
+};
+
+/**
  * Virtual cluster definition (allows splitting a virtual host into virtual clusters orthogonal to
  * routes for stat tracking and priority purposes).
  */
@@ -382,6 +437,15 @@ public:
    * @return the stat-name of the virtual cluster.
    */
   virtual Stats::StatName statName() const PURE;
+
+  /**
+   * @return VirtualClusterStats& strongly named stats for this virtual cluster.
+   */
+  virtual VirtualClusterStats& stats() const PURE;
+
+  static VirtualClusterStats generateStats(Stats::Scope& scope) {
+    return {ALL_VIRTUAL_CLUSTER_STATS(POOL_COUNTER(scope))};
+  }
 };
 
 class RateLimitPolicy;
@@ -443,7 +507,12 @@ public:
   /**
    * @return bool whether to include the request count header in upstream requests.
    */
-  virtual bool includeAttemptCount() const PURE;
+  virtual bool includeAttemptCountInRequest() const PURE;
+
+  /**
+   * @return bool whether to include the request count header in the downstream response.
+   */
+  virtual bool includeAttemptCountInResponse() const PURE;
 
   /**
    * @return uint32_t any route cap on bytes which should be buffered for shadowing or retries.
@@ -652,6 +721,13 @@ public:
   virtual const RetryPolicy& retryPolicy() const PURE;
 
   /**
+   * @return const InternalRedirectPolicy& the internal redirect policy for the route. All routes
+   *         have a internal redirect policy even if it is not enabled, which means redirects are
+   *         simply proxied as normal responses.
+   */
+  virtual const InternalRedirectPolicy& internalRedirectPolicy() const PURE;
+
+  /**
    * @return uint32_t any route cap on bytes which should be buffered for shadowing or retries.
    *         This is an upper bound so does not necessarily reflect the bytes which will be buffered
    *         as other limits may apply.
@@ -778,7 +854,14 @@ public:
    * count header.
    * @return bool whether x-envoy-attempt-count should be included on the upstream request.
    */
-  virtual bool includeAttemptCount() const PURE;
+  virtual bool includeAttemptCountInRequest() const PURE;
+
+  /**
+   * True if the virtual host this RouteEntry belongs to is configured to include the attempt
+   * count header.
+   * @return bool whether x-envoy-attempt-count should be included on the downstream response.
+   */
+  virtual bool includeAttemptCountInResponse() const PURE;
 
   using UpgradeMap = std::map<std::string, bool>;
   /**
@@ -786,16 +869,11 @@ public:
    */
   virtual const UpgradeMap& upgradeMap() const PURE;
 
+  using ConnectConfig = envoy::config::route::v3::RouteAction::UpgradeConfig::ConnectConfig;
   /**
-   * @returns the internal redirect action which should be taken on this route.
+   * If present, informs how to handle proxying CONNECT requests on this route.
    */
-  virtual InternalRedirectAction internalRedirectAction() const PURE;
-
-  /**
-   * @returns the threshold of number of previously handled internal redirects, for this route to
-   * stop handle internal redirects.
-   */
-  virtual uint32_t maxInternalRedirects() const PURE;
+  virtual const absl::optional<ConnectConfig>& connectConfig() const PURE;
 
   /**
    * @return std::string& the name of the route.
@@ -912,6 +990,44 @@ public:
 using RouteConstSharedPtr = std::shared_ptr<const Route>;
 
 /**
+ * RouteCallback, returns one of these enums to the route matcher to indicate
+ * if the matched route has been accepted or it wants the route matching to
+ * continue.
+ */
+enum class RouteMatchStatus {
+  // Continue matching route
+  Continue,
+  // Accept matched route
+  Accept
+};
+
+/**
+ * RouteCallback is passed this enum to indicate if more routes are available for evaluation.
+ */
+enum class RouteEvalStatus {
+  // Has more routes that can be evaluated for match.
+  HasMoreRoutes,
+  // All routes have been evaluated for match.
+  NoMoreRoutes
+};
+
+/**
+ * RouteCallback can be used to override routing decision made by the Route::Config::route,
+ * this callback is passed the RouteConstSharedPtr, when a matching route is found, and
+ * RouteEvalStatus indicating whether there are more routes available for evaluation.
+ *
+ * RouteCallback will be called back only when at least one matching route is found, if no matching
+ * routes are found RouteCallback will not be invoked. RouteCallback can return one of the
+ * RouteMatchStatus enum to indicate if the match has been accepted or should the route match
+ * evaluation continue.
+ *
+ * Returning RouteMatchStatus::Continue, when no more routes available for evaluation will result in
+ * no further callbacks and no route is deemed to be accepted and nullptr is returned to the caller
+ * of Route::Config::route.
+ */
+using RouteCallback = std::function<RouteMatchStatus(RouteConstSharedPtr, RouteEvalStatus)>;
+
+/**
  * The router configuration.
  */
 class Config {
@@ -927,6 +1043,25 @@ public:
    * @return the route or nullptr if there is no matching route for the request.
    */
   virtual RouteConstSharedPtr route(const Http::RequestHeaderMap& headers,
+                                    const StreamInfo::StreamInfo& stream_info,
+                                    uint64_t random_value) const PURE;
+
+  /**
+   * Based on the incoming HTTP request headers, determine the target route (containing either a
+   * route entry or a direct response entry) for the request.
+   *
+   * Invokes callback with matched route, callback can choose to accept the route by returning
+   * RouteStatus::Stop or continue route match from last matched route by returning
+   * RouteMatchStatus::Continue, when more routes are available.
+   *
+   * @param cb supplies callback to be invoked upon route match.
+   * @param headers supplies the request headers.
+   * @param random_value supplies the random seed to use if a runtime choice is required. This
+   *        allows stable choices between calls if desired.
+   * @return the route accepted by the callback or nullptr if no match found or none of route is
+   * accepted by the callback.
+   */
+  virtual RouteConstSharedPtr route(const RouteCallback& cb, const Http::RequestHeaderMap& headers,
                                     const StreamInfo::StreamInfo& stream_info,
                                     uint64_t random_value) const PURE;
 
